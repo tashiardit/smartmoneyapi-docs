@@ -1,0 +1,37 @@
+openapi: 3.0.3
+info:
+  title: SmartMoneyAPI
+  version: "1.0"
+  description: Trade confirmation API for crypto bots. Not financial advice.
+servers:
+  - url: https://api.smartmoneyapi.com
+security:
+  - ApiKeyAuth: []
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+paths:
+  /v1/confirm:
+    get:
+      summary: Confirm, reduce, or skip a trade idea
+      parameters:
+        - { name: symbol, in: query, required: true, schema: { type: string }, example: BTC }
+        - { name: direction, in: query, required: true, schema: { type: string, enum: [long, short] } }
+      responses:
+        "200":
+          description: Confirmation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbol: { type: string }
+                  direction: { type: string }
+                  action: { type: string, enum: [CONFIRM, REDUCE, SKIP] }
+                  confidence: { type: string, enum: [HIGH, MEDIUM, LOW] }
+                  composite_score: { type: number }
+                  size_multiplier: { type: number }
+                  reasons: { type: array, items: { type: string } }
