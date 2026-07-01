@@ -12,5 +12,7 @@ async function confirm(symbol, direction) {
 }
 
 confirm("BTC", "long").then(res => {
-  console.log(res.action, res.confidence, res.composite_score);
+  console.log(res.action, res.confidence, res.composite);
+  // action: CONFIRM_FULL / CONFIRM_REDUCED / CONFIRM_MINIMAL / VETO_SKIP / NO_DATA_SKIP
+  if (res.action.startsWith("CONFIRM")) console.log("size x" + res.size_mult);
 }); // Not financial advice. Crypto trading involves risk.

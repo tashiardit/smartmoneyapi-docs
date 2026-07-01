@@ -13,9 +13,9 @@ def confirm(symbol: str, direction: str) -> dict:
 
 if __name__ == "__main__":
     res = confirm("BTC", "long")
-    print(res["action"], res["confidence"], res["composite_score"])
-    if res["action"] == "SKIP":
-        print("Standing aside.")
+    print(res["action"], res["confidence"], res["composite"])
+    if res["action"].startswith("CONFIRM"):
+        print(f"Enter at size x{res['size_mult']}")
     else:
-        print(f"Enter at size x{res['size_multiplier']}")
+        print("Standing aside:", res["action"])  # VETO_SKIP / NO_DATA_SKIP
 # Not financial advice. Crypto trading involves risk.

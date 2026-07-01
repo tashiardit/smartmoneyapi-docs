@@ -1,8 +1,13 @@
 openapi: 3.0.3
 info:
   title: SmartMoneyAPI
-  version: "1.0"
-  description: Trade confirmation API for crypto bots. Not financial advice.
+  version: "1.1"
+  description: >
+    Trade-confirmation and market-intelligence API for crypto bots. Aggregates
+    3-exchange derivatives, on-chain metrics, whale positioning, real
+    multi-exchange forced-liquidation feeds, and on-chain DeFi lending
+    liquidations. Not financial advice — scores are a multi-factor confluence
+    read, not a guaranteed win-rate.
 servers:
   - url: https://api.smartmoneyapi.com
 security:
@@ -13,13 +18,417 @@ components:
       type: apiKey
       in: header
       name: X-API-Key
+      description: >
+        Primary auth. Send your key in the X-API-Key header. A session JWT via
+        Authorization Bearer is accepted as a fallback for browser/dashboard
+        sessions, but API clients should use X-API-Key.
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string, example: forbidden }
+        message: { type: string }
+    ConfirmFactorLeg:
+      type: object
+      description: One weighted leg of the composite confluence score.
+      properties:
+        score: { type: number, description: 'Sub-score in [-1, 1]' }
+        weight: { type: number, description: Nominal weight for this leg }
+        weighted: { type: number, description: score x effective weight }
+    Confirmation:
+      type: object
+      properties:
+        ts: { type: integer, description: Unix timestamp of the evaluation }
+        symbol: { type: string, example: BTC }
+        direction: { type: string, enum: [long, short] }
+        source: { type: string, description: Optional caller-supplied label }
+        composite:
+          type: number
+          description: Composite confluence score in [-1.0, 1.0] (not 0–100, not a win-rate).
+        base_composite:
+          type: number
+          description: Composite before post-filter adjustments were applied.
+        confidence:
+          type: string
+          enum: [HIGH, MEDIUM, LOW, VETO, NO_DATA]
+          description: >
+            Confidence bucket. NO_DATA means the symbol is outside the tracked
+            derivatives/whale universe (nothing was measured — NOT a weak LOW).
+        action:
+          type: string
+          enum: [CONFIRM_FULL, CONFIRM_REDUCED, CONFIRM_MINIMAL, VETO_SKIP, NO_DATA_SKIP]
+          description: Recommended action derived from confidence.
+        size_mult:
+          type: number
+          description: Suggested position-size multiplier (e.g. 0.0, 0.5, 1.0, 1.5).
+        unsupported:
+          type: boolean
+          description: true when the symbol is not covered (paired with NO_DATA).
+        deriv_score: { type: number, description: 'Derivatives sub-score [-1, 1]' }
+        onchain_score: { type: number, description: 'On-chain sub-score [-1, 1]' }
+        whale_score: { type: number, description: 'Whale-consensus sub-score [-1, 1]' }
+        x_score: { type: number, description: 'X/social-sentiment sub-score [-1, 1]' }
+        factors:
+          type: object
+          description: >
+            Transparent per-leg breakdown of what drove the composite
+            (score x weight). Keys present when the symbol is covered.
+          properties:
+            derivatives: { $ref: '#/components/schemas/ConfirmFactorLeg' }
+            onchain:
+              allOf:
+                - $ref: '#/components/schemas/ConfirmFactorLeg'
+                - type: object
+                  properties:
+                    source:
+                      type: string
+                      description: >
+                        On-chain data source used, e.g. "coinmetrics" (free
+                        MVRV / exchange-flow / active-address), "glassnode", or "none".
+                    available: { type: boolean }
+            whale:
+              allOf:
+                - $ref: '#/components/schemas/ConfirmFactorLeg'
+                - type: object
+                  properties:
+                    weight_effective: { type: number }
+                    staleness_factor: { type: number, description: 'Whale-data freshness decay in [0,1]' }
+            x_sentiment: { $ref: '#/components/schemas/ConfirmFactorLeg' }
+        adjustments:
+          type: object
+          description: Signed post-filter tweaks applied to the base composite.
+          properties:
+            agreement: { type: number }
+            trend: { type: number }
+            rsi_1h: { type: number }
+            news_macro: { type: number }
+            momentum: { type: number }
+            time_of_day: { type: number }
+            streak_decay: { type: number }
+        weights:
+          type: object
+          description: Weight set actually used for this evaluation.
+        coverage:
+          type: object
+          description: Which legs had real data for this symbol.
+          properties:
+            derivatives: { type: boolean }
+            whale: { type: boolean }
+            onchain: { type: boolean }
+        weights_mode:
+          type: string
+          description: e.g. "free", "full", "free_x", "full_x".
+        reasons:
+          type: array
+          items: { type: string }
+          description: Human-readable context strings.
+    LiquidationRealizedHeatmap:
+      type: object
+      description: >
+        REAL executed forced-liquidation intensity (price x time), aggregated
+        live from public exchange WebSocket feeds (Binance, OKX, Bybit, Bitget,
+        BitMEX). Complements the leverage-projected `levels` estimate.
+      properties:
+        symbol: { type: string }
+        window_minutes: { type: integer }
+        price_buckets: { type: integer }
+        time_bucket_minutes: { type: number }
+        price_min: { type: number }
+        price_max: { type: number }
+        price_levels: { type: array, items: { type: number } }
+        time_buckets: { type: array, items: { type: integer } }
+        matrix:
+          type: array
+          description: price_buckets x time_buckets notional grid (all liquidations).
+          items: { type: array, items: { type: number } }
+        long_matrix: { type: array, items: { type: array, items: { type: number } } }
+        short_matrix: { type: array, items: { type: array, items: { type: number } } }
+        clusters:
+          type: array
+          items:
+            type: object
+            properties:
+              price: { type: number }
+              notional: { type: number }
+              long_notional: { type: number }
+              short_notional: { type: number }
+              count: { type: integer }
+              dominant_side: { type: string, enum: [long, short] }
+        by_side:
+          type: object
+          properties:
+            long: { type: number }
+            short: { type: number }
+        totals:
+          type: object
+          properties:
+            long_liq_notional: { type: number }
+            short_liq_notional: { type: number }
+            total_notional: { type: number }
+            count: { type: integer }
+        exchanges:
+          type: object
+          description: Per-exchange event counts contributing to the window.
+        generated_at: { type: integer }
+    OnchainLiquidation:
+      type: object
+      properties:
+        chain: { type: string, enum: [bsc, avax] }
+        protocol: { type: string, example: Venus }
+        event: { type: string }
+        borrower: { type: string }
+        liquidator: { type: string }
+        debt_token: { type: string }
+        debt_symbol: { type: string }
+        debt_amount: { type: number, nullable: true }
+        debt_amount_raw: { type: string }
+        repay_usd: { type: number, nullable: true }
+        collateral_token: { type: string }
+        collateral_symbol: { type: string }
+        collateral_amount: { type: number, nullable: true }
+        tx_hash: { type: string }
+        block: { type: integer, nullable: true }
+        log_index: { type: integer }
+        ts: { type: integer }
 paths:
   /v1/confirm:
     get:
       summary: Confirm, reduce, or skip a trade idea
+      description: >
+        Multi-factor confluence score for a trade direction. `/confirm` scores
+        symbols with enough resolved history (currently BTC, ETH, SOL). An
+        untracked symbol returns an explicit NO_DATA/unsupported result — not a
+        fabricated LOW. This is decision support, not a guaranteed win-rate.
       parameters:
         - { name: symbol, in: query, required: true, schema: { type: string }, example: BTC }
         - { name: direction, in: query, required: true, schema: { type: string, enum: [long, short] } }
+        - { name: source, in: query, required: false, schema: { type: string }, description: Optional label for your signal source (logged). }
+      responses:
+        "200":
+          description: Confirmation result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Confirmation' }
+        "401": { description: Missing/invalid key, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        "403": { description: Symbol or endpoint not on your tier }
+        "429": { description: Rate limited }
+  /v1/liquidations:
+    get:
+      summary: Liquidation levels + real executed-liquidation heatmap
+      description: >
+        Returns leverage-projected liquidation `levels` (an estimate of WHERE
+        clusters sit) plus, when available, a `realized_heatmap` of ACTUAL
+        forced liquidations streamed live from Binance/OKX/Bybit/Bitget/BitMEX.
+        Trader tier gets cascade risk, nearest distances, and realized totals;
+        Pro tier gets full level detail and the full realized matrix.
+      parameters:
+        - { name: symbol, in: query, required: false, schema: { type: string, default: BTC }, example: BTC }
+      responses:
+        "200":
+          description: Liquidation data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  symbol: { type: string }
+                  cascade_risk: { type: string, example: HIGH }
+                  nearest_long_liq_pct: { type: number }
+                  nearest_short_liq_pct: { type: number }
+                  levels:
+                    type: object
+                    description: Leverage-projected liquidation clusters (Pro).
+                  realized_heatmap: { $ref: '#/components/schemas/LiquidationRealizedHeatmap' }
+                  realized_totals:
+                    type: object
+                    description: Present on Trader tier (subset of realized_heatmap.totals).
+                  realized_by_side:
+                    type: object
+                    description: Present on Trader tier.
+        "403": { description: Endpoint not on your tier }
+        "503": { description: Could not determine current price for the symbol }
+  /v1/liquidations/onchain:
+    get:
+      summary: Executed on-chain DeFi lending liquidations (BSC + Avalanche)
+      description: >
+        Executed lending-protocol liquidations (Venus/Cream/Moolah on BSC;
+        AAVE/Benqi/BankerJoe/Granary/Vinium on Avalanche) captured directly from
+        the project's own local full nodes — independent of any trading bot.
+        Requires an authenticated key (Trader tier and above). Pro tier
+        additionally returns `at_risk` positions (bot-dependent, may be absent).
+      parameters:
+        - { name: chain, in: query, required: false, schema: { type: string, enum: [bsc, avax] }, description: Omit for all chains. }
+        - { name: limit, in: query, required: false, schema: { type: integer, default: 100, maximum: 500 } }
+      responses:
+        "200":
+          description: On-chain liquidations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  chain: { type: string, example: all }
+                  count: { type: integer }
+                  liquidations:
+                    type: array
+                    items: { $ref: '#/components/schemas/OnchainLiquidation' }
+                  summary:
+                    type: object
+                    properties:
+                      window_hours: { type: number }
+                      buffer_size: { type: integer }
+                      enabled: { type: boolean }
+                      generated_ts: { type: integer }
+                      by_chain: { type: object }
+                      by_protocol: { type: object }
+                      nodes:
+                        type: object
+                        description: Per-chain node health (reachable, head_block, last_poll_ts, ...).
+                  at_risk:
+                    type: object
+                    description: Pro only; bot-dependent forward-looking at-risk positions.
+        "403": { description: Requires an authenticated Trader+ key }
+  /v1/webhooks:
+    post:
+      summary: Register an outbound webhook (Pro)
+      description: >
+        Register an HTTPS URL to receive signed event pushes. Deliveries carry
+        an HMAC-SHA256 signature in the `X-SmartMoney-Signature` header and an
+        `X-SmartMoney-Event` header. Retries up to 3x with backoff.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [url, events, symbols, secret]
+              properties:
+                url: { type: string, format: uri, description: HTTPS endpoint to POST events to. }
+                events:
+                  type: array
+                  items: { type: string }
+                  description: 'Event names to receive, e.g. ["HIGH","MEDIUM","VETO"] or ["*"].'
+                symbols:
+                  type: array
+                  items: { type: string }
+                  description: 'Symbols to filter, e.g. ["BTC","ETH"] or ["*"].'
+                secret:
+                  type: string
+                  minLength: 16
+                  description: >
+                    Your signing secret (>= 16 chars). Stored hashed. The HMAC
+                    key used to sign deliveries is the SHA-256 hex digest of this
+                    secret — see api-reference.md for the verification recipe.
+      responses:
+        "201":
+          description: Webhook registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  webhook_id: { type: integer }
+                  url: { type: string }
+                  events: { type: array, items: { type: string } }
+                  symbols: { type: array, items: { type: string } }
+                  message: { type: string }
+        "400": { description: Invalid body (URL must be HTTPS, secret >= 16 chars) }
+        "403": { description: Requires Pro tier }
+  /v1/alerts/conditions:
+    get:
+      summary: List alert conditions (Pro)
+      responses:
+        "200":
+          description: Your alert conditions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conditions: { type: array, items: { type: object } }
+                  count: { type: integer }
+                  available_metrics: { type: array, items: { type: string } }
+                  available_operators: { type: array, items: { type: string } }
+        "403": { description: Requires Pro tier }
+    post:
+      summary: Create an alert condition (Pro)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, metric, operator, threshold]
+              properties:
+                name: { type: string }
+                metric:
+                  type: string
+                  description: 'One of the available_metrics, e.g. funding_rate, global_lsr, mvrv, whale_long_pct, composite_long.'
+                symbol: { type: string, default: BTC }
+                operator:
+                  type: string
+                  enum: [lt, gt, eq, crosses_above, crosses_below]
+                threshold: { type: number }
+                delivery: { type: string, default: telegram, description: 'e.g. telegram, webhook.' }
+                cooldown_minutes: { type: integer, default: 60 }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id: { type: integer }
+                  message: { type: string }
+        "400": { description: Invalid body }
+        "403": { description: Requires Pro tier }
+  /v1/alerts/conditions/{id}:
+    delete:
+      summary: Delete an alert condition (Pro)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: Deleted }
+        "404": { description: Not found or not owned by you }
+        "403": { description: Requires Pro tier }
+  /v1/alerts/history:
+    get:
+      summary: Recent alert trigger events (Pro)
+      responses:
+        "200":
+          description: Trigger history (most recent first, up to 100)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  history: { type: array, items: { type: object } }
+                  count: { type: integer }
+        "403": { description: Requires Pro tier }
+  /v1/tradingview/webhook:
+    post:
+      summary: Inbound TradingView alert -> /confirm
+      description: >
+        Receives a TradingView alert (which cannot send custom headers, so it
+        authenticates via a `secret` field in the JSON body), runs it through
+        /confirm, and returns the confirmation. Does not use X-API-Key.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [secret, symbol, direction]
+              properties:
+                secret: { type: string, description: Your TradingView webhook secret. }
+                symbol: { type: string, example: BTC }
+                direction: { type: string, enum: [long, short] }
+                source: { type: string }
+                timeframe: { type: string, example: 1h }
+                strategy: { type: string }
+                price: { type: number }
       responses:
         "200":
           description: Confirmation result
@@ -28,10 +437,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  symbol: { type: string }
-                  direction: { type: string }
-                  action: { type: string, enum: [CONFIRM, REDUCE, SKIP] }
-                  confidence: { type: string, enum: [HIGH, MEDIUM, LOW] }
-                  composite_score: { type: number }
-                  size_multiplier: { type: number }
-                  reasons: { type: array, items: { type: string } }
+                  tradingview: { type: object }
+                  confirmation: { $ref: '#/components/schemas/Confirmation' }
+                  action: { type: string, enum: [CONFIRMED, VETOED] }
+        "401": { description: Invalid webhook secret }
+        "400": { description: Missing/invalid symbol or direction }
