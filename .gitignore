@@ -1,0 +1,29 @@
+# Env / secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+id_ecdsa
+*.secret
+
+# Claude Code
+.claude/
+CLAUDE.md
+
+# Python cache (examples dir)
+__pycache__/
+*.pyc
+
+# IDEs / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+Thumbs.db
+
+# Node (examples dir)
+node_modules/
