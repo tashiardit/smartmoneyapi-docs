@@ -103,10 +103,35 @@ def namespace(path: str) -> str:
     return parts[0]
 
 
+#: Sent on every fetch. Cloudflare fronts both documented hosts and answers the
+#: DEFAULT Python-urllib User-Agent with 403 Forbidden while serving curl and
+#: browsers a 200 — so a bare urlopen() made this whole script, the one thing
+#: standing between this mirror and the seven-week rot it was written to end,
+#: fail with an unhandled traceback for anyone following the README. Measured:
+#:   curl -A 'Python-urllib/3.12' https://smartmoneyapi.com/openapi.json -> 403
+#:   curl -A 'Mozilla/5.0'        same URL                               -> 200
+USER_AGENT = ("smartmoneyapi-docs-build/1.0 "
+              "(+https://github.com/tashiardit/smartmoneyapi-docs)")
+
+
 def load_spec(source: str) -> dict:
     if source.startswith(("http://", "https://")):
-        with urllib.request.urlopen(source, timeout=60) as r:  # noqa: S310
-            return json.loads(r.read().decode("utf-8"))
+        req = urllib.request.Request(source, headers={"User-Agent": USER_AGENT})
+        try:
+            with urllib.request.urlopen(req, timeout=60) as r:  # noqa: S310
+                return json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            raise SystemExit(
+                f"could not fetch the live spec from {source}: HTTP {exc.code}.\n"
+                f"If this is a 403, an edge rule is rejecting this build's "
+                f"User-Agent ({USER_AGENT!r}). Fetch the spec by hand and pass it "
+                f"as a file instead:\n"
+                f"    curl -sSL {source} -o /tmp/openapi.json\n"
+                f"    python3 tools/build_public_spec.py --source /tmp/openapi.json"
+            ) from exc
+        except urllib.error.URLError as exc:
+            raise SystemExit(
+                f"could not reach {source}: {exc.reason}") from exc
     with open(source, encoding="utf-8") as fh:
         return json.load(fh)
 
@@ -363,7 +388,14 @@ def measure(spec: dict, base: str) -> dict:
             stats["skipped"] += 1
             continue
         try:
-            with urllib.request.urlopen(base + path, timeout=30) as r:  # noqa: S310
+            # Same User-Agent as load_spec, and for the same reason: the
+            # measurement pass goes through the SAME Cloudflare edge, so a
+            # bare urlopen here made 133 of 207 probes 403 and the script
+            # recorded them as 'calls failed' — an edge rule reported as an
+            # API that does not answer.
+            _req = urllib.request.Request(base + path,
+                                          headers={'User-Agent': USER_AGENT})
+            with urllib.request.urlopen(_req, timeout=30) as r:  # noqa: S310
                 body = json.loads(r.read().decode("utf-8"))
         except Exception:
             stats["failed"] += 1
