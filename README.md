@@ -4,7 +4,7 @@ This repository is **one thing**: a generated, machine-readable contract for the
 SmartMoneyAPI public data surface, kept in sync with the live API by a script in
 this repo rather than by hand.
 
-- **[`openapi.yaml`](openapi.yaml)** — OpenAPI 3.0.3, 207 operations. Point
+- **[`openapi.yaml`](openapi.yaml)** — OpenAPI 3.0.3, 249 operations. Point
   `openapi-generator`, Postman, an LLM agent, or your IDE at it.
 - **[`api-reference.md`](api-reference.md)** — the same contract as prose, one
   section per endpoint, with parameters, response fields and a runnable `curl`.
@@ -20,7 +20,7 @@ machine can read, that says exactly which endpoints exist, which need a key,
 which tier unlocks each one, and what comes back.
 
 The hand-maintained version of that file rotted. It carried 8 endpoints against
-the live API's 263 paths, and it documented `/v1/alerts/conditions/{id}` — a
+the live API's 263 paths (306 today), and it documented `/v1/alerts/conditions/{id}` — a
 route that had been renamed and answered 404. So this repo no longer contains
 anything written by hand. `openapi.yaml` and `api-reference.md` are both emitted
 by `tools/build_public_spec.py`, and the script is committed here so anyone can
@@ -30,11 +30,11 @@ see the selection rule and re-run it.
 
 | | |
 |---|---|
-| Generated | **2026-08-28** |
+| Generated | **2026-10-08** |
 | Source | the live document the API serves at <https://smartmoneyapi.com/openapi.json> |
-| Live spec | 263 paths |
-| Published here | **207 paths / 207 operations** (149 keyless) |
-| Response shapes measured against the running API | 131 operations |
+| Live spec | 306 paths |
+| Published here | **249 paths / 249 operations** (136 keyless) |
+| Response shapes measured against the running API | not recorded in this build (see below) |
 
 ## What is published, and what is not
 
@@ -81,9 +81,11 @@ x-response-note: "Field names and types below were recorded from one real
 
 Only names and types are recorded — no values are copied out of any response.
 
-**What is *not* measured, and is therefore weaker:** the 76 operations that need
-a key or a required parameter carry whatever the live document declares, which
-for some of them is nothing. Where you see an operation with no response fields
+**This build was generated from the published spec without the `--measure` pass**,
+so no operation carries recorded response fields; each carries whatever the live
+document declares, which for some of them is nothing. Run
+`python3 tools/build_public_spec.py --measure https://api.smartmoneyapi.com` to
+add the recorded shapes. Where you see an operation with no response fields
 listed, that is an honest gap, not an empty response.
 
 ## Quickstart
@@ -97,7 +99,7 @@ curl -s "https://api.smartmoneyapi.com/v1/history/coverage" | jq '.tables | keys
 # Executed forced liquidations bucketed by price x time. Keyless.
 curl -s "https://api.smartmoneyapi.com/v1/liquidations/heatmap?symbol=BTC" | jq '{symbol, window_minutes, price_buckets}'
 
-# Confirm a trade idea. Needs a key; the Free tier covers BTC, ETH and SOL.
+# Confirm a trade idea. Needs a key; the Free tier covers BTC, ETH, SOL, XAU and XAG.
 curl -s -H "X-API-Key: sm_xxxxxxxxxxxx" \
   "https://api.smartmoneyapi.com/v1/confirm?symbol=BTC&direction=long" \
   | jq '{action, confidence, composite, size_mult}'

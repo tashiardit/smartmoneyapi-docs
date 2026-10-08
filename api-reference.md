@@ -1,6 +1,6 @@
 # SmartMoneyAPI — API reference
 
-**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json (read from a local copy)>, on 2026-08-28. It documents 207 of the 263 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
+**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-08. It documents 249 of the 306 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
 
 Base URL: `https://api.smartmoneyapi.com`
 
@@ -13,33 +13,41 @@ Errors: `429` is a quota or throttle rejection; `403` means your tier does not i
 ## Contents
 
 - [Account](#account) — 1 endpoint
-- [COT](#cot) — 4 endpoints
+- [COT](#cot) — 5 endpoints
 - [Copy-trading](#copy-trading) — 9 endpoints
 - [DEX](#dex) — 4 endpoints
 - [DeFiLlama](#defillama) — 11 endpoints
-- [Derivatives](#derivatives) — 7 endpoints
+- [Derivatives](#derivatives) — 11 endpoints
 - [ETF](#etf) — 2 endpoints
 - [Equities](#equities) — 24 endpoints
 - [Historical](#historical) — 4 endpoints
 - [History](#history) — 10 endpoints
+- [Insiders](#insiders) — 1 endpoint
 - [Integrations](#integrations) — 1 endpoint
 - [Intelligence](#intelligence) — 6 endpoints
 - [JSON-RPC](#json-rpc) — 6 endpoints
+- [L2 order-book depth](#l2-order-book-depth) — 2 endpoints
+- [L2 trade tape](#l2-trade-tape) — 2 endpoints
 - [Liquidations](#liquidations) — 10 endpoints
 - [Live chain](#live-chain) — 5 endpoints
 - [Market](#market) — 11 endpoints
-- [Meta](#meta) — 7 endpoints
+- [Meta](#meta) — 9 endpoints
 - [News](#news) — 8 endpoints
 - [Node](#node) — 13 endpoints
-- [On-chain](#on-chain) — 7 endpoints
-- [Options](#options) — 6 endpoints
+- [On-chain](#on-chain) — 10 endpoints
+- [Options](#options) — 8 endpoints
 - [Performance](#performance) — 3 endpoints
+- [Reference](#reference) — 4 endpoints
+- [Research](#research) — 4 endpoints
 - [Screener](#screener) — 7 endpoints
 - [Seasonality](#seasonality) — 6 endpoints
-- [Signals](#signals) — 8 endpoints
+- [Signals](#signals) — 9 endpoints
+- [Smart-money cohorts](#smart-money-cohorts) — 7 endpoints
 - [Strategies](#strategies) — 6 endpoints
 - [Technicals](#technicals) — 3 endpoints
+- [Top traders](#top-traders) — 4 endpoints
 - [Trading tools](#trading-tools) — 3 endpoints
+- [Volume](#volume) — 5 endpoints
 - [Whales](#whales) — 15 endpoints
 
 ## Account
@@ -63,15 +71,6 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 COT positioning compared across the tracked contracts.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `BTC` | object |  |
-| `ETH` | — |  |
-| `relative_strength` | — |  |
-| `updated` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/cot/comparison"
@@ -88,19 +87,65 @@ Historical COT positioning series.
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 | `weeks` | query | no | Weeks of history. |
 
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/cot/history"
+```
+
+### `GET /v1/cot/positioning`
+
+**COT positioning** — keyless
+
+CFTC Commitments of Traders categories for BTC, ETH, XAU or XAG with percentiles computed only from reports published by as_of. Disclosed positioning of a legally defined category, published Friday for the prior Tuesday. Source: CFTC Commitments of Traders. Public.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbol` | query | no | Market. One of: `BTC`, `ETH`, `XAU`, `XAG`. Default `BTC`. |
+| `lookback_weeks` | query | no | Percentile window. One of: `52`, `156`. Default `156`. |
+
 Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `history` | array |  |
-| `meta` | object |  |
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `availability_rule` | string |  |
+| `available_ts` | integer |  |
+| `basis` | string |  |
+| `categories` | array |  |
+| `caveats` | array |  |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `data_mode_counts` | object |  |
+| `dataset_id` | string |  |
+| `expected_obs` | integer |  |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `licence_class` | string |  |
+| `lookback_weeks` | integer |  |
+| `market` | object |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `methods` | object |  |
+| `metric` | string |  |
+| `n_obs` | integer |  |
+| `note` | string |  |
+| `released_ts` | integer |  |
+| `report_as_of` | object |  |
+| `report_date` | string |  |
+| `report_family` | string |  |
+| `report_name` | string |  |
+| `rights` | object |  |
+| `rows_excluded` | object |  |
+| `scope` | string |  |
+| `source` | string |  |
 | `symbol` | string |  |
-| `updated` | integer |  |
-| `weeks` | integer |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `validation` | object |  |
+| `venue` | string |  |
+| `versions` | object |  |
+| `window` | object |  |
+| `window_complete` | boolean |  |
 
 ```bash
 curl \
-  "https://api.smartmoneyapi.com/v1/cot/history"
+  "https://api.smartmoneyapi.com/v1/cot/positioning"
 ```
 
 ### `GET /v1/cot/summary`
@@ -112,24 +157,6 @@ CFTC Commitments of Traders positioning summary.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `categories` | object |  |
-| `macd_confirmation` | object |  |
-| `meta` | object |  |
-| `net_change` | integer |  |
-| `net_long` | integer |  |
-| `open_interest` | integer |  |
-| `pct_long` | number |  |
-| `pct_short` | number |  |
-| `report_date` | string |  |
-| `signal` | string |  |
-| `symbol` | string |  |
-| `trend_4w` | array |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -146,31 +173,67 @@ Trend in COT net positioning.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `current_net_long` | integer |  |
-| `divergence` | string |  |
-| `extreme` | string |  |
-| `hedger_net` | integer |  |
-| `mean_net_long` | integer |  |
-| `momentum_4w` | integer |  |
-| `percentile` | number |  |
-| `speculator_net` | integer |  |
-| `std_dev` | integer |  |
-| `symbol` | string |  |
-| `trend_series` | array |  |
-| `updated` | integer |  |
-| `weeks` | integer |  |
-| `z_score` | number |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/cot/trend"
 ```
 
 ## Copy-trading
+
+### `GET /v1/copy-engine/history`
+
+**Our copy-trading engine (experimental): order history (executed orders)** — key required — Pro (15,000 calls/day)
+
+Executed orders of our own copy-trading accounts, newest first. pnl_status is known, unknown (realized_pnl is null: no stored exit) or not_applicable (opens and adds). Failed orders in the same window are not listed; failed_count counts them.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `wallet` | query | no | Source wallet address, exact match. |
+| `symbol` | query | no | Base symbol, e.g. BTC. |
+| `days` | query | no | Look-back window in days. Default `30`. |
+| `limit` | query | no | Max rows returned. Default `100`. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/copy-engine/history"
+```
+
+### `GET /v1/copy-engine/leaderboard`
+
+**Our copy-trading engine (experimental): source wallets, by our executed PnL** — key required — Pro (15,000 calls/day)
+
+Source wallets our own copy-trading accounts copied, ranked by the realized PnL of OUR executed copies (closing orders with a stored exit price only; up to 50 rows). Not the source wallets' own record, not a ranking of skilled traders and not a signal. Failed orders enter no figure and are counted in failed_count; executed closing orders without a stored exit are counted in pnl_unknown. Every response carries scope "our copy-trading engine (experimental): executed orders of our own copy-trading accounts, not the source wallets' own trading record".
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/copy-engine/leaderboard"
+```
+
+### `GET /v1/copy-engine/performance`
+
+**Our copy-trading engine (experimental): daily PnL (executed orders)** — key required — Pro (15,000 calls/day)
+
+One row per UTC calendar day in the last `days` days, today included, on which our own copy-trading accounts placed any order: PnL and trade counts from executed orders only, with executed_count, failed_count and pnl_unknown per day.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `days` | query | no | Calendar days back, today included. Default `30`. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/copy-engine/performance"
+```
+
+### `GET /v1/copy-engine/summary`
+
+**Our copy-trading engine (experimental): totals (executed orders)** — key required — Pro (15,000 calls/day)
+
+Totals over our own copy-trading accounts' executed orders: total_trades, wins, losses, win_rate and total_pnl over closing orders with a known PnL (before fees), plus executed_count, failed_count, pnl_unknown and last_executed_at. These are OUR engine's results, not any trader's.
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/copy-engine/summary"
+```
 
 ### `GET /v1/copy-trading/overview`
 
@@ -254,67 +317,11 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/copy-trading/wallets"
 ```
 
-### `GET /v1/top-traders/history`
-
-**Top-trader history** — key required — Pro (15,000 calls/day)
-
-Historical position and PnL series for the tracked top traders.
-
-| Parameter | In | Required | Description |
-|---|---|---|---|
-| `days` | query | no | Look-back window in days. |
-
-```bash
-curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
-  "https://api.smartmoneyapi.com/v1/top-traders/history"
-```
-
-### `GET /v1/top-traders/leaderboard`
-
-**Top-trader leaderboard** — key required — Pro (15,000 calls/day)
-
-Hyperliquid leaderboard traders ranked over the selected window.
-
-| Parameter | In | Required | Description |
-|---|---|---|---|
-| `limit` | query | no | Max rows returned. |
-
-```bash
-curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
-  "https://api.smartmoneyapi.com/v1/top-traders/leaderboard"
-```
-
-### `GET /v1/top-traders/performance`
-
-**Top-trader performance** — key required — Pro (15,000 calls/day)
-
-Realised performance of the tracked top traders.
-
-| Parameter | In | Required | Description |
-|---|---|---|---|
-| `days` | query | no | Look-back window in days. |
-
-```bash
-curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
-  "https://api.smartmoneyapi.com/v1/top-traders/performance"
-```
-
-### `GET /v1/top-traders/summary`
-
-**Top-trader summary** — key required — Pro (15,000 calls/day)
-
-Aggregate statistics for the tracked top traders.
-
-```bash
-curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
-  "https://api.smartmoneyapi.com/v1/top-traders/summary"
-```
-
 ## DEX
 
 ### `GET /v1/dex/pair`
 
-**Pair details** — keyless
+**Pair details** — key required — withheld
 
 Details for a single DEX pair.
 
@@ -324,13 +331,13 @@ Details for a single DEX pair.
 | `address` | query | yes | Pair contract address. |
 
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/dex/pair"
 ```
 
 ### `GET /v1/dex/search`
 
-**Search DEX pairs** — keyless
+**Search DEX pairs** — key required — withheld
 
 Search DexScreener pairs by name/symbol.
 
@@ -340,13 +347,13 @@ Search DexScreener pairs by name/symbol.
 | `limit` | query | no | Max pairs. Default `20`. |
 
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/dex/search"
 ```
 
 ### `GET /v1/dex/token`
 
-**Token pairs** — keyless
+**Token pairs** — key required — withheld
 
 All DEX pairs for a token address.
 
@@ -356,13 +363,13 @@ All DEX pairs for a token address.
 | `limit` | query | no | Max pairs. Default `10`. |
 
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/dex/token"
 ```
 
 ### `GET /v1/dex/trending`
 
-**Trending DEX pairs** — keyless
+**Trending DEX pairs** — key required — withheld
 
 Trending pairs from DexScreener.
 
@@ -370,28 +377,8 @@ Trending pairs from DexScreener.
 |---|---|---|---|
 | `limit` | query | no | Max pairs. Default `20`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `base_token` | object |  |
-| `chain` | string |  |
-| `created_at` | integer |  |
-| `dex` | string |  |
-| `fdv` | number |  |
-| `liquidity_usd` | number |  |
-| `pair_address` | string |  |
-| `price_change_1h` | number |  |
-| `price_change_24h` | number |  |
-| `price_change_5m` | number |  |
-| `price_change_6h` | number |  |
-| `price_usd` | number |  |
-| `quote_token` | object |  |
-| `url` | string |  |
-| `volume_24h` | number |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/dex/trending"
 ```
 
@@ -399,35 +386,18 @@ curl \
 
 ### `GET /v1/defillama/all`
 
-**All DeFiLlama data** — keyless
+**All DeFiLlama data** — key required — withheld
 
 Every DeFiLlama dataset in one payload. Sourced from DeFiLlama.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `borrow_rates` | object |  |
-| `bridges` | object |  |
-| `derivatives` | object |  |
-| `fees` | object |  |
-| `hacks` | object |  |
-| `options` | object |  |
-| `pools` | object |  |
-| `price_momentum` | object |  |
-| `raises` | object |  |
-| `stablecoin_chains` | object |  |
-| `treasuries` | object |  |
-| `unlocks` | object |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/defillama/all"
 ```
 
 ### `GET /v1/defillama/borrow-rates`
 
-**Borrow rates** — key required — Trader (3,000 calls/day)
+**Borrow rates** — key required — withheld
 
 Lending-market borrow rates. Sourced from DeFiLlama.
 
@@ -438,163 +408,84 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 ### `GET /v1/defillama/bridges`
 
-**Bridge volumes** — keyless
+**Bridge volumes** — key required — withheld
 
 Cross-chain bridge volume. Sourced from DeFiLlama.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `available` | boolean |  |
-| `data_is_placeholder` | boolean |  |
-| `error` | string |  |
-| `remediation` | string |  |
-| `source_note` | string |  |
-| `status` | string |  |
-| `top_bridges` | array |  |
-| `total_24h` | integer |  |
-| `total_7d` | integer |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/defillama/bridges"
 ```
 
 ### `GET /v1/defillama/derivatives`
 
-**Perp DEX volumes** — keyless
+**Perp DEX volumes** — key required — withheld
 
 Perpetual DEX volume rankings. Sourced from DeFiLlama.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `available` | boolean |  |
-| `data_is_placeholder` | boolean |  |
-| `error` | string |  |
-| `remediation` | string |  |
-| `source_note` | string |  |
-| `status` | string |  |
-| `top_protocols` | array |  |
-| `total_24h` | integer |  |
-| `total_7d` | integer |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/defillama/derivatives"
 ```
 
 ### `GET /v1/defillama/fees`
 
-**Protocol fees** — keyless
+**Protocol fees** — key required — withheld
 
 Protocol fee and revenue rankings. Sourced from DeFiLlama.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `change_1d` | number |  |
-| `top_protocols` | array |  |
-| `total_fees_24h` | number |  |
-| `total_fees_7d` | number |  |
-| `total_revenue_24h` | integer |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/defillama/fees"
 ```
 
 ### `GET /v1/defillama/hacks`
 
-**Hacks** — keyless
+**Hacks** — key required — withheld
 
 Logged protocol exploits and amounts lost. Sourced from DeFiLlama.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `recent_hacks` | array |  |
-| `total_30d_usd` | number |  |
-| `total_all_time_usd` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/defillama/hacks"
 ```
 
 ### `GET /v1/defillama/momentum`
 
-**Price momentum** — keyless
+**Price momentum** — key required — withheld
 
 Cross-token price momentum. Sourced from DeFiLlama.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `coins` | array |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/defillama/momentum"
 ```
 
 ### `GET /v1/defillama/raises`
 
-**Fundraises** — keyless
+**Fundraises** — key required — withheld
 
 Recent protocol fundraises. Sourced from DeFiLlama.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `available` | boolean |  |
-| `data_is_placeholder` | boolean |  |
-| `error` | string |  |
-| `recent_raises` | array |  |
-| `remediation` | string |  |
-| `source_note` | string |  |
-| `status` | string |  |
-| `total_raised_30d_usd` | integer |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/defillama/raises"
 ```
 
 ### `GET /v1/defillama/stablecoin-chains`
 
-**Stablecoins by chain** — keyless
+**Stablecoins by chain** — key required — withheld
 
 Stablecoin supply broken down by chain. Sourced from DeFiLlama.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `chains` | array |  |
-| `total_stablecoin_usd` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/defillama/stablecoin-chains"
 ```
 
 ### `GET /v1/defillama/treasuries`
 
-**Protocol treasuries** — key required — Trader (3,000 calls/day)
+**Protocol treasuries** — key required — withheld
 
 Protocol treasury holdings. Sourced from DeFiLlama.
 
@@ -605,30 +496,55 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 ### `GET /v1/defillama/unlocks`
 
-**Token unlocks** — keyless
+**Token unlocks** — key required — withheld
 
 Upcoming token unlock schedule. Sourced from DeFiLlama.
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/defillama/unlocks"
+```
+
+## Derivatives
+
+### `GET /v1/coverage`
+
+**Derivatives field coverage matrix** — keyless
+
+How completely each tracked field (funding, open interest, long/short ratio, ...) is populated per venue over a lookback window, plus one symbol's per-venue/per-field detail when `?symbol=` is given. `venues_registry_only` names venues the instrument registry knows about but that never actually wrote a row in the window -- a registry entry is not evidence of collection. `listing_source` and `declaration` carry the metadata this matrix reasons from (what we believe is listed, and on what evidence) alongside `declaration_conflicts`, so a coverage gap can be told apart from a symbol that was never listed anywhere. `window_seconds` is clamped to [3600, 604800] (1h-7d); an out-of-range or unparsable value falls back to the clamped/default value rather than erroring. `?symbol=` other than alphanumeric/`_`/`-` is a 400 `bad_symbol`.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `window_seconds` | query | no | Lookback window in seconds, clamped to [3600, 604800]. Default `86400`. |
+| `symbol` | query | no | Restrict to one symbol's per-venue/per-field detail instead of the full matrix. Alphanumeric plus '_'/'-', max 24 chars. |
 
 Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `available` | boolean |  |
-| `data_is_placeholder` | boolean |  |
-| `error` | string |  |
-| `events` | array |  |
-| `remediation` | string |  |
-| `source_note` | string |  |
+| `declaration` | object |  |
+| `declaration_conflicts` | array |  |
+| `fields` | array |  |
+| `generated_at` | integer |  |
+| `listing_source` | object |  |
+| `not_claimed` | array |  |
+| `per_field` | object | Per tracked field: distribution, buckets, per_venue counts, symbols_with_at_least_one_venue. Empty when status != ok. |
+| `source_table` | string |  |
 | `status` | string |  |
-| `total` | integer |  |
-| `updated` | integer |  |
+| `status_buckets` | object |  |
+| `status_labels` | object |  |
+| `symbol` | string |  |
+| `symbols_observed` | integer |  |
+| `venues` | object | Present only with ?symbol=: per-venue, per-field cell detail for that one symbol. |
+| `venues_collected` | array |  |
+| `venues_in_instrument_registry` | array |  |
+| `venues_registry_only` | array |  |
+| `window` | object |  |
 
 ```bash
 curl \
-  "https://api.smartmoneyapi.com/v1/defillama/unlocks"
+  "https://api.smartmoneyapi.com/v1/coverage"
 ```
-
-## Derivatives
 
 ### `GET /v1/derivatives/detail`
 
@@ -655,16 +571,6 @@ Cross-exchange funding spreads ranked by annualised carry.
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `limited` | boolean |  |
-| `opportunities` | array |  |
-| `public` | boolean |  |
-| `scanned_symbols` | integer |  |
-| `ts` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/derivatives/funding-arb"
@@ -681,8 +587,6 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `heatmap` | array |  |
-| `public` | boolean |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -711,19 +615,31 @@ Open-interest change rankings. Anonymous callers get a fixed 24h/top-10 view; au
 | `timeframe` | query | no | Ranking window (authenticated only). Default `24h`. |
 | `limit` | query | no | Max rows, capped at 50 (authenticated only). Default `20`. |
 
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/derivatives/oi-rankings"
+```
+
+### `GET /v1/derivatives/provenance`
+
+**Derivatives data provenance** — keyless
+
+Which rows in the derivatives table were WATCHED live versus REPLAYED after the fact from a venue's own historical funding/price endpoint. Full scan of the derivatives_backfill table (~11s), served through a 30-minute cache. `backfilled` covers only the handful of symbols that were ever backfilled, NOT the whole tracked universe -- read `backfilled.instruments`/`backfilled.symbols`, never a symbol count multiplied by a venue count. Six of nine venues publish no historical open-interest endpoint, so an empty `rows_with_open_interest` for them is a venue limitation, not a gap in collection. If the shard has no derivatives_backfill table at all, `status` is `no_backfill_table` and every row in `derivatives` for this shard is observed (nothing was replayed).
+
 Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `gainers` | array |  |
-| `losers` | array |  |
-| `public` | boolean |  |
-| `timeframe` | string |  |
-| `updated` | integer |  |
+| `backfilled` | object |  |
+| `not_claimed` | array |  |
+| `observed` | object | Per-venue earliest/latest ts and row count for the live (non-backfilled) derivatives table in THIS shard -- the daemon rotates the database, so earliest_ts_in_this_shard is a floor on collection start, not when collection began. |
+| `provenance_values_present` | array |  |
+| `read_this_view` | string |  |
+| `status` | string |  |
 
 ```bash
 curl \
-  "https://api.smartmoneyapi.com/v1/derivatives/oi-rankings"
+  "https://api.smartmoneyapi.com/v1/derivatives/provenance"
 ```
 
 ### `GET /v1/derivatives/screener`
@@ -732,30 +648,82 @@ curl \
 
 Cross-exchange derivatives screener (500+ symbols): funding, open interest, long/short ratio, signals. Anonymous callers get a fixed top-10 by OI (response carries public:true, limited:true); authenticated callers can sort/filter up to 200 rows.
 
+BY-NAME LOOKUP REQUIRES A KEY. `?symbol=` (alias `?asset=`) is answered only for authenticated callers, and only for the symbols the caller's tier grants: the free tier's by-name list is published on every public operation as `x-free-tier-symbols`, and paid tiers cover every symbol. A keyless request that names a symbol gets 403 naming the free key as the fix; a keyed request naming a symbol outside the tier gets 403 with the included list. Keyless callers keep the top-10 preview by simply omitting `?symbol=` -- the preview is a RANKING, so a symbol you are entitled to may still be absent from it on any given day, which is why by-name exists.
+
+An entitled symbol with no snapshot recorded yet returns an empty `symbols` array plus a `note`: that is absent data, not zero and not an exclusion.
+
 | Parameter | In | Required | Description |
 |---|---|---|---|
+| `symbol` | query | no | Look one symbol up by name. Requires an API key; restricted to the tier's symbol list. Alias: asset. |
 | `sort` | query | no | Sort field (authenticated only). Default `oi_usd`. |
 | `dir` | query | no | Sort direction (authenticated only). One of: `asc`, `desc`. Default `desc`. |
 | `limit` | query | no | Max rows, capped at 200 (authenticated only). Default `50`. |
 | `min_oi` | query | no | Minimum open interest in USD (authenticated only). Default `0`. |
-| `signal` | query | no | Filter by signal type (authenticated only). |
+| `crowding` | query | no | Filter by crowding state (authenticated only). Legacy alias: signal. One of: `crowded_long`, `crowded_short`, `neutral`. |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/derivatives/screener"
+```
+
+### `GET /v1/funding/clock`
+
+**Measured funding-settlement clock** — keyless
+
+Per-venue summary of the MEASURED funding-settlement interval, derived from each venue's own settlement timestamps (never from documentation): the newest gap, extended backwards while consecutive gaps agree. A median over full history is deliberately NOT used -- a venue that changed its clock mid-history (observed: Binance moved COTIUSDT from hourly to 4-hourly settlement) makes the median wrong for however long the new clock has been running. `venues_measured` only lists venues with a usable measurement; `venues_unmeasured` lists the rest, so a venue can never silently vanish from the coverage claim. `refuses_measurements_older_than_days` names the staleness bound past which a per-instrument measurement is refused rather than trusted.
 
 Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `limited` | boolean |  |
-| `meta` | object |  |
-| `public` | boolean |  |
-| `sort_by` | string |  |
-| `symbols` | array |  |
-| `total_count` | integer |  |
-| `unmeasured_for_sort` | integer |  |
-| `updated` | integer |  |
+| `basis` | string |  |
+| `how_measured` | string |  |
+| `metadata_disagreements` | array |  |
+| `not_claimed` | array |  |
+| `refuses_measurements_older_than_days` | integer |  |
+| `status` | string |  |
+| `totals` | object |  |
+| `venues` | object | Keyed by venue; each entry is the venue's raw coverage record plus measurement_age_days (derived from the measurement's own timestamp, so a stale sweep is visible in the payload). |
+| `venues_measured` | array |  |
+| `venues_unmeasured` | array |  |
 
 ```bash
 curl \
-  "https://api.smartmoneyapi.com/v1/derivatives/screener"
+  "https://api.smartmoneyapi.com/v1/funding/clock"
+```
+
+### `GET /v1/funding/normalised`
+
+**Cross-venue funding on one clock** — keyless
+
+One underlying's live funding rate on every venue we hold a rate for, put on a single annualised basis using each venue's MEASURED settlement clock (see /v1/funding/clock) instead of assuming every venue settles 8-hourly. Every venue that has a stored rate for this symbol lands in exactly one of three buckets so none can silently disappear from the average: `venues_contributing` (used in the mean), `venues_refused` (had a rate but the clock refused it, with a reason per venue), and `venues_unmapped` (no funding stored, or no single measured linear perpetual resolves for this base in the venue registry). `comparison` recomputes the same contributing rates assuming every venue is 8-hourly, so the size of the correction is checkable from the response alone (measured median across underlyings: 5.47 annualised percentage points). A symbol with no derivatives row in the last 2 hours returns `status: no_rows` rather than an empty average. `?symbol=` other than alphanumeric/`_`/`-` is a 400 `bad_symbol`.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbol` | query | no | Base symbol, e.g. BTC. Alphanumeric plus '_'/'-', max 24 chars. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `base` | string |  |
+| `basis` | string |  |
+| `comparison` | object |  |
+| `mean_annualised_pct` | number |  |
+| `mean_rate_8h_equivalent` | number |  |
+| `not_claimed` | array |  |
+| `observed_ts` | integer |  |
+| `per_venue` | object |  |
+| `status` | string |  |
+| `symbol` | string |  |
+| `venues_contributing` | array |  |
+| `venues_refused` | object |  |
+| `venues_unmapped` | object |  |
+| `venues_with_a_stored_rate` | array |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/funding/normalised"
 ```
 
 ### `GET /v1/snapshot`
@@ -777,7 +745,7 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 ### `GET /v1/etf/flows`
 
-**ETF flows** — keyless
+**ETF flows** — key required — withheld
 
 Spot BTC/ETH ETF daily flows with per-fund breakdown (SoSoValue).
 
@@ -785,25 +753,14 @@ Spot BTC/ETH ETF daily flows with per-fund breakdown (SoSoValue).
 |---|---|---|---|
 | `asset` | query | no | ETF asset. One of: `BTC`, `ETH`. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `asset` | string |  |
-| `current` | object |  |
-| `etf_type` | string |  |
-| `funds` | array |  |
-| `history_recent` | array |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/etf/flows"
 ```
 
 ### `GET /v1/etf/history`
 
-**ETF flow history** — key required — Pro (15,000 calls/day)
+**ETF flow history** — key required — withheld
 
 Historical spot-ETF flow series.
 
@@ -849,7 +806,7 @@ curl \
 
 ### `GET /v1/equity-flow/dark-pool`
 
-**Dark-pool prints** — keyless
+**Dark-pool prints** — key required — withheld
 
 Off-exchange (dark-pool) prints for the tracked tickers.
 
@@ -859,13 +816,13 @@ Off-exchange (dark-pool) prints for the tracked tickers.
 | `limit` | query | no | Max rows returned. |
 
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/equity-flow/dark-pool"
 ```
 
 ### `GET /v1/equity-flow/gex`
 
-**Equity gamma exposure** — keyless
+**Equity gamma exposure** — key required — withheld
 
 Dealer gamma exposure by strike for one ticker.
 
@@ -874,7 +831,7 @@ Dealer gamma exposure by strike for one ticker.
 | `ticker` | query | yes | Ticker symbol. |
 
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/equity-flow/gex"
 ```
 
@@ -908,7 +865,7 @@ curl \
 
 ### `GET /v1/equity-flow/unusual-activity`
 
-**Unusual options activity** — keyless
+**Unusual options activity** — key required — withheld
 
 Unusual equity options prints ranked by a size/open-interest score.
 
@@ -919,27 +876,8 @@ Unusual equity options prints ranked by a size/open-interest score.
 | `min_score` | query | no | Minimum unusualness score. |
 | `limit` | query | no | Max rows returned. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `contract_type` | string |  |
-| `expiry_date` | string |  |
-| `in_the_money` | integer |  |
-| `iv` | number |  |
-| `last_price` | number |  |
-| `open_interest` | integer |  |
-| `premium` | number |  |
-| `snapshot_ts` | integer |  |
-| `spot_price` | number |  |
-| `strike` | number |  |
-| `ticker` | string |  |
-| `unusualness` | number |  |
-| `vol_oi_ratio` | number |  |
-| `volume` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/equity-flow/unusual-activity"
 ```
 
@@ -1020,6 +958,7 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `meta` | object |  |
 | `universe` | array |  |
 
 ```bash
@@ -1042,6 +981,7 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `alerts` | array |  |
+| `attribution` | string |  |
 
 ```bash
 curl \
@@ -1050,9 +990,9 @@ curl \
 
 ### `GET /v1/stocks/congress/{ticker}`
 
-**Congressional trades** — keyless
+**Congressional trades** — key required — withheld
 
-Disclosed congressional trades in one ticker, with the disclosure (PTR) link. Published as disclosure data, not as a signal — the long-horizon study found no tradable edge.
+Disclosed congressional trades in one ticker, as filed, with the disclosure (PTR) link. Free public information, provided for public information and not investment advice: served to everyone with no key and the same rows on every plan. Coverage today is House of Representatives filings only: the feed holds no Senate filings and makes no claim about them. US law restricts commercial use of these reports (5 U.S.C. §13107(c)), so congress data is never an input to any score, ranking, signal or alert and is not part of any paid product. Every 200 carries `free: true`, a `source_note` and `source_links` to the official sources (the House Clerk PTR search and, for the Senate filings this feed does not hold, the Senate eFD). At most 200 rows are returned (`row_cap`) to every caller, newest first, and `truncated` says whether more rows matched. Published as disclosure data, not as a signal — the long-horizon study found no tradable edge.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -1060,7 +1000,7 @@ Disclosed congressional trades in one ticker, with the disclosure (PTR) link. Pu
 | `days` | query | no | Look-back window in days. |
 
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/stocks/congress/{ticker}"
 ```
 
@@ -1078,6 +1018,7 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `attribution` | string |  |
 | `clusters` | array |  |
 
 ```bash
@@ -1104,7 +1045,7 @@ curl \
 
 ### `GET /v1/stocks/institutions/{ticker}`
 
-**Institutional holders** — keyless
+**Institutional holders** — key required — withheld
 
 Institutional holders and position changes for one ticker.
 
@@ -1113,7 +1054,7 @@ Institutional holders and position changes for one ticker.
 | `ticker` | path | yes | Equity ticker symbol. |
 
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/stocks/institutions/{ticker}"
 ```
 
@@ -1153,6 +1094,8 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `rankings` | array |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
 
 ```bash
 curl \
@@ -1161,7 +1104,7 @@ curl \
 
 ### `GET /v1/stocks/short-interest/{ticker}`
 
-**Short interest** — keyless
+**Short interest** — key required — withheld
 
 Reported short interest for one ticker.
 
@@ -1170,7 +1113,7 @@ Reported short interest for one ticker.
 | `ticker` | path | yes | Equity ticker symbol. |
 
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/stocks/short-interest/{ticker}"
 ```
 
@@ -1229,6 +1172,7 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `meta` | object |  |
 | `universe` | array |  |
 
 ```bash
@@ -1251,6 +1195,8 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `signals` | array |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
 
 ```bash
 curl \
@@ -1341,7 +1287,7 @@ curl \
 
 ### `GET /v1/historical/market`
 
-**Market OHLCV history** — keyless
+**Market OHLCV history** — key required — withheld
 
 Historical market data by CoinGecko coin id.
 
@@ -1350,17 +1296,8 @@ Historical market data by CoinGecko coin id.
 | `coin` | query | no | CoinGecko coin id. Default `bitcoin`. |
 | `days` | query | no | Days of history. Default `30`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `coin` | string |  |
-| `count` | integer |  |
-| `data` | array |  |
-| `days` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/historical/market"
 ```
 
@@ -1446,7 +1383,6 @@ Response fields:
 | `index_available` | boolean |  |
 | `manifest_present` | boolean |  |
 | `partition_cap` | integer |  |
-| `partition_dir` | string |  |
 | `query_budget_s` | number |  |
 | `shard_index_available` | boolean |  |
 | `source_budget_s` | number |  |
@@ -1779,6 +1715,54 @@ curl \
   "https://api.smartmoneyapi.com/v1/history/whale_positions"
 ```
 
+## Insiders
+
+### `GET /v1/insiders/purchases`
+
+**Insider open-market purchases** — key required — Trader (3,000 calls/day)
+
+SEC Form 4 open-market purchases (code P) by officers and directors, classified opportunistic, routine or unclassified (Cohen, Malloy & Pomorski). Descriptive: the academic result has not been validated on our data. One row per filing (accession): its purchase lines summed, min_value applied to that sum. Source: SEC EDGAR. Lives under /v1/insiders, not /v1/stocks.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `days` | query | no | Lookback days. Default `30`. |
+| `min_value` | query | no | Minimum purchase value USD. Default `100000`. |
+| `cmp_class` | query | no | Classification filter. One of: `all`, `opportunistic`, `routine`, `unclassified`. Default `all`. |
+| `limit` | query | no | Rows. Default `100`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `basis` | string |  |
+| `caveats` | array |  |
+| `count` | integer |  |
+| `coverage` | object |  |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `data_mode_counts` | object |  |
+| `definition` | object |  |
+| `filing_lag_days` | object |  |
+| `filters` | object |  |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `licence_class` | string |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `note` | string |  |
+| `rights` | object |  |
+| `rows` | array |  |
+| `scope` | string |  |
+| `source` | string |  |
+| `total_matching` | integer |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `validation` | object |  |
+| `venue` | string |  |
+| `versions` | object |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/insiders/purchases"
+```
+
 ## Integrations
 
 ### `GET /v1/tradingview/setup`
@@ -1798,7 +1782,7 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 **AI market analysis** — key required — Pro (15,000 calls/day)
 
-Latest AI-written market commentary over the aggregated data. Commentary only — it is not a prediction and carries no measured edge.
+Latest AI-written market commentary over the aggregated data. Commentary only — it is not a prediction and carries no measured edge. It includes a `recommendation`, so the response carries `operator_position_disclosure` for its symbol, dated when served. `provider` says where it ran: `local` (the operator's own hardware) or `hosted` (a hosted model service); the exact model is named in `ai_backend`. It covers BTC, ETH and SOL only; any other symbol is refused with 400 `symbol_not_covered`, naming what is covered. A covered symbol with no reading yet answers 202 `not_cached` with an `engine` state (as under /v1/analysis/status) and a `message`; readings are generated when requested, and the first request may take up to a few minutes.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -1813,17 +1797,18 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 **AI analysis status** — keyless
 
-Freshness and availability of the AI analysis loop.
+Freshness and availability of the AI analysis loop, with the public regime teaser: per symbol, `regime` and `regime_label` (an opinion on the asset, e.g. "Strong bullish trend"). `engine` is `ok`, `stale`, `warming` (just started, or generating now), `on_demand` (healthy and idle: readings are generated when requested, so an empty cache is normal until someone asks) or `unavailable` (a failed or paused run, a loop that is not reporting, or a cache that cannot be read; this route then answers HTTP 503). While no reading is cached, `message` says why. Every row carries `operator_position_disclosure`, dated when the response is served.
 
 Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `as_of` | string |  |
+| `as_of` | — |  |
 | `cached_count` | integer |  |
 | `engine` | string |  |
 | `fresh_count` | integer |  |
 | `full_analysis` | object |  |
+| `message` | string |  |
 | `note` | string |  |
 | `requested_count` | integer |  |
 | `stale_after_seconds` | integer |  |
@@ -1981,6 +1966,125 @@ curl \
   "https://api.smartmoneyapi.com/rpc/v1/health"
 ```
 
+## L2 order-book depth
+
+### `GET /v1/l2/depth`
+
+**L2 order-book depth** — keyless
+
+Raw order-book DEPTH updates for one venue over a bounded UTC hour window, read directly from the depth collector's store (never written to). Licence-gated by the SAME allow-list as the trade tape: a venue whose terms forbid redistribution is refused with **HTTP 403** naming the venue and the exact reason from `SOURCE_TERMS[venue].note`, and the refusal fires even when the store holds zero matching rows, so an empty result and a licence refusal can never be confused. **Collecting a venue never made it servable** -- ten venues are collected, and only the redistributable ones are served here; see GET /v1/l2/depth-venues. Rows carry the venue's OWN continuity evidence, and there are THREE different models: an update-id chain (`final_update_id` / `prev_final_update_id`, with `gap_count` in the coverage), a CRC32 BOOK-STATE checksum (`venue_checksum` / `checksum_verified`, kraken_spot -- which proves book state, NOT event delivery), and a periodic full SNAPSHOT with no continuity field at all (hyperliquid -- `gap_count` is null and MUST NOT be read as zero gaps). A row carries one model's evidence or the other's, never a blend. The window is capped at 2 hours per request (depth rows are heavier than trades) and `limit` defaults to 2,000, capped at 10,000; a cut is reported explicitly. An unreadable or unavailable store is **HTTP 503**, never 502/504.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `venue` | query | yes | Venue id, e.g. binance_usdm. See GET /v1/l2/depth-venues for the full list. Required. |
+| `symbol` | query | no | Restrict to one symbol (e.g. BTCUSDT). Omit to include every symbol the store collected in the window. |
+| `start` | query | no | Window start, ISO-8601 UTC. Defaults to one hour before `end`. |
+| `end` | query | no | Window end, ISO-8601 UTC, exclusive. Defaults to the current UTC hour. |
+| `limit` | query | no | Max rows returned. Default 2,000, capped at 10,000. Default `2000`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `complete` | boolean |  |
+| `coverage` | array |  |
+| `dataset_version` | string |  |
+| `hours_refused` | array |  |
+| `limit` | integer |  |
+| `row_count` | integer |  |
+| `rows` | object | Depth rows: exchange_ts, local_recv_ts, venue, symbol, bid_prices, bid_sizes, ask_prices, ask_sizes, bid_levels, ask_levels, bid_levels_dropped, ask_levels_dropped, is_snapshot, source, and the continuity evidence for whichever model this venue uses (first/final/prev_update_id, or venue_checksum + checksum_verified, or neither). |
+| `rows_available` | integer |  |
+| `source_terms` | object | Keyed by venue served; each entry is that venue's SourceTerms. |
+| `symbol` | string |  |
+| `truncated` | boolean |  |
+| `venue` | string |  |
+| `window_covered_ms` | array |  |
+| `window_requested_utc` | array |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/l2/depth"
+```
+
+### `GET /v1/l2/depth-venues`
+
+**L2 depth venue + continuity table** — keyless
+
+Every venue the depth collector knows: whether it is cleared to reach a paying subscriber (the SAME licence answer as the trade tape, read from ops/l2_collector/dataset.py's SOURCE_TERMS), and WHICH CONTINUITY MODEL it proves itself with -- an update-id chain, a CRC32 book-state checksum, or a periodic snapshot that claims no continuity at all. Venues deliberately NOT collected are named with the specific unmeasured thing that blocks them, not a vague 'unsupported'.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `dataset_version` | string |  |
+| `redistributable_venues` | array |  |
+| `refused` | object | Venues not collected, each with the specific blocker. |
+| `venues` | object | One entry per collected venue: venue, may_reach_subscriber, licence, origin, note, continuity model and the live evidence for it. |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/l2/depth-venues"
+```
+
+## L2 trade tape
+
+### `GET /v1/l2/trades`
+
+**L2 trade tape** — keyless
+
+Raw trade prints for one venue over a bounded UTC hour window, read directly from the collector's store (never written to). Only `venue=hyperliquid` returns rows today: every other venue's API terms forbid redistribution, and the request is refused with **HTTP 403** naming the venue and the exact licence reason (sourced from `SOURCE_TERMS[venue].note` -- see GET /v1/l2/venues for the full table). The refusal fires even when the store holds zero matching rows for that venue/window, so an empty result and a licence refusal can never be confused for one another. `start`/`end` are ISO-8601 UTC timestamps rounded down to the hour; the window is capped at 6 hours per request. `limit` caps the rows returned (default 5,000, capped at 20,000) -- `truncated`, `row_count` and `rows_available` in the response report a cut explicitly rather than silently. The response also carries the dataset's own coverage fields (`complete`, `hours_refused`, `window_covered_ms`, `dataset_version`, `source_terms`) so the limits of the extract travel with the data. An unreadable or unavailable store is **HTTP 503**, never 502/504.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `venue` | query | yes | Venue id, e.g. hyperliquid. See GET /v1/l2/venues for the full list. Required. |
+| `symbol` | query | no | Restrict to one symbol (e.g. BTC). Omit to include every symbol the store collected in the window. |
+| `start` | query | no | Window start, ISO-8601 UTC (e.g. 2026-09-01T15:00:00Z). Defaults to one hour before `end`. |
+| `end` | query | no | Window end, ISO-8601 UTC, exclusive. Defaults to the current UTC hour. |
+| `limit` | query | no | Max rows returned. Default 5,000, capped at 20,000. Default `5000`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `complete` | boolean |  |
+| `coverage` | array |  |
+| `dataset_version` | string |  |
+| `hours_refused` | array |  |
+| `limit` | integer |  |
+| `row_count` | integer |  |
+| `rows` | object | Trade rows: exchange_ts, local_recv_ts, venue, symbol, side, price, size, tape (live/replay), source. |
+| `rows_available` | integer |  |
+| `source_terms` | object | Keyed by venue served; each entry is that venue's SourceTerms (origin, licence, may_reach_subscriber, note). |
+| `symbol` | string |  |
+| `truncated` | boolean |  |
+| `venue` | string |  |
+| `window_covered_ms` | array |  |
+| `window_requested_utc` | array |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/l2/trades"
+```
+
+### `GET /v1/l2/venues`
+
+**L2 venue licence table** — keyless
+
+Every venue this collector knows, whether it is cleared to reach a paying subscriber, and the reason for the rest -- read directly from ops/l2_collector/dataset.py's SOURCE_TERMS, the single place that answer is recorded (never a literal in the gateway).
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `dataset_version` | string |  |
+| `redistributable_venues` | array |  |
+| `venues` | object | One entry per venue: venue, may_reach_subscriber, licence, origin, note. |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/l2/venues"
+```
+
 ## Liquidations
 
 ### `GET /v1/hl/frequently-liquidated`
@@ -2053,7 +2157,7 @@ NO PER-SIDE DOLLAR OPEN-INTEREST SPLIT IS INVENTED. `total_long_oi` and `total_s
 
 READ THE STATUS FIELDS. `bands_status`, `nearest_status`, `oi_split_source`, `positioning.status` and `whale_book.status` each separate "we measured this" from "we could not". A null distance, a null funding rate and a 'unknown' cascade_risk are absences, not zeros and not calm.
 
-TIERS. Trader receives 24 of the 28 fields, listed per field below; the ladders are truncated to 5 levels per side (Pro: up to 10) and Pro additionally receives `nearest_status`, `nearest_excluded_modelled`, `nearest_exclusion_reason`, `realized_heatmap`. Anything a plan removed is named in `withheld` (`withheld_reason: "trader_plan"`), computed per response — so a short ladder does not report a boundary that removed nothing, and a missing key never has to stand in for both "not in your plan" and "the server had nothing".
+TIERS. Trader receives 26 of the 30 fields, listed per field below; the ladders are truncated to 5 levels per side (Pro: up to 10) and Pro additionally receives `nearest_status`, `nearest_excluded_modelled`, `nearest_exclusion_reason`, `realized_heatmap`. Anything a plan removed is named in `withheld` (`withheld_reason: "trader_plan"`), computed per response — so a short ladder does not report a boundary that removed nothing, and a missing key never has to stand in for both "not in your plan" and "the server had nothing".
 
 NOTE: `nearest_status`, `nearest_excluded_modelled`, `nearest_exclusion_reason` qualify `nearest_long_liq_pct` / `nearest_short_liq_pct`, which Trader DOES receive, and are currently Pro-only. A Trader can still separate the two empty states — both distances null with a non-empty ladder means levels exist but none was eligible to set a headline; empty ladders mean nothing was on that side — but the count and the stated reason for refused levels are not on that plan.
 
@@ -2081,6 +2185,8 @@ Response fields:
 | `oi_scope` | string | [Trader and Pro] What `total_oi` is a sum over. null whenever `total_oi` is null. |
 | `oi_split_source` | string | [Trader and Pro] Why the per-side split is or is not present: 'measured' (a venue reported it), 'aggregate_only' (only the total was readable), 'unavailable' (nothing was). |
 | `positioning` | object | [Trader and Pro] Directional skew, which unlike a dollar split IS measurable. Carries top_trader_long_share / top_trader_lsr with top_trader_scope, the account-headcount pair with its own scope, and `status` (ok \| unavailable \| unmeasured_default). 'unmeasured_default' means the upstream ratio was a default rather than a reading, and both shares are then null. |
+| `price_age_s` | number | [Trader and Pro] Seconds between that price being observed and this payload being built. 0 for a live read. null when no price was readable — never 0, which would report an absent datum as a fresh one. |
+| `price_source` | string | [Trader and Pro] Where `current_price` came from, in falling recency: 'binance_ticker' (live), 'last_known' (our own last good live read, bounded at 600 s), 'derivatives_snapshot' (median venue price from our newest collection cycle, bounded at 2700 s — derived from that feed's measured p99 of 28.8 min), or 'none' when no source answered and `current_price` is null. |
 | `realized_by_side` | object | [TRADER ONLY] Trader's view of `realized_heatmap.by_side`. |
 | `realized_heatmap` | object | [PRO/ENTERPRISE ONLY] The full realized tape for the last window: price x time matrices, per-price clusters, per-venue counts, totals and by_side. Present only when the stream has data for the symbol. |
 | `realized_totals` | object | [TRADER ONLY] Trader's view of `realized_heatmap.totals` — notional and count of what actually liquidated. null when the tape had nothing. |
@@ -2113,13 +2219,10 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `compute_ms` | integer |  |
 | `coverage` | object |  |
-| `current_context` | object |  |
 | `data_posture` | string | Fixed disclaimer: descriptive conditional statistics, not a signal. |
 | `event_definition` | string |  |
 | `generated_at` | integer |  |
-| `honesty` | string |  |
 | `horizons` | object | Keyed by horizon ('+5m', '+15m', '+1h', ...), each holding long_liq / short_liq / all blocks with n, mean_pct, median_pct, pos_frac, std_pct, ci95_low_pct, ci95_high_pct, perm_p and verdict. |
 | `n_events` | integer |  |
 | `n_long_liq_events` | integer |  |
@@ -2142,20 +2245,15 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `by_regime` | object |  |
-| `compute_ms` | integer |  |
 | `dataset` | object |  |
 | `event_definition` | string |  |
 | `generated_at` | integer |  |
-| `honesty` | string |  |
 | `horizons` | array |  |
 | `kind` | string |  |
 | `n_events` | object |  |
 | `per_symbol` | object |  |
-| `pooled` | object |  |
 | `posture` | string | States that events are an OI-cascade PROXY, not realized liquidations. |
 | `span` | string |  |
-| `stats_legend` | object |  |
 
 ```bash
 curl \
@@ -2259,7 +2357,6 @@ Response fields:
 | `by_exchange` | object | Per-venue triggered notional: {venue: {long_usd, short_usd, total_usd}}. |
 | `cascade_depth` | number |  |
 | `cascade_risk` | string |  |
-| `cascade_status` | string |  |
 | `clusters` | array |  |
 | `current_price` | number |  |
 | `empty` | boolean | True when there was nothing to simulate (no positions/OI for this symbol). Distinct from ok=false, which is a failure. |
@@ -2269,7 +2366,6 @@ Response fields:
 | `move_pct` | number |  |
 | `nearest_long_wall` | object | Nearest modelled long liquidation wall, or null when none is derivable. |
 | `nearest_short_wall` | object |  |
-| `oi_band_status` | object |  |
 | `ok` | boolean |  |
 | `realized_context` | object | REAL executed liquidations shown alongside the model for scale. Context only — it never makes the projection realized, and its own coverage span is stated so a short sample is not mistaken for a long one. |
 | `symbol` | string |  |
@@ -2279,7 +2375,6 @@ Response fields:
 | `triggered_notional_usd` | number |  |
 | `triggered_whale_usd` | number |  |
 | `ts` | integer |  |
-| `whale_positions_dropped_no_notional` | integer |  |
 | `whale_positions_used` | integer |  |
 
 ```bash
@@ -2436,48 +2531,23 @@ curl \
 
 ### `GET /v1/market/altseason`
 
-**Altcoin Season Index** — keyless
+**Altcoin Season Index** — key required — withheld
 
 Altcoin season index derived from top-coin performance vs BTC. Public.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `altcoins_outperforming` | integer |  |
-| `altcoins_total` | integer |  |
-| `btc_30d_change` | number |  |
-| `btc_7d_change` | number |  |
-| `label` | string |  |
-| `period` | string |  |
-| `score` | number |  |
-| `top_performers` | array |  |
-| `updated` | integer |  |
-| `worst_performers` | array |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/market/altseason"
 ```
 
 ### `GET /v1/market/basis`
 
-**CME basis** — keyless
+**CME basis** — key required — withheld
 
 CME futures basis vs spot. Public.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `futures` | array |  |
-| `nearest_annualized` | number |  |
-| `nearest_basis_pct` | number |  |
-| `spot_price` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/market/basis"
 ```
 
@@ -2495,19 +2565,6 @@ Returns 400 for a pair that is not listed upstream and 503 when the price cannot
 | `interval` | query | no | Candle interval. One of: `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `1d`. Default `5m`. |
 | `limit` | query | no | Number of candles returned, newest last. Default `68`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `candles` | array |  |
-| `count` | integer |  |
-| `fetched_at` | integer |  |
-| `interval` | string |  |
-| `meta` | object |  |
-| `pair` | string |  |
-| `source` | string |  |
-| `symbol` | string |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/market/candles"
@@ -2515,25 +2572,12 @@ curl \
 
 ### `GET /v1/market/dominance`
 
-**BTC dominance** — keyless
+**BTC dominance** — key required — withheld
 
 Bitcoin market-cap dominance. Public.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `active_cryptos` | integer |  |
-| `btc_dominance` | number |  |
-| `eth_dominance` | number |  |
-| `market_cap_change_24h` | number |  |
-| `top_dominance` | array |  |
-| `total_market_cap` | number |  |
-| `total_volume_24h` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/market/dominance"
 ```
 
@@ -2542,15 +2586,6 @@ curl \
 **All market indices** — keyless
 
 All market indices in one response. Public.
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `altcoin_season` | object |  |
-| `cme_basis` | object |  |
-| `dominance` | object |  |
-| `volatility` | object |  |
 
 ```bash
 curl \
@@ -2562,14 +2597,6 @@ curl \
 **Volatility index** — keyless
 
 Crypto volatility gauge (Deribit). Public.
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `btc` | object |  |
-| `eth` | object |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -2585,19 +2612,6 @@ Composite market-mood reading built from funding, positioning and volatility inp
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `components` | object |  |
-| `gauge_zone` | string |  |
-| `label` | string |  |
-| `prev_score` | number |  |
-| `score` | number |  |
-| `symbol` | string |  |
-| `trend` | string |  |
-| `updated_at` | integer |  |
 
 ```bash
 curl \
@@ -2615,15 +2629,6 @@ Historical mood series for one symbol.
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 | `days` | query | no | Look-back window in days. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `days` | integer |  |
-| `history` | array |  |
-| `symbol` | string |  |
-| `updated` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/mood/history"
@@ -2635,14 +2640,6 @@ curl \
 
 Mood reading across the tracked symbol universe. Served from cache; returns a warming-up marker rather than recomputing inline.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `symbols` | array |  |
-| `total` | integer |  |
-| `updated` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/mood/overview"
@@ -2650,9 +2647,9 @@ curl \
 
 ### `GET /v1/projection`
 
-**Range projection** — keyless
+**Pattern projection** — keyless
 
-Statistical range projection from realised volatility. A range, not a directional call.
+Pattern-match projection from historical analogues: a bullish or bearish `direction` with its probabilities and a `signal_strength`. The response carries `operator_position_disclosure`, dated when served.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -2672,6 +2669,7 @@ Response fields:
 | `horizon` | integer |  |
 | `lookback` | integer |  |
 | `matches` | array |  |
+| `operator_position_disclosure` | object |  |
 | `probability_bearish` | integer |  |
 | `probability_bullish` | integer |  |
 | `robustness` | integer |  |
@@ -2688,30 +2686,11 @@ curl \
 
 **Projection screener** — keyless
 
-Range projections across the symbol universe.
+Pattern projections across the symbol universe. Every row carries `operator_position_disclosure`, dated when the response is served.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `avg_correlation` | number |  |
-| `count_matches` | integer |  |
-| `current_price` | number |  |
-| `direction` | string |  |
-| `horizon_days` | integer |  |
-| `probability_bearish` | integer |  |
-| `probability_bullish` | integer |  |
-| `projected_pct_bear` | number |  |
-| `projected_pct_bull` | number |  |
-| `robustness` | integer |  |
-| `score` | integer |  |
-| `signal_strength` | string |  |
-| `symbol` | string |  |
-| `ts` | integer |  |
 
 ```bash
 curl \
@@ -2740,6 +2719,34 @@ Response fields:
 ```bash
 curl \
   "https://api.smartmoneyapi.com/openapi.json"
+```
+
+### `GET /v1/billing/regime`
+
+**VAT regime in force** — keyless
+
+The Italian VAT regime this business invoices under, read from `api_service/plans.json` — the single source of truth — and resolved for today. Public and keyless because peer systems (and anyone checking an invoice) must be able to read it without an account.
+
+RESOLVE IT FOR THE INVOICE'S OWN DATE, NOT FOR 'NOW'. The regime is a property of the operation date (`DataDocumento`), so an invoice issued before a regime change keeps the regime that was in force when it was issued. `regime_today` is a convenience for the common case; it is not a licence to stamp today's regime onto a back-dated document.
+
+`cache_s` is how long a caller may hold this before re-reading. An unreadable or malformed flag answers 503 rather than guessing a regime, so a peer keeps its last-good value instead of caching a fabricated one.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `VAT_REGIME` | string |  |
+| `as_of` | string |  |
+| `cache_s` | integer |  |
+| `note` | string |  |
+| `regime_today` | string |  |
+| `schema_version` | integer |  |
+| `source` | string |  |
+| `vat` | object |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/billing/regime"
 ```
 
 ### `GET /v1/exchange-health`
@@ -2771,8 +2778,14 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `ingestion` | object |  |
+| `loop_stall` | object |  |
 | `status` | string |  |
+| `subsystems` | object |  |
+| `subsystems_down` | array |  |
+| `subsystems_warming` | array |  |
 | `ts` | number |  |
+| `warming` | boolean |  |
 
 ```bash
 curl \
@@ -2825,7 +2838,11 @@ curl \
 
 **Site statistics** — keyless
 
-Canonical public site stats: exchange count, tracked derivatives symbols, measured signal win-rates with sample sizes (in-sample labelled) and the accruing out-of-sample forward holdout. Cached.
+Canonical public site stats: venue counts, tracked derivatives symbols, measured signal win-rates with sample sizes (in-sample labelled) and the accruing out-of-sample forward holdout. Cached.
+
+TWO VENUE COUNTS, AND THEY ARE NOT INTERCHANGEABLE. `exchanges` counts the venues behind the DERIVATIVES data (currently 3) and is the number the copy 'derivatives across N exchanges' may use. `venues_total` counts the wider union including liquidation-only venues (currently 6) -- bitget, bitmex and okx stream liquidations but appear nowhere in the derivatives table, so publishing 6 as the derivatives venue count would be a claim we cannot support. `exchange_names` and `venue_names_all` are the corresponding name lists, so a consumer never has to guess which set a count refers to.
+
+Every headline figure carries an entry in `basis` naming its source, window and what it counts. A field whose source is unavailable is OMITTED, never zeroed -- absence of a key means 'not measured', which is a different claim from a zero.
 
 Response fields:
 
@@ -2833,35 +2850,92 @@ Response fields:
 |---|---|---|
 | `avg_loss_pct` | number |  |
 | `avg_win_pct` | number |  |
+| `basis` | object |  |
+| `chains` | integer |  |
+| `confirm_excluded_episodes` | integer |  |
+| `confirm_horizon` | string |  |
 | `confirm_outcomes_n` | integer |  |
+| `confirm_signals_dedup_rule` | string |  |
 | `confirm_signals_n` | integer |  |
 | `derivatives_symbols` | integer |  |
+| `endpoints` | integer |  |
+| `exchange_names` | array |  |
 | `exchanges` | integer |  |
 | `expectancy_pct` | number |  |
 | `forward_holdout` | object |  |
+| `high_expectancy_pct` | number |  |
 | `high_n_forward` | integer |  |
+| `high_pf` | number |  |
 | `high_status` | string |  |
 | `high_winrate` | number |  |
+| `high_winrate_ci` | array |  |
 | `high_winrate_forward` | number |  |
 | `high_winrate_n` | integer |  |
+| `high_winrate_publishable` | boolean |  |
+| `high_winrate_withheld_reason` | string |  |
 | `last_updated` | string |  |
+| `medium_expectancy_pct` | number |  |
+| `medium_pf` | number |  |
 | `medium_winrate` | number |  |
+| `medium_winrate_ci` | array |  |
 | `medium_winrate_n` | integer |  |
+| `medium_winrate_publishable` | boolean |  |
 | `overall_accuracy` | number |  |
+| `overall_accuracy_ci` | array |  |
 | `overall_accuracy_forward` | number |  |
 | `overall_accuracy_n` | integer |  |
+| `overall_accuracy_publishable` | boolean |  |
+| `overall_expectancy_pct` | number |  |
 | `overall_n_forward` | integer |  |
+| `overall_pf` | number |  |
+| `payoff_horizon` | string |  |
 | `profit_factor` | number |  |
+| `refresh_cycle` | string |  |
+| `refresh_cycle_s` | integer |  |
 | `signal_count` | integer |  |
 | `stats_source` | string |  |
 | `tracked_symbols` | integer |  |
+| `venue_names_all` | array |  |
+| `venues_total` | integer |  |
 | `whale_count` | integer |  |
+| `whales_tracked_total` | integer |  |
 | `winrate_basis` | string |  |
+| `winrate_dedup_rule` | string |  |
+| `winrate_excluded_episodes` | integer |  |
 | `winrate_horizon` | string |  |
+| `winrate_min_publish_n` | integer |  |
 
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/stats"
+```
+
+### `GET /v1/stats/calls`
+
+**API calls served** — keyless
+
+How many API calls we have served to callers who are NOT us. For the landing page, and public so the claim on it can be checked.
+
+IT IS NOT THE TOTAL, AND THAT IS THE POINT. Measured over the week this was built: of 661,447 calls, 462,291 were our own daemon polling this gateway over loopback and 75,082 were the operator's own bots. A counter fed by the total would have been about 70% us, shown to visitors as evidence of demand. `excludes` names every category left out, including this endpoint itself -- the landing page polls it on a timer, and a number that grows by being looked at is not a measurement.
+
+IT IS A FLOOR, AND IT PUBLISHES NO START DATE. The counter began from whatever the two request logs had not yet pruned, so it understates the true total by an unknown amount and covers no period we can name. It is a stored high-water mark rather than a COUNT(*), because the anonymous log is trimmed by age and by row count and a live scan would fall every time the pruner ran.
+
+`calls` is null, with `state` naming the reason, whenever the number cannot be read -- including `warming` for a counter that has not yet run. Never measured and measured zero are different facts and neither is published as 0.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | string |  |
+| `calls` | integer |  |
+| `counts` | string |  |
+| `excludes` | array |  |
+| `seed_is_a_floor` | boolean |  |
+| `state` | string |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/stats/calls"
 ```
 
 ### `GET /v1/symbols`
@@ -2892,26 +2966,6 @@ curl \
 
 Measured accuracy of the news impact classifier, published with its sample size.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `by_state` | object |  |
-| `combined_accuracy` | object |  |
-| `combined_formula_versions` | object |  |
-| `daily_trend` | array |  |
-| `days` | integer |  |
-| `dropout` | object |  |
-| `method` | string |  |
-| `n_is` | string |  |
-| `note` | — |  |
-| `recent_snapshots` | array |  |
-| `status` | string |  |
-| `timeframe_accuracy` | object |  |
-| `updated` | integer |  |
-| `window` | object |  |
-| `yield_accuracy` | object |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/accuracy"
@@ -2936,24 +2990,6 @@ The WHOLE retained news archive, not just the recent window that /v1/news/genera
 | `q` | query | no | Keyword search over headline and summary; multiple terms are ANDed. |
 | `include_trump` | query | no | Set 0 to exclude TRUMP_POLICY. Default 1. Default `1`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `count` | integer |  |
-| `coverage` | object |  |
-| `empty_reason` | — |  |
-| `events` | array |  |
-| `filters` | object |  |
-| `has_more` | boolean |  |
-| `max_page_limit` | integer |  |
-| `next_cursor` | string |  |
-| `page_limit` | integer |  |
-| `status` | string |  |
-| `total_is_capped` | boolean |  |
-| `total_matching` | integer |  |
-| `updated` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/archive"
@@ -2965,21 +3001,6 @@ curl \
 
 What the archive actually contains: row count, oldest and newest timestamps and dates, span in days, and breakdowns by category and by source. Use it to render an honest coverage statement rather than implying records exist for dates we never retained.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `by_category` | object |  |
-| `by_source` | object |  |
-| `newest_date` | string |  |
-| `newest_ts` | integer |  |
-| `note` | string |  |
-| `oldest_date` | string |  |
-| `oldest_ts` | integer |  |
-| `span_days` | number |  |
-| `total_rows` | integer |  |
-| `updated` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/coverage"
@@ -2990,22 +3011,6 @@ curl \
 **Fear & Greed index** — keyless
 
 Crypto Fear & Greed index (Alternative.me).
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `avg_7d` | number |  |
-| `classification` | string |  |
-| `meta` | object |  |
-| `source` | string |  |
-| `source_ts` | integer |  |
-| `stale` | boolean |  |
-| `trend_7d` | string |  |
-| `ts` | integer |  |
-| `updated` | integer |  |
-| `value` | integer |  |
-| `values_7d` | array |  |
 
 ```bash
 curl \
@@ -3025,20 +3030,6 @@ General crypto/geopolitical news, keyword-classified into six categories (TRUMP_
 | `category` | query | no | Filter by category name. |
 | `include_trump` | query | no | Set 1 to stop excluding TRUMP_POLICY. The default (0) omits it; the response always declares what was withheld in `excluded_categories`. Default `0`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `archive_endpoint` | string |  |
-| `categories` | object |  |
-| `count` | integer |  |
-| `events` | array |  |
-| `excluded_categories` | array |  |
-| `limit_applied` | integer |  |
-| `truncated` | boolean |  |
-| `updated` | integer |  |
-| `window_hours` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/general"
@@ -3050,23 +3041,6 @@ curl \
 
 Current aggregated news impact state.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `active_alerts` | array |  |
-| `active_count` | integer |  |
-| `confidence_modifier` | number |  |
-| `market_state` | string |  |
-| `net_sentiment` | string |  |
-| `news_direction` | integer |  |
-| `news_modifier` | number |  |
-| `news_severity` | number |  |
-| `treasury_yield` | object |  |
-| `updated` | integer |  |
-| `yield_direction` | integer |  |
-| `yield_modifier` | number |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/impact"
@@ -3077,20 +3051,6 @@ curl \
 **Treasury yields** — keyless
 
 US Treasury yield levels used by the macro classifier.
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `change_7d` | number |  |
-| `change_90d` | number |  |
-| `daily_change` | number |  |
-| `history` | array |  |
-| `score` | number |  |
-| `signal` | string |  |
-| `ts` | integer |  |
-| `updated` | integer |  |
-| `yield_20y` | number |  |
 
 ```bash
 curl \
@@ -3107,15 +3067,6 @@ Trump/policy-classified news items with impact levels.
 |---|---|---|---|
 | `limit` | query | no | Max items. Default `20`. |
 | `hours` | query | no | Lookback window in hours. Default `24`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `count` | integer |  |
-| `events` | array |  |
-| `signal_types` | object |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -3144,7 +3095,7 @@ curl \
 
 ### `GET /v1/node/{chain}/deployer/{address}`
 
-**Deployer history** — key required — per-feature node entitlement
+**Deployer history** — key required — withheld
 
 Deployment history for a contract deployer.
 
@@ -3304,7 +3255,7 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 ### `GET /v1/node/{chain}/top-holders/{address}`
 
-**Top holders** — key required — per-feature node entitlement
+**Top holders** — key required — withheld
 
 Largest holders of one token.
 
@@ -3338,41 +3289,23 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 ### `GET /v1/onchain/btc`
 
-**BTC on-chain stats** — keyless
+**BTC on-chain stats** — key required — withheld
 
 Bitcoin network stats: hashrate, difficulty, mempool, transaction counts (Blockchain.com).
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `btc_onchain` | object |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/onchain/btc"
 ```
 
 ### `GET /v1/onchain/dex`
 
-**DEX volumes** — keyless
+**DEX volumes** — key required — withheld
 
 Decentralised exchange volume rankings (DeFiLlama).
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `change_1d` | number |  |
-| `change_7d` | number |  |
-| `top_dexes` | array |  |
-| `total_24h` | number |  |
-| `total_7d` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/onchain/dex"
 ```
 
@@ -3380,29 +3313,110 @@ curl \
 
 **Ethereum gas** — keyless
 
-Current Ethereum gas prices (Etherscan).
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `base_fee` | number |  |
-| `block` | string |  |
-| `fast` | number |  |
-| `proposed` | number |  |
-| `safe` | number |  |
-| `updated` | integer |  |
+Current Ethereum gas prices, derived from eth_feeHistory (base fee plus the 25th/50th/90th percentile priority tip over the last 20 blocks) against a public Ethereum RPC.
 
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/onchain/gas"
 ```
 
+### `GET /v1/onchain/liquidations/coverage`
+
+**On-chain liquidation coverage** — keyless
+
+What we hold, per chain/protocol/source: event counts, the share that carries a USD price, and the time span. This is our own coverage FACT, never the events themselves, which is why it is public while the two event queries are not. `priced_pct` is published beside every count because a total taken over only the rows that happened to price is a different number from a total.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `meta` | object |  |
+| `rows` | array |  |
+| `totals` | object |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/onchain/liquidations/coverage"
+```
+
+### `GET /v1/onchain/liquidations/history`
+
+**On-chain liquidation events** — key required — Free (200 calls/day)
+
+DeFi lending liquidation events (Aave V2/V3, Benqi, Venus, Compound forks and others) across arbitrum, base, bnb, ethereum, optimism, polygon and avalanche_c, newest first. Metered per plan: the window is clamped to your tier's history_days and the row count to its max_rows, and both limits plus `window_clamped_to_plan` ride in the response so a clamped answer is never mistaken for an empty one.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `chain` | query | no | Restrict to one chain, e.g. arbitrum, base, bnb, ethereum, optimism, polygon, avalanche_c. Omitted means every chain. |
+| `protocol` | query | no | Restrict to one lending protocol, e.g. Aave, AaveV2, AaveV3, Benqi, Venus, CompoundFork. |
+| `since` | query | no | Window start, unix seconds. Clamped to the history_days your plan allows; the response says so in window_clamped_to_plan. |
+| `until` | query | no | Window end, unix seconds. |
+| `min_usd` | query | no | Only events whose priced debt is at least this many USD. Unpriced events are never counted as zero — they are excluded and reported. |
+| `limit` | query | no | Maximum rows. Clamped to the max_rows your plan allows. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `events_priced` | integer |  |
+| `events_returned` | integer |  |
+| `history_days_limit` | integer |  |
+| `max_rows_limit` | integer |  |
+| `meta` | object |  |
+| `newest_ts` | integer |  |
+| `oldest_ts` | integer |  |
+| `priced_pct` | number |  |
+| `rows` | array |  |
+| `sources` | array |  |
+| `tier` | string |  |
+| `window_clamped_to_plan` | boolean |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/onchain/liquidations/history"
+```
+
+### `GET /v1/onchain/liquidations/top`
+
+**Largest on-chain liquidations** — key required — Free (200 calls/day)
+
+The largest PRICED liquidation events in a tier-metered window, by debt_usd descending. Events we could not price are EXCLUDED and counted in `unpriced_excluded` rather than ranked as zero.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `chain` | query | no | Restrict to one chain, e.g. arbitrum, base, bnb, ethereum, optimism, polygon, avalanche_c. Omitted means every chain. |
+| `protocol` | query | no | Restrict to one lending protocol, e.g. Aave, AaveV2, AaveV3, Benqi, Venus, CompoundFork. |
+| `since` | query | no | Window start, unix seconds. Clamped to the history_days your plan allows; the response says so in window_clamped_to_plan. |
+| `until` | query | no | Window end, unix seconds. |
+| `min_usd` | query | no | Only events whose priced debt is at least this many USD. Unpriced events are never counted as zero — they are excluded and reported. |
+| `limit` | query | no | Maximum rows. Clamped to the max_rows your plan allows. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `events_scanned` | integer |  |
+| `history_days_limit` | integer |  |
+| `max_rows_limit` | integer |  |
+| `meta` | object |  |
+| `newest_ts` | integer |  |
+| `priced_pct` | number |  |
+| `rows` | array |  |
+| `sources` | array |  |
+| `tier` | string |  |
+| `unpriced_excluded` | integer |  |
+| `window_clamped_to_plan` | boolean |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/onchain/liquidations/top"
+```
+
 ### `GET /v1/onchain/metrics`
 
 **All on-chain metrics** — keyless
 
-Aggregated on-chain metrics bundle (DeFiLlama TVL/stablecoins/DEX volumes, Blockchain.com BTC stats, Etherscan gas, CoinGecko global). Public.
+Aggregated on-chain metrics bundle (DeFiLlama TVL/stablecoins/DEX volumes, Blockchain.com BTC stats, Ethereum gas, CoinGecko global). Public.
 
 Response fields:
 
@@ -3419,59 +3433,34 @@ curl \
 
 ### `GET /v1/onchain/stablecoins`
 
-**Stablecoin supply** — keyless
+**Stablecoin supply** — key required — withheld
 
 Stablecoin circulating supply breakdown (DeFiLlama).
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `stablecoins` | array |  |
-| `total_flow_24h` | number |  |
-| `total_flow_7d` | number |  |
-| `total_mcap` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/onchain/stablecoins"
 ```
 
 ### `GET /v1/onchain/tvl`
 
-**TVL by chain** — keyless
+**TVL by chain** — key required — withheld
 
 DeFi total value locked per chain (DeFiLlama). Anonymous callers get the top 10 chains.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `top_chains` | array |  |
-| `total_tvl` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/onchain/tvl"
 ```
 
 ### `GET /v1/onchain/yields`
 
-**DeFi yields** — keyless
+**DeFi yields** — key required — withheld
 
 Top DeFi yield pools (DeFiLlama). Anonymous callers get the top 8 pools.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `pools` | array |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/onchain/yields"
 ```
 
@@ -3479,7 +3468,7 @@ curl \
 
 ### `GET /v1/options`
 
-**Options index** — key required — Pro (15,000 calls/day)
+**Options index** — key required — withheld
 
 Index of the available options endpoints.
 
@@ -3490,7 +3479,7 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 ### `GET /v1/options/chain`
 
-**Options chain summary** — keyless
+**Options chain summary** — key required — withheld
 
 BTC/ETH options summary from Deribit: put/call ratio, max pain, open interest by strike, per-expiry breakdown.
 
@@ -3498,32 +3487,14 @@ BTC/ETH options summary from Deribit: put/call ratio, max pain, open interest by
 |---|---|---|---|
 | `currency` | query | no | Options currency. One of: `BTC`, `ETH`. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `currency` | string |  |
-| `expiry_summary` | object |  |
-| `max_pain` | object |  |
-| `meta` | object |  |
-| `oi_by_strike` | array |  |
-| `pcr_oi` | number |  |
-| `pcr_volume` | number |  |
-| `total_call_oi` | number |  |
-| `total_call_volume` | number |  |
-| `total_put_oi` | number |  |
-| `total_put_volume` | number |  |
-| `underlying_price` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/options/chain"
 ```
 
 ### `GET /v1/options/gex`
 
-**Gamma exposure** — keyless
+**Gamma exposure** — key required — withheld
 
 Dealer gamma-exposure profile by strike for BTC/ETH.
 
@@ -3531,37 +3502,14 @@ Dealer gamma-exposure profile by strike for BTC/ETH.
 |---|---|---|---|
 | `currency` | query | no | Options currency. One of: `BTC`, `ETH`. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `available` | boolean |  |
-| `call_gex_total` | number |  |
-| `convention` | string |  |
-| `gamma_flip` | number |  |
-| `gex_regime` | string |  |
-| `net_gex` | number |  |
-| `net_gex_raw` | number |  |
-| `profile` | array |  |
-| `profile_strikes` | integer |  |
-| `put_gex_total` | number |  |
-| `regime_note` | string |  |
-| `scale` | string |  |
-| `skew` | object |  |
-| `source` | string |  |
-| `spot_price` | number |  |
-| `symbol` | string |  |
-| `term_structure` | array |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/options/gex"
 ```
 
 ### `GET /v1/options/history`
 
-**Options history** — key required — Pro (15,000 calls/day)
+**Options history** — key required — withheld
 
 Historical options aggregates (put/call ratio, open interest).
 
@@ -3575,49 +3523,52 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/options/history"
 ```
 
+### `GET /v1/options/iv-surface`
+
+**Implied-volatility surface (one book)** — key required — withheld
+
+Per-instrument implied-volatility surface for one Deribit option book (BTC, ETH, or a USDC-linear book such as BTC_USDC, SOL_USDC, HYPE_USDC). Every `iv_pct` on a node is Deribit's own published mark IV, carried through unchanged; anything this endpoint derives itself (an interpolated ATM point, a fixed-moneyness skew point, the 25-delta risk reversal) is labelled `fitted: true` under its own key and never mixed into a measured field. The surface is SPARSE: `grid.rectangle_cells` (n_strikes x n_expiries) is not the number of quoted cells, and holes are listed per expiry rather than interpolated into the node set. `nodes` (the actual per-strike quotes) is included only with `?nodes=1` -- omitted by default because the full BTC node set is ~440KB against ~92KB without it on a keyless route. An unknown book or an upstream Deribit fetch failure both return 200 with `status` naming the failure (fetch_failed / unknown_book) rather than a 4xx/5xx, so a caller following `status` never has to special-case a non-2xx response; a genuine internal error (module failed to import) is a 503 with `error=capability_unavailable`.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `book` | query | no | Deribit option book identifier (the part of an instrument name before the first '-'). BTC and ETH are coin-margined; each also lists a separate USDC-linear book (BTC_USDC, ETH_USDC, ...). See /v1/options/iv-surface/books for the full list. Default `BTC`. |
+| `nodes` | query | no | Include the full per-strike/expiry node grid (call+put mark IV, quote_state, greeks). Accepts 1/true/yes; anything else is treated as 0. Default 0 (grid + term-structure + skew only, no nodes). Default `0`. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/options/iv-surface"
+```
+
+### `GET /v1/options/iv-surface/books`
+
+**Implied-volatility surface -- book list** — key required — withheld
+
+Every Deribit option book currently listed, with headline surface numbers (grid fill, front-expiry ATM IV, leg counts) and no node payload -- the index to page against before calling /v1/options/iv-surface?book=<book>. BTC and ETH each list a coin-margined AND a USDC-linear book; those are two separate surfaces, not one book counted twice.
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/options/iv-surface/books"
+```
+
 ### `GET /v1/options/overview`
 
-**Options overview (BTC + ETH)** — keyless
+**Options overview (BTC + ETH)** — key required — withheld
 
 Both BTC and ETH options summaries in one response.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `BTC` | object |  |
-| `ETH` | object |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/options/overview"
 ```
 
 ### `GET /v1/options/pcr`
 
-**Put/call ratio** — keyless
+**Put/call ratio** — key required — withheld
 
 BTC options summary (put/call ratio focus). Same payload shape as /v1/options/chain with currency=BTC.
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `currency` | string |  |
-| `expiry_summary` | object |  |
-| `max_pain` | object |  |
-| `oi_by_strike` | array |  |
-| `pcr_oi` | number |  |
-| `pcr_volume` | number |  |
-| `total_call_oi` | number |  |
-| `total_call_volume` | number |  |
-| `total_put_oi` | number |  |
-| `total_put_volume` | number |  |
-| `underlying_price` | number |  |
-| `updated` | integer |  |
-
 ```bash
-curl \
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/options/pcr"
 ```
 
@@ -3639,10 +3590,13 @@ Response fields:
 |---|---|---|
 | `by_confidence` | object |  |
 | `by_symbol` | object |  |
+| `excluded_signals` | integer |  |
+| `licence_exclusion` | object |  |
 | `min_resolved_sample` | integer |  |
 | `overall_accuracy` | number |  |
 | `overall_resolved` | integer |  |
 | `period_days` | integer |  |
+| `population` | object |  |
 | `recent_signals` | array |  |
 | `signal_counts` | object |  |
 | `symbol_timeseries` | object |  |
@@ -3660,7 +3614,7 @@ curl \
 
 **Performance export** — key required — Trader (3,000 calls/day)
 
-CSV export of the tracked-signal performance log.
+CSV (or JSON, format=json) export of the tracked-signal performance log. Every row carries `operator_position_disclosure` as recorded when the signal was logged (`unavailable` for older rows); in CSV the object is one column of compact JSON.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -3688,27 +3642,163 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `basis` | string |  |
-| `btc_overlay` | array |  |
+| `btc_overlay` | — |  |
 | `confidence` | — |  |
 | `cost_bases` | object |  |
+| `cost_basis_note` | string |  |
 | `curves` | array |  |
 | `curves_gross` | array |  |
 | `curves_net_fees` | array |  |
 | `curves_net_fees_slip` | array |  |
+| `dedup_effect` | object |  |
+| `dedup_rule` | string |  |
 | `disclaimer` | string |  |
+| `excluded_episodes` | integer |  |
 | `forward_holdout` | object |  |
 | `horizon` | string |  |
+| `is_full_span` | boolean |  |
+| `licence_exclusion` | object |  |
+| `min_publish_n` | integer |  |
 | `n_signals` | integer |  |
+| `population` | object |  |
 | `scorer_frozen_ts` | integer |  |
 | `sizing_note` | string |  |
 | `summary` | object |  |
 | `timestamps` | array |  |
+| `window_days` | — |  |
 | `window_end` | integer |  |
+| `window_label` | string |  |
+| `window_since_ts` | integer |  |
 | `window_start` | integer |  |
 
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/performance/track-record"
+```
+
+## Reference
+
+### `GET /v1/symbols/universe`
+
+**Symbol universe** — key required — Free (200 calls/day)
+
+Every symbol currently listed across the tracked venues, resolved to a canonical asset from the base the VENUE declares in its own instrument metadata — the ticker string is never parsed. Delisted symbols are kept in history and never returned here. Free plans receive a sample.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `venue` | query | no | Restrict to one venue key. |
+| `limit` | query | no | Max rows returned. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/symbols/universe"
+```
+
+### `GET /v1/symbols/universe/asset`
+
+**One asset everywhere** — key required — Free (200 calls/day)
+
+One canonical asset across every venue that lists it, with its scale variants (1000PEPE, KPEPE) LINKED but never merged — no venue publishes the multiplier as a field, so the link is derived and labelled as such.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `asset` | query | yes | Canonical asset id, e.g. BTC. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/symbols/universe/asset"
+```
+
+### `GET /v1/symbols/universe/coverage`
+
+**Universe coverage** — key required — Trader (3,000 calls/day)
+
+Per venue: what was requested, what was not, and whether absence is CONCLUSIVE. `absence_is_conclusive: false` means we never asked for that product line — our fetch gap, not a statement that the venue does not list the symbol.
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/symbols/universe/coverage"
+```
+
+### `GET /v1/symbols/universe/venue`
+
+**One venue's listings** — key required — Trader (3,000 calls/day)
+
+One venue's live symbols, or — with `symbol` — the specific reason a symbol is absent from it (not listed / not requested / unknown because the last read failed).
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `venue` | query | yes | Venue key. |
+| `symbol` | query | no | Ask why this symbol is absent instead of listing all. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/symbols/universe/venue"
+```
+
+## Research
+
+### `GET /v1/research/coverage`
+
+**Research capture coverage** — key required — Trader (3,000 calls/day)
+
+Per-table coverage of the Hyperliquid research capture: time span, shards and status. A table with `status: empty` exists in the schema with no rows; that is different from a table we cannot read. Every response carries provenance including is_live_production_feed: false.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `counts` | query | no | Include row counts (slower). |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/research/coverage"
+```
+
+### `GET /v1/research/disk`
+
+**Research storage report** — key required — Trader (3,000 calls/day)
+
+Shard sizes, filesystem usage, retention policy and the (unexecuted) relocation plan. Paid plans only.
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/research/disk"
+```
+
+### `GET /v1/research/query`
+
+**Query the research capture** — key required — Trader (3,000 calls/day)
+
+Read-only, bounded query over the research shards. Timestamps are epoch MILLISECONDS. Some tables have no timestamp-only index and therefore REFUSE an unfiltered range with 503 rather than running a multi-GB scan; truncation is always declared in the envelope.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `table` | query | yes | Table name. |
+| `coin` | query | no | Filter by coin. |
+| `wallet` | query | no | Filter by wallet. |
+| `interval` | query | no | Kline interval. |
+| `start_ms` | query | no | Start, epoch ms. |
+| `end_ms` | query | no | End, epoch ms. |
+| `order` | query | no | asc or desc. One of: `asc`, `desc`. |
+| `limit` | query | no | Max rows returned. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/research/query"
+```
+
+### `GET /v1/research/symbols`
+
+**Research symbols** — key required — Trader (3,000 calls/day)
+
+Distinct coins actually collected for a table. Free plans receive a sample.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `table` | query | no | Table name. Default `price_snapshots`. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/research/symbols"
 ```
 
 ## Screener
@@ -3717,22 +3807,11 @@ curl \
 
 **Symbol rankings** — keyless
 
-Composite symbol rankings with the methodology used to build them.
+Composite symbol rankings with the methodology used to build them. Every row carries `operator_position_disclosure`, dated when the response is served.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `contrarian` | array |  |
-| `funding_arb` | array |  |
-| `momentum` | array |  |
-| `seasonal_plays` | array |  |
-| `updated_at` | integer |  |
-| `whale_favorites` | array |  |
 
 ```bash
 curl \
@@ -3749,19 +3828,6 @@ Order-block / imbalance scanner across the symbol universe.
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `composite_score` | number |  |
-| `indicators` | object |  |
-| `price` | number |  |
-| `signal` | — |  |
-| `state` | string |  |
-| `strength` | integer |  |
-| `symbol` | string |  |
-| `ts` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/scanner/obs"
@@ -3776,19 +3842,6 @@ Most extreme order-block readings in the current scan.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `composite_score` | number |  |
-| `indicators` | object |  |
-| `price` | number |  |
-| `signal` | string |  |
-| `state` | string |  |
-| `strength` | integer |  |
-| `symbol` | string |  |
-| `ts` | integer |  |
 
 ```bash
 curl \
@@ -3805,21 +3858,6 @@ Order-block scan detail for one symbol.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `composite_score` | number |  |
-| `history` | array |  |
-| `indicators` | object |  |
-| `multi_timeframe` | object |  |
-| `price` | number |  |
-| `signal` | — |  |
-| `state` | string |  |
-| `strength` | integer |  |
-| `symbol` | string |  |
-| `ts` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/scanner/obs/symbol"
@@ -3829,21 +3867,11 @@ curl \
 
 **Multi-factor screener** — keyless
 
-Cross-symbol screener over derivatives, whale and technical factors.
+Cross-symbol screener over derivatives, whale and technical factors, with a bullish/bearish classification per symbol. Every row carries `operator_position_disclosure`, dated when the response is served.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `direction` | string |  |
-| `sort_by` | string |  |
-| `symbols` | array |  |
-| `total_count` | integer |  |
-| `updated_at` | integer |  |
 
 ```bash
 curl \
@@ -3854,22 +3882,11 @@ curl \
 
 **Screener rankings** — keyless
 
-Ranked screener output.
+Ranked screener output. Every row carries `operator_position_disclosure`, dated when the response is served.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `contrarian` | array |  |
-| `funding_arb` | array |  |
-| `momentum` | array |  |
-| `seasonal_plays` | array |  |
-| `updated_at` | integer |  |
-| `whale_favorites` | array |  |
 
 ```bash
 curl \
@@ -3880,29 +3897,11 @@ curl \
 
 **Screener detail** — keyless
 
-Full screener factor breakdown for one symbol.
+Full screener factor breakdown for one symbol. Carries `operator_position_disclosure`, dated when served.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `components` | object |  |
-| `composite_score` | number |  |
-| `direction` | string |  |
-| `grade` | string |  |
-| `partial_data` | boolean |  |
-| `price` | number |  |
-| `rank` | integer |  |
-| `score_history` | array |  |
-| `signal` | string |  |
-| `symbol` | string |  |
-| `symbol_full` | string |  |
-| `total_symbols` | integer |  |
-| `updated_at` | integer |  |
 
 ```bash
 curl \
@@ -3921,20 +3920,6 @@ Calendar-seasonality statistics for one symbol.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `best_months` | array |  |
-| `current_month` | object |  |
-| `data_years` | integer |  |
-| `months` | array |  |
-| `symbol` | string |  |
-| `timeframe` | string |  |
-| `updated` | integer |  |
-| `worst_months` | array |  |
-| `yearly_returns` | array |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/seasonality"
@@ -3949,17 +3934,6 @@ Day-of-week return distribution.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `best_day` | object |  |
-| `days` | array |  |
-| `symbol` | string |  |
-| `timeframe` | string |  |
-| `updated` | integer |  |
-| `worst_day` | object |  |
 
 ```bash
 curl \
@@ -3976,17 +3950,6 @@ Month-by-year return heatmap.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `data` | object |  |
-| `months` | array |  |
-| `symbols` | array |  |
-| `timeframe` | string |  |
-| `updated` | integer |  |
-| `win_rates` | object |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/seasonality/heatmap"
@@ -4001,17 +3964,6 @@ Current year overlaid on the historical seasonal path.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `cumulative_ytd` | object |  |
-| `months` | array |  |
-| `symbol` | string |  |
-| `timeframe` | string |  |
-| `updated` | integer |  |
-| `years` | object |  |
 
 ```bash
 curl \
@@ -4028,18 +3980,6 @@ Quarter-by-quarter return statistics.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `best_quarter` | object |  |
-| `current_quarter` | object |  |
-| `quarters` | array |  |
-| `symbol` | string |  |
-| `timeframe` | string |  |
-| `updated` | integer |  |
-| `worst_quarter` | object |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/seasonality/quarters"
@@ -4055,14 +3995,6 @@ Symbols ranked by the current seasonal window.
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `months` | array |  |
-| `timeframe` | string |  |
-| `updated` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/seasonality/rankings"
@@ -4072,9 +4004,9 @@ curl \
 
 ### `GET /v1/confirm`
 
-**Smart-money confirmation** — key required — Free (100 calls/day)
+**Smart-money confirmation** — key required — Free (200 calls/day)
 
-Core smart-money confirmation for a symbol: verdict, composite score, confidence (HIGH/MEDIUM/LOW), component scores and reasons (proxied to the aggregation daemon, then tier-enriched with multi-timeframe views, AI analysis and Kelly sizing). Free tier: BTC only, delayed response, some fields stripped.
+Score a trade the caller is about to take. One request reads the aggregated Bybit/Binance/Hyperliquid derivatives, on-chain metrics and tracked whale positioning for the symbol, and returns a verdict with the full arithmetic behind it: per-component scores and weights (`factors`), every signed modifier (`adjustments`), which data families actually had data (`coverage`), and per-source provenance and staleness (`meta`). A component with no data contributes a neutral 0 and the other weights are not rescaled to cover for it; `coverage` says which data families had data, and a leg withheld for licence reasons is null in its score, has weight 0 and is named in `withheld_sources`. This is an aggregation and transparency endpoint: it does not predict price, and `confidence` is not a probability. Free tier: BTC, ETH, SOL, XAU, XAG; no added delay; these fields are stripped from the body: deriv_score, details, onchain_score, reasons, whale_score.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -4082,9 +4014,64 @@ Core smart-money confirmation for a symbol: verdict, composite score, confidence
 | `direction` | query | no | Trade direction to confirm. One of: `long`, `short`. Default `long`. |
 | `account_size` | query | no | Account size in USD for Kelly position sizing (Pro only). |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `action` | string | The verdict. NO_DATA_SKIP is deliberately distinct from VETO_SKIP: it means nothing was measured, not that the data was negative. |
+| `adjustments` | object | Every post-scoring modifier, signed. base_composite plus these gives composite, so a verdict is never a black box. |
+| `ai_analysis` | object | LLM summary of the SAME numbers (regime, conflicts, risk factors) plus provider (`local` or `hosted`: where it ran), ai_backend and generation_time_ms. It has no extra information; if it disagrees with `composite`, `composite` is the machine-readable answer. |
+| `base_composite` | number | Weighted factor sum BEFORE the `adjustments` are applied. Absent on the blacklist-VETO and NO_DATA branches. |
+| `composite` | number | Final score for the requested direction after weighting and adjustments. Unitless: not a price target and not an expected return. |
+| `confidence` | string | Bucketed composite. NOT a probability and NOT calibrated to any hit rate. |
+| `coverage` | object | Which data families actually returned something. false means UNKNOWN — that component had no data and contributes a neutral 0; the other weights are not rescaled to cover for it. A leg withheld for licence reasons is null in its score, has weight 0 and is named in `withheld_sources`. |
+| `decision` | string | Canonical coarse enum derived from confidence/action. ABSTAIN covers both LOW confidence and NO_DATA. Prefer this for branching. |
+| `deriv_score` | number | Component score in [-1, +1], oriented to the requested direction: positive supports it. |
+| `details` | object | Raw inputs behind each component (derivatives, onchain, whale, x_sentiment) so the score can be recomputed. Stripped on tiers whose plans.json strip_fields lists it. |
+| `direction` | string | Echo of the direction that was scored. |
+| `factors` | object | Per-component line items of the composite. Empty object {} on the NO_DATA branch. |
+| `meta` | object | Proof-carrying provenance for the verdict. |
+| `model_version` | string | Scoring model version. Scores are not comparable across a change of this value. |
+| `multi_timeframe` | object | The same component scores re-weighted for short / medium / long horizons, each with composite, confidence, weights_used and timeframe_label. Horizons are tier-gated. A leg withheld for licence reasons (null score) has weight 0 in every horizon and the other weights are not rescaled to cover for it; while a leg is withheld a horizon reads HIGH only when the headline `confidence` is HIGH, otherwise MEDIUM at most. |
+| `onchain_score` | number | Component score in [-1, +1], oriented to the requested direction: positive supports it. |
+| `operator_position_disclosure` | object | Whether the operator's automated trading accounts hold a position in the asset (MiCA Art. 91(2)(c) conflict disclosure). A historical signal carries the value recorded when it was published; one with no record is 'unavailable'. Unavailable value: {"status": "unavailable", "side": null, "as_of": null, "source_age_s": null, "text": "Operator position data is unavailable right now; the operator's automated trading accounts may hold a position in this asset."}. |
+| `personalized` | object | The caller's saved risk tolerance and base trade size turned into a suggested USD figure. Carries its own disclaimer field. Arithmetic on caller-supplied numbers, not advice. |
+| `reasons` | array | One human-readable line per contributing observation and per non-zero adjustment. Stripped on tiers whose plans.json strip_fields lists it. |
+| `size_mult` | number | Suggested fraction of the caller's normal position size for this confidence bucket, after a liquidation-distance reduction. Not risk management: it knows nothing about the caller's account. |
+| `source` | string | Caller-supplied ?source= tag, echoed back. |
+| `symbol` | string | Echo of the requested base symbol. |
+| `ts` | integer | Unix second the verdict was computed. |
+| `unsupported` | boolean | true only when the symbol is outside the tracked universe (no derivatives AND no whale data). Then action=NO_DATA_SKIP and every *_score is a zero meaning 'not measured'. |
+| `weights` | object | The weight set actually used for this call. |
+| `weights_mode` | string | Which weight set was selected, e.g. free, full, free_x, full_x. |
+| `whale_score` | number | Component score in [-1, +1], oriented to the requested direction: positive supports it. |
+| `x_score` | number | Always 0. The X/social sentiment input is switched off and its weight is renormalised to 0, so it cannot move the composite. Kept in the payload for client compatibility. |
+
 ```bash
 curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/confirm"
+```
+
+### `GET /v1/disclosures/operator-positions`
+
+**Operator position disclosure** — keyless
+
+Whether the operator's automated trading accounts currently hold a position in each asset -- the conflict-of-interest disclosure MiCA Art. 91(2)(c) requires next to every published signal, served by the SAME provider as the `operator_position_disclosure` field on /v1/confirm, /v1/signals/recent, /v1/signals/{signal_id}/outcome, /v1/performance, /v1/performance/export, /v1/alerts/regime-flips, /v1/signals/capitulation (+ walkforward), /v1/shadow-gate/decisions, /v1/analysis, /v1/projection (+ screener), /v1/screener (+ rankings, symbol) and /v1/rankings. Read from the bots' own stored state, never from an exchange. `not_holding` is asserted only from position data at most 900 s old; stale, missing or unreadable data answers `unavailable`, whose text says the accounts MAY hold a position. Keys of `disclosures` are normalised base symbols (BTCUSDT -> BTC), in request order. 400 on a malformed `symbols`; 503 if the provider path fails.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbols` | query | yes | Comma-separated symbols, at most 50 (e.g. BTC,ETH,SOLUSDT). |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `disclosures` | object |  |
+| `generated_at` | string | UTC, YYYY-MM-DDTHH:MM:SSZ. |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/disclosures/operator-positions"
 ```
 
 ### `GET /v1/signals/analytics/{view}`
@@ -4106,28 +4093,11 @@ curl \
 
 **Capitulation state** — keyless
 
-Current capitulation reading per symbol from the liquidation and funding panel.
+Current capitulation reading per symbol from the liquidation and funding panel. Every `triggered[]` row carries `operator_position_disclosure`, dated when the response is served.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `backtest` | object |  |
-| `caveats` | array |  |
-| `compute_ms` | integer |  |
-| `generated_at` | integer |  |
-| `n_scanned` | integer |  |
-| `n_triggered` | integer |  |
-| `n_triggered_validated` | integer |  |
-| `posture` | string |  |
-| `regime` | object |  |
-| `spec` | object |  |
-| `trigger_definition` | string |  |
-| `triggered` | array |  |
 
 ```bash
 curl \
@@ -4144,23 +4114,6 @@ In-sample backtest of the capitulation reading. Published with its own disclaime
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `caveats` | array |  |
-| `costs` | string |  |
-| `cutoffs` | object |  |
-| `dataset` | object |  |
-| `generated_at` | integer |  |
-| `kind` | string |  |
-| `meta` | object |  |
-| `per_symbol_test_E1_L5` | object |  |
-| `profiles` | array |  |
-| `shuffle_control` | object |  |
-| `threshold_grid_E1_L5_test` | array |  |
-| `trigger` | string |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/signals/capitulation/backtest"
@@ -4170,29 +4123,11 @@ curl \
 
 **Capitulation walk-forward** — keyless
 
-Walk-forward (out-of-sample) evaluation of the capitulation reading.
+Walk-forward (out-of-sample) evaluation of the capitulation reading. Every `trades[]` paper trade carries `operator_position_disclosure` as recorded when it was captured (`unavailable` for a backfill reconstruction or a trade captured before the field existed).
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `accrual_start_ts` | integer |  |
-| `backfill_boundary_ts` | integer |  |
-| `generated_at` | integer |  |
-| `kind` | string |  |
-| `n_backfill` | integer |  |
-| `n_open` | integer |  |
-| `n_resolved` | integer |  |
-| `n_trades` | integer |  |
-| `n_void` | integer |  |
-| `notes` | array |  |
-| `posture` | string |  |
-| `profiles` | array |  |
-| `trades` | array |  |
 
 ```bash
 curl \
@@ -4216,7 +4151,9 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `days` | integer |  |
+| `excluded_signals` | integer |  |
 | `horizons` | object |  |
+| `licence_exclusion` | object |  |
 | `signal_type` | — |  |
 | `symbol` | — |  |
 | `total_signals` | integer |  |
@@ -4260,7 +4197,7 @@ curl \
 
 **Signal outcome** — keyless
 
-The resolved 4h/12h/24h/72h outcome of one logged signal.
+The resolved 4h/12h/24h/72h outcome of one logged signal, with the `operator_position_disclosure` recorded when it was published.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -4269,6 +4206,302 @@ The resolved 4h/12h/24h/72h outcome of one logged signal.
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/signals/{signal_id}/outcome"
+```
+
+## Smart-money cohorts
+
+### `GET /v1/smart-money/activity`
+
+**Wallet activity** — key required — Trader (3,000 calls/day)
+
+What wallets did in an interval: open, add, reduce, close, flip, deposit, withdraw and transfers on Hyperliquid, or swap and transfer legs on bsc/avalanche read from our own node's scan (no cohorts; swap legs carry no direction because the ingest does not record one). bsc/avalanche answer 451 withheld_for_licence until the rights registry clears them; the shape is what they serve once cleared. A price move is never an activity event. The span is at most 7 days; the lookback is per plan (`features.sm_history_days`) and a clamp is reported in `lookback_clamped_by_tier`. `execution_context` separates observations from labelled estimates; on bsc/avalanche the honeypot probe is an estimate that does not execute the token's transfer hooks, and the Etherscan-derived contract source scan is withheld. No safety score, rating or recommendation is ever returned. Per-address cohort tags would list a cohort's members, so they are served only when membership is published; otherwise `cohorts` is null with `cohorts_state: "withheld"`, and a `cohort` filter answers 451 `withheld` with reason `member_lists`. An address on the privacy suppression list is never returned (on bsc/avalanche, neither as the wallet nor as the counterparty); if the list cannot be read the request answers 503.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `from` | query | no | Window start, unix seconds (default: to - 24h). |
+| `to` | query | no | Window end, unix seconds (default: now). |
+| `chain` | query | no | Venue. One of: `hyperliquid`, `bsc`, `avalanche`. Default `hyperliquid`. |
+| `cohort` | query | no | Comma-separated cohort ids (hyperliquid only). Answers 451 `withheld` with reason `member_lists` unless membership is published. |
+| `symbol` | query | no | Hyperliquid coin, matched case-insensitively (e.g. BTC, kPEPE). |
+| `kind` | query | no | Comma-separated kinds. hyperliquid: open, add, reduce, close, flip, transfer_in, transfer_out, deposit, withdraw. bsc/avalanche: swap, transfer_in, transfer_out. |
+| `min_usd` | query | no | Minimum notional USD. |
+| `cursor` | query | no | `next_cursor` from the previous page (event_ts_seq). |
+| `limit` | query | no | Events per page. Default `100`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `basis` | string |  |
+| `chain` | string |  |
+| `cohort_labels` | object | cohort id -> label, for the cohorts the events carry (empty while tags are withheld) |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `events` | array |  |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `from` | integer |  |
+| `from_requested` | integer |  |
+| `history_days_limit` | integer |  |
+| `licence_class` | string |  |
+| `lookback_clamped_by_tier` | boolean |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `next_cursor` | string | null on the last page |
+| `note` | string |  |
+| `rights` | object |  |
+| `scan` | object |  |
+| `scope` | string |  |
+| `to` | integer |  |
+| `universe` | string |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `venue` | string |  |
+| `versions` | object |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/smart-money/activity"
+```
+
+### `GET /v1/smart-money/activity/summary`
+
+**Wallet activity summary** — key required — Trader (3,000 calls/day)
+
+Per symbol: counts and USD of opens, adds, reduces, closes and flips, the price-neutral net_position_change_usd, and mark_to_market_change_usd reported beside it (never summed into it). The everyone rows are `all_observed`, which counts every wallet with an event (`cohort=all_observed` selects it), and `all_tracked`; they are served for any window. The row of a membership cohort is added only when cohort disclosure is enabled (see `disclosure_control`) and, under disclosure control, only for one complete UTC day (`window=1d`, or from/to on 00:00 UTC one day apart). A `cohort` filter other than `all_observed` answers 451 `withheld` with reason `member_lists` unless membership is published. USDC ledger transfers are listed by /activity, not summed here. Served on the hour grid; when `window` is not given it is `1d`, the last complete UTC day. Replaces the retired /flows design.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `window` | query | no | 1d = the last complete UTC day (the only window that carries membership-cohort cells under disclosure control); 1h/4h/24h/7d = the last 1, 4, 24 or 168 complete hours. One of: `1d`, `1h`, `4h`, `24h`, `7d`. Default `1d`. |
+| `from` | query | no | Explicit start, a whole hour (multiple of 3600; with `to`, instead of window). The window is [from, to). |
+| `to` | query | no | Explicit end, a whole hour, at least one hour after `from`; clamped to the last complete hour. |
+| `cohort` | query | no | Comma-separated cohort ids from /v1/smart-money/cohorts. |
+| `symbol` | query | no | Hyperliquid coin, matched case-insensitively (e.g. BTC, kPEPE). |
+| `limit` | query | no | Symbols to return. Default `50`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `basis` | string |  |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `disclosure_control` | object | States the disclosure setting this response was served under. Present unless membership is published (where it is published the field is absent and the cells are exact). `mode` is `withheld`: only the everyone rows (`all_observed`, `all_tracked`) are served and no membership-cohort aggregate is (a week of controlled cells joined in one MILP was measured to rebuild the members). `mode` is `controlled` (an operator decision): membership-cohort cells are served under the disclosure control -- one UTC day, at least 10 distinct addresses inside a cell and 10 outside it in its row, per cell and per sub-aggregate; counts rounded to 5 and USD to 2 significant figures; a quantity that would decide one address's membership withheld; account-value tiers all or none. Not differential privacy. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `from` | integer |  |
+| `licence_class` | string |  |
+| `lookback_clamped_by_tier` | boolean |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `method` | string |  |
+| `note` | string |  |
+| `rights` | object |  |
+| `scope` | string |  |
+| `symbols` | array |  |
+| `to` | integer |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `venue` | string |  |
+| `versions` | object |  |
+| `window` | string | the window= asked for; null with from/to |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/smart-money/activity/summary"
+```
+
+### `GET /v1/smart-money/cohorts`
+
+**Smart-money cohorts** — keyless
+
+Every cohort with its published rule, formation date, membership counts and validation status. Skill cohorts carry the label "past performers (unvalidated)" until their pre-registered out-of-sample study passes; size, vault and seed cohorts are labelled "descriptive". Public.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `basis` | string |  |
+| `cohorts` | array |  |
+| `coverage` | object | The complete-sweep snapshot's own coverage, exactly as recorded; before the first snapshot {state: missing, missing_reason: no_snapshot}. |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `licence_class` | string |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `note` | string |  |
+| `prereg_sha256` | string |  |
+| `rights` | object |  |
+| `scope` | string |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `venue` | string |  |
+| `versions` | object |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/smart-money/cohorts"
+```
+
+### `GET /v1/smart-money/positioning`
+
+**Cohort positioning** — key required — Trader (3,000 calls/day)
+
+What the tracked accounts hold on Hyperliquid perps, per symbol, from a complete sweep of the tracked accounts: long/short/net/gross USD, counts, observed addresses and an independent-participant estimate. The everyone row (`all_tracked`) is always served. The row of a membership cohort is added only when cohort disclosure is enabled (see `disclosure_control`); otherwise the response carries the everyone row alone, and a `cohort` filter naming a membership cohort that is not served returns no rows. Under disclosure control a membership cohort's cells come from the newest UTC-day snapshot (`cohort_snapshot_ts`) and are rounded, a cell or side under the floor is omitted or withheld (`withheld_fields`), and concentration and divergence are withheld; where membership is published the cells are exact. `include` adds concentration and divergence to the exact rows. Every cell that is served carries `state` (observed|missing|stale); a measured zero is observed 0, a missing value is null with a missing_reason. Descriptive, not a forecast.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbol` | query | no | Hyperliquid coin, matched case-insensitively (e.g. BTC, kPEPE). |
+| `cohort` | query | no | Comma-separated cohort ids from /v1/smart-money/cohorts. |
+| `include` | query | no | Comma-separated: concentration, divergence. |
+| `min_gross_usd` | query | no | Keep symbols where a selected cohort holds at least this gross USD. Default `0`. |
+| `limit` | query | no | Symbols to return. Default `50`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `basis` | string |  |
+| `cohort_snapshot_ts` | integer | the UTC-day snapshot the cohort cells come from |
+| `coverage` | object | The complete-sweep snapshot's own coverage, exactly as recorded; before the first snapshot {state: missing, missing_reason: no_snapshot}. |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `disclosure_control` | object | States the disclosure setting this response was served under. Present unless membership is published (where it is published the field is absent and the cells are exact). `mode` is `withheld`: only the everyone rows (`all_observed`, `all_tracked`) are served and no membership-cohort aggregate is (a week of controlled cells joined in one MILP was measured to rebuild the members). `mode` is `controlled` (an operator decision): membership-cohort cells are served under the disclosure control -- one UTC day, at least 10 distinct addresses inside a cell and 10 outside it in its row, per cell and per sub-aggregate; counts rounded to 5 and USD to 2 significant figures; a quantity that would decide one address's membership withheld; account-value tiers all or none. Not differential privacy. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `licence_class` | string |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `note` | string |  |
+| `rights` | object |  |
+| `scope` | string |  |
+| `snapshot_ts` | integer |  |
+| `symbols` | array |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `validation_by_cohort` | object |  |
+| `venue` | string |  |
+| `versions` | object |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/smart-money/positioning"
+```
+
+### `GET /v1/smart-money/positioning/history`
+
+**Cohort positioning history** — key required — Trader (3,000 calls/day)
+
+Stored 4-hourly positioning points for one symbol and one cohort. Depth is per plan (`features.sm_history_days` in /v1/plans). A request deeper than the plan allows is clamped and says so in `truncated_by_tier`. The everyone cohort (`all_tracked`) is served as stored. A membership cohort is served only when cohort disclosure is enabled (see `disclosure_control`): one disclosure-controlled point per UTC day, and a side whose change since the last served point would decide one address's membership is withheld. Otherwise the request answers 451 `withheld` with reason `cohort_aggregates`.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbol` | query | yes | Hyperliquid coin (required). |
+| `cohort` | query | yes | One cohort id (required). A membership cohort answers 451 `withheld` unless cohort disclosure is enabled. |
+| `days` | query | no | Days of history, clamped to the plan. Default `30`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `basis` | string |  |
+| `cohort_id` | string |  |
+| `cohort_label` | string |  |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `days` | integer |  |
+| `days_requested` | integer |  |
+| `disclosure_control` | object | States the disclosure setting this response was served under. Present unless membership is published (where it is published the field is absent and the cells are exact). `mode` is `withheld`: only the everyone rows (`all_observed`, `all_tracked`) are served and no membership-cohort aggregate is (a week of controlled cells joined in one MILP was measured to rebuild the members). `mode` is `controlled` (an operator decision): membership-cohort cells are served under the disclosure control -- one UTC day, at least 10 distinct addresses inside a cell and 10 outside it in its row, per cell and per sub-aggregate; counts rounded to 5 and USD to 2 significant figures; a quantity that would decide one address's membership withheld; account-value tiers all or none. Not differential privacy. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `history_days_limit` | integer |  |
+| `history_start_ts` | integer |  |
+| `licence_class` | string |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `note` | string |  |
+| `points` | array |  |
+| `rights` | object |  |
+| `scope` | string |  |
+| `symbol` | string |  |
+| `truncated_by_tier` | boolean |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `validation` | object | The cohort's validation object. |
+| `venue` | string |  |
+| `versions` | object |  |
+| `window_start_ts` | integer |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/smart-money/positioning/history"
+```
+
+### `GET /v1/smart-money/quality/{address}`
+
+**Wallet quality profile** — key required — Trader (3,000 calls/day)
+
+The wallet's own record: accounting, risk, evidence and specialization reconstructed from its own Hyperliquid fills, funding and ledger updates, labelled "performance on the observed venue" (spot, other perp dexes and other venues are not observed). No display names or off-chain identity. An address on the privacy suppression list returns only {address, status: "suppressed"}. Its cohort memberships and the rank inputs behind them (`cohorts`, `cohort_history`, `selection_inputs.rule_scores`) are served only when membership is published; otherwise they are withheld: null, with `cohorts_state: "withheld"`.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `address` | path | yes | Hyperliquid account address (0x + 40 hex). |
+| `as_of` | query | no | An instant (unix seconds, not in the future): the profile from the formation in effect then (the newest at or before it), named in as_of_formation_ts; default the latest. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `accounting` | object |  |
+| `address` | string |  |
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `as_of_formation_ts` | integer |  |
+| `basis` | string |  |
+| `cohort_history` | array | null while member tags are withheld |
+| `cohorts` | array | null while member tags are withheld |
+| `cohorts_missing_reason` | string |  |
+| `cohorts_state` | string | present when cohorts is withheld |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `evidence` | object |  |
+| `evidence_grade` | string |  |
+| `exclusion_reason` | string |  |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `independence` | object |  |
+| `licence_class` | string |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `note` | string |  |
+| `rights` | object |  |
+| `risk` | object |  |
+| `scope` | string |  |
+| `selection_inputs` | object | rank inputs; rule_scores null while member tags are withheld |
+| `specialization` | object |  |
+| `status` | string |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `venue` | string |  |
+| `versions` | object |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/smart-money/quality/{address}"
+```
+
+### `GET /v1/smart-money/validation`
+
+**Cohort validation ledger** — keyless
+
+The pre-registration (sha256, frozen date) and every study window, aggregate and decision, failures included. Public.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
+| `basis` | string |  |
+| `cohort_status` | object |  |
+| `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `licence_class` | string |  |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `note` | string |  |
+| `prereg` | object |  |
+| `published_failures` | array |  |
+| `rights` | object |  |
+| `scope` | string |  |
+| `studies` | array |  |
+| `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
+| `venue` | string |  |
+| `versions` | object |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/smart-money/validation"
 ```
 
 ## Strategies
@@ -4288,9 +4521,7 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `count` | integer |  |
-| `meta` | object |  |
 | `positions` | array |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4316,10 +4547,8 @@ Response fields:
 | `curve` | array |  |
 | `initial_equity` | number |  |
 | `max_drawdown_percent` | number |  |
-| `meta` | object |  |
 | `total_adjustments` | number |  |
 | `total_pnl_usdt` | number |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4336,11 +4565,9 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `meta` | object |  |
 | `signal_types` | object |  |
 | `total_signals` | integer |  |
 | `unique_signal_types` | integer |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4362,32 +4589,12 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `account` | integer |  |
-| `account_growth_percent` | number |  |
-| `adjustments` | array |  |
-| `avg_duration_hours` | number |  |
-| `avg_leverage` | number |  |
-| `avg_loser_pnl` | number |  |
-| `avg_pnl_percent` | number |  |
-| `avg_pnl_usdt` | number |  |
-| `avg_winner_pnl` | number |  |
-| `best_trade` | object |  |
 | `current_equity` | number |  |
-| `initial_equity` | number |  |
-| `losing_trades` | integer |  |
 | `max_drawdown_portfolio` | number |  |
-| `max_drawdown_trade` | number |  |
-| `meta` | object |  |
 | `profit_factor` | number |  |
-| `total_adjustments` | number |  |
-| `total_pnl_percent` | number |  |
 | `total_pnl_usdt` | number |  |
 | `total_trades` | integer |  |
-| `trades_by_direction` | object |  |
-| `trades_by_exit_reason` | object |  |
-| `updated` | integer |  |
 | `win_rate` | number |  |
-| `winning_trades` | integer |  |
-| `worst_trade` | object |  |
 
 ```bash
 curl \
@@ -4403,17 +4610,6 @@ Per-symbol performance breakdown for a strategy account.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `account` | query | no | Strategy account id (1-10). Defaults to 1; out-of-range values fall back to 1. Default `1`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `account` | integer |  |
-| `all_symbols` | object |  |
-| `meta` | object |  |
-| `top_10` | array |  |
-| `total_symbols` | integer |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4431,18 +4627,6 @@ Closed trades for a live strategy account (newest first).
 | `account` | query | no | Strategy account id (1-10). Defaults to 1; out-of-range values fall back to 1. Default `1`. |
 | `limit` | query | no | Max trades, capped at 500. Default `100`. |
 | `offset` | query | no | Pagination offset. Default `0`. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `account` | integer |  |
-| `limit` | integer |  |
-| `meta` | object |  |
-| `offset` | integer |  |
-| `total` | integer |  |
-| `trades` | array |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4478,14 +4662,6 @@ Technical-indicator screener across the symbol universe.
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `interval` | string |  |
-| `symbols` | array |  |
-| `updated_at` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/ta/screener"
@@ -4501,26 +4677,70 @@ Indicator set (moving averages, RSI, MACD, ATR) for one symbol.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `bollinger` | object |  |
-| `dpo` | object |  |
-| `interval` | string |  |
-| `macd` | object |  |
-| `market_mood` | object |  |
-| `obos` | string |  |
-| `price` | object |  |
-| `rsi` | object |  |
-| `signals` | array |  |
-| `speed` | object |  |
-| `symbol` | string |  |
-| `ts` | integer |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/ta/technicals"
+```
+
+## Top traders
+
+### `GET /v1/top-traders/history`
+
+**One top trader's closed episodes in a window** — key required — Pro (15,000 calls/day)
+
+The closed position episodes behind a trader's win rate in one window, newest first: coin, side, open and close time, size, entry and exit VWAP, Hyperliquid closedPnl, fees, net PnL and the outcome, with `counted` false and `excluded_reason` for episodes left out of the rate. Read from the episodes the fills job stored with the counts; nothing is listed for a window not proven observed.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `wallet` | query | yes | The trader's address (0x + 40 hex). |
+| `window` | query | no | Window. One of: `day`, `week`, `month`, `allTime`. Default `month`. |
+| `limit` | query | no | Max episodes returned. Default `100`. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/top-traders/history"
+```
+
+### `GET /v1/top-traders/leaderboard`
+
+**Hyperliquid leaderboard, with each trader's own win rate** — key required — Pro (15,000 calls/day)
+
+The top N accounts of Hyperliquid's leaderboard for one window (day, week, month or allTime), ranked by that window's PnL. Each row carries `hl_leaderboard`: pnl, roi and vlm for all four windows plus account_value, exactly as Hyperliquid publishes them in its daily snapshot, with provenance in `snapshot` (source URL, our fetch time, Hyperliquid's Last-Modified time of the file, as_of, sha256). It also carries `win_rate_stats`: closed-episode wins / closed episodes reconstructed from the trader's own fills, net of fees, funding not included, with n, the window, coverage and the excluded episodes by reason; `state` partial_coverage (and no number, with `partial_reason`) when not all of the window's fills were observed: coverage is proven, never assumed, by requiring the notional of the held fills to reach Hyperliquid's own published vlm for the window (`volume_check`), and it fails for an account whose older fills Hyperliquid no longer serves, for older history the job skipped, or for fills Hyperliquid omitted. It also carries `closing_order_share` (version tt-closeshare-2), a second figure from the same fills, labelled "share of closing orders in profit — an order is counted once however many fills it executed; this is not a per-trade win rate": of the trader's closing orders in the window (an order with at least one fill that reduces or closes a position; the unit is an order, not a fill, and one order can execute as thousands of fills), how many have closedPnl minus fee, summed over their closing fills, above 0, as a count of orders (the sample size), a share and a notional-weighted share, net of the fees of the closing fills only and not the opening fee, funding not included; the fill counts are secondary. It is not the strict win rate: a position closed by three orders counts three times, and the partial closes of a position that is still open count too. It is served only where the same volume proof holds (otherwise `state` partial_coverage and no number, with the same `partial_reason`, or `fills_missing_order_id` when a closing fill has no order id); a proven window with no closing order is `no_closing_orders` with null shares, never 0%; a snapshot processed before the metric existed, or under a different version of it, is `not_computed`. Hyperliquid's own anomalies are flagged, not repaired (`hl_leaderboard_anomalies`). Vaults are labelled `is_vault`. Addresses on our privacy suppression list are omitted (`omitted_privacy`). Descriptive past performance on one venue: not a forecast, not a ranking of skill, not a recommendation or signal.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `window` | query | no | Which leaderboard window ranks the rows. One of: `day`, `week`, `month`, `allTime`. Default `month`. |
+| `limit` | query | no | Rows returned (capped at the job's top N, default 25). Default `100`. |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/top-traders/leaderboard"
+```
+
+### `GET /v1/top-traders/performance`
+
+**One top trader: leaderboard figures and win rates, all windows** — key required — Pro (15,000 calls/day)
+
+For one address in the top N of any window of the served snapshot: its rank per window, Hyperliquid's published pnl/roi/vlm for day, week, month and allTime, a `win_rate_stats` block per window from its own fills, and a `closing_order_share` block per window: the "share of closing orders in profit — an order is counted once however many fills it executed; this is not a per-trade win rate" (version tt-closeshare-2; the unit is an order, not a fill, and one order can execute as thousands of fills), a different figure from the strict win rate with its own counts and states. An address outside the top N gets status not_in_top_traders and no figures; a suppressed address gets status suppressed.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `wallet` | query | yes | The trader's address (0x + 40 hex). |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/top-traders/performance"
+```
+
+### `GET /v1/top-traders/summary`
+
+**Top-traders snapshot, job coverage and definitions** — key required — Pro (15,000 calls/day)
+
+The served leaderboard snapshot and its provenance, the state of the fills job that computes the win rates (targets, computed, pending, failed, the share of the single-IP Hyperliquid budget it uses), the count of win-rate states per window (`win_rate_states`), the count of `closing_order_share` states per window (`closing_order_states`), and the full definitions of the leaderboard fields, of the win rate and of the share of closing orders in profit (`closing_order_share_definition`).
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/top-traders/summary"
 ```
 
 ## Trading tools
@@ -4614,6 +4834,128 @@ Response fields:
 ```bash
 curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
   "https://api.smartmoneyapi.com/v1/smart-stop"
+```
+
+## Volume
+
+### `GET /v1/volume`
+
+**Volume series** — keyless
+
+Per-venue traded volume series on the same timeframe grid as the liquidation heatmap, over the permanently retained archive. Series values are NULLABLE: null means the venue was not measured for that bar, 0 means it was measured and nothing traded. They are not interchangeable and gaps must not be plotted as zero. The response carries a coverage block naming which venues were absent and why.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+| `timeframe` | query | no | Bar size. Alias: tf. One of: `5m`, `15m`, `30m`, `1h`, `4h`, `1d`. Default `1h`. |
+| `window_minutes` | query | no | Lookback in minutes, snapped to the timeframe grid. Alias: window. Defaults to 200 bars; a window asking for more than 1500 points is rejected with 400 rather than silently truncated. |
+| `exchanges` | query | no | Comma-separated venues (binance, okx, bybit, bitget, bitmex). Alias: exchange. Omit for all. An unknown venue is a 400, never a silently wider query. |
+| `to_ts` | query | no | End of the window as a unix timestamp (default now). Alias: to. Snapped to the timeframe grid. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `coverage` | object |  |
+| `series` | object |  |
+| `symbol` | string |  |
+| `timeframe` | string |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/volume"
+```
+
+### `GET /v1/volume/aggregate`
+
+**Aggregate volume series** — keyless
+
+Volume summed across the selected venues, on the same grid as /v1/volume. Series values are NULLABLE: null means the venue was not measured for that bar, 0 means it was measured and nothing traded. They are not interchangeable and gaps must not be plotted as zero. The response carries a coverage block naming which venues were absent and why.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+| `timeframe` | query | no | Bar size. Alias: tf. One of: `5m`, `15m`, `30m`, `1h`, `4h`, `1d`. Default `1h`. |
+| `window_minutes` | query | no | Lookback in minutes, snapped to the timeframe grid. Alias: window. Defaults to 200 bars; a window asking for more than 1500 points is rejected with 400 rather than silently truncated. |
+| `exchanges` | query | no | Comma-separated venues (binance, okx, bybit, bitget, bitmex). Alias: exchange. Omit for all. An unknown venue is a 400, never a silently wider query. |
+| `to_ts` | query | no | End of the window as a unix timestamp (default now). Alias: to. Snapped to the timeframe grid. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `coverage` | object |  |
+| `series` | array |  |
+| `symbol` | string |  |
+| `timeframe` | string |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/volume/aggregate"
+```
+
+### `GET /v1/volume/exchange`
+
+**Single-venue volume series** — keyless
+
+Volume series for exactly one venue. `exchange` is REQUIRED and must name a single venue (binance, okx, bybit, bitget, bitmex); naming none or several is a 400, because quietly widening it would return a different query than the one asked for. Series values are NULLABLE: null means the venue was not measured for that bar, 0 means it was measured and nothing traded. They are not interchangeable and gaps must not be plotted as zero. The response carries a coverage block naming which venues were absent and why.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `exchange` | query | yes | Exactly one venue (binance, okx, bybit, bitget, bitmex). One of: `binance`, `okx`, `bybit`, `bitget`, `bitmex`. |
+| `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+| `timeframe` | query | no | Bar size. Alias: tf. One of: `5m`, `15m`, `30m`, `1h`, `4h`, `1d`. Default `1h`. |
+| `window_minutes` | query | no | Lookback in minutes, snapped to the timeframe grid. Alias: window. Defaults to 200 bars; a window asking for more than 1500 points is rejected with 400 rather than silently truncated. |
+| `to_ts` | query | no | End of the window as a unix timestamp (default now). Alias: to. Snapped to the timeframe grid. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `exchange` | string |  |
+| `series` | array |  |
+| `symbol` | string |  |
+| `timeframe` | string |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/volume/exchange"
+```
+
+### `GET /v1/volume/health`
+
+**Volume collector health** — keyless
+
+Collector liveness per venue: last bar written, lag, and whether the archive is currently being appended to. Use this to tell an outage apart from a quiet market before drawing conclusions from a flat series.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `status` | string |  |
+| `venues` | object |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/volume/health"
+```
+
+### `GET /v1/volume/symbols`
+
+**Symbols held in the volume archive** — keyless
+
+Every symbol the volume archive actually holds bars for. An empty series from /v1/volume plus a symbol listed here means the window is empty; a symbol absent here was never collected. A 503 from this endpoint is a READ FAILURE and must not be read as 'no volume recorded'.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `count` | integer |  |
+| `symbols` | array |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/volume/symbols"
 ```
 
 ## Whales
@@ -4729,7 +5071,10 @@ Response fields:
 | `chain_flows` | object |  |
 | `consensus` | array |  |
 | `count` | integer |  |
+| `meta` | object |  |
 | `updated` | integer |  |
+| `whale_wallets_in_window` | integer |  |
+| `whale_window_s` | integer |  |
 
 ```bash
 curl \
@@ -4740,12 +5085,14 @@ curl \
 
 **Whale events (authenticated)** — key required — Trader (3,000 calls/day)
 
-Full whale-event feed with per-event PnL, leverage and margin detail.
+Full whale-event feed with per-event PnL, leverage and margin detail. Trader gets an aggregate summary only (ignores limit/before_ts/before_id); Pro/Enterprise get this keyset-paginated feed, capped at `limit` events per response with NO exception (including when many events share one `ts`, which is the normal case here, not an edge one). Each response adds `has_more`, `next_before_ts` and `next_before_id` (the ts/id of the last event returned, null once nothing older is left) alongside `limit` and `window_hours`. `count` is the number of events in THIS response, not in the whole window. To page, request with no cursor, then keep requesting with before_ts AND before_id set to the previous response's next_before_ts/next_before_id together while has_more is true. before_ts and before_id must be given TOGETHER or NOT AT ALL -- either one alone -> 400 (a ts-only cursor can skip the untraversed rest of a tie group; an id-only one is meaningless).
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
-| `limit` | query | no | Max rows returned. |
+| `limit` | query | no | Max events per page (Pro/Enterprise feed only). Clamped 1-5000; non-integer -> 400. Default `500`. |
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+| `before_ts` | query | no | Keyset pagination cursor (Pro/Enterprise feed only). Must be given together with before_id, or not at all -- alone, -> 400. Returns events strictly before the exact (ts, id) pair. Unix-seconds, range 0-10^12; non-integer or out of range -> 400. Pass the previous response's next_before_ts. |
+| `before_id` | query | no | Keyset pagination cursor (Pro/Enterprise feed only). Must be given together with before_ts, or not at all -- alone, -> 400. The id of a specific whale_events row. Range 0-2^62; non-integer or out of range -> 400. Pass the previous response's next_before_id. |
 
 ```bash
 curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
@@ -4822,18 +5169,6 @@ Open perpetual positions on GMX v2 (Arbitrum/Avalanche) and Jupiter (Solana).
 | `min_notional` | query | no | Minimum position notional in USD. |
 | `limit` | query | no | Max rows returned. |
 
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `count` | integer |  |
-| `filters` | object |  |
-| `ok` | boolean |  |
-| `positions` | array |  |
-| `total` | integer |  |
-| `ts` | integer |  |
-| `venues` | array |  |
-
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/whales/dex-positions"
@@ -4857,19 +5192,9 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `chain` | string |  |
 | `count` | integer |  |
-| `distinct` | integer |  |
 | `events` | array |  |
-| `hours` | integer |  |
-| `limit` | integer |  |
-| `max_id` | integer |  |
-| `meta` | object |  |
-| `next_url` | string |  |
-| `offset` | integer |  |
-| `since_id` | — |  |
 | `total` | integer |  |
-| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4885,14 +5210,6 @@ Wallets classified as market makers rather than directional traders.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `count` | integer |  |
-| `market_makers` | array |  |
-| `window_days` | integer |  |
 
 ```bash
 curl \
@@ -4910,14 +5227,6 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `chains` | object |  |
-| `critical_24h` | integer |  |
-| `net_flows` | object |  |
-| `source_count` | integer |  |
-| `sources_contributing` | array |  |
-| `sources_silent` | array |  |
-| `top_movers` | array |  |
-| `updated` | integer |  |
-| `volume_basis` | string |  |
 
 ```bash
 curl \
@@ -4928,15 +5237,17 @@ curl \
 
 **Whale universe stats** — keyless
 
-Size and composition of the tracked whale universe.
+Size and composition of the tracked whale universe. Since 2026-10-01 a wallet whose fills could not be read is UNKNOWN, never zero: `fills` counts known / unknown / carried_forward wallets, `qualification` splits qualified / not_qualified / unknown / not_applicable (vaults), and `qualified_traders` counts only wallets whose fills are known, so it is a floor. In `pinned_preview`, `n_trades` and `win_rate` are null when unknown (they read 0 before), next to `fills_known`, `qualification` and `last_fills_ok_ts`.
 
 Response fields:
 
 | Field | Type | Description |
 |---|---|---|
 | `discovery_sources` | object |  |
+| `fills` | object |  |
 | `last_discovered` | string |  |
 | `pinned_preview` | array |  |
+| `qualification` | object |  |
 | `qualified_traders` | integer |  |
 | `seeded` | integer |  |
 | `total` | integer |  |

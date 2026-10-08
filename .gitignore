@@ -10,9 +10,6 @@ id_ed25519
 id_ecdsa
 *.secret
 
-# Claude Code
-.claude/
-CLAUDE.md
 
 # Python cache (examples dir)
 __pycache__/
