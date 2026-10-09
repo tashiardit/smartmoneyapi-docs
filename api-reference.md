@@ -1,6 +1,6 @@
 # SmartMoneyAPI — API reference
 
-**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-08. It documents 249 of the 306 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
+**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-09. It documents 249 of the 306 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
 
 Base URL: `https://api.smartmoneyapi.com`
 
@@ -71,6 +71,27 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 COT positioning compared across the tracked contracts.
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `BTC` | object |  |
+| `ETH` | object |  |
+| `XAG` | object |  |
+| `XAU` | object |  |
+| `as_of` | object |  |
+| `attribution` | string |  |
+| `data_class` | string |  |
+| `is_live` | boolean |  |
+| `markets` | object |  |
+| `meta` | object |  |
+| `relative_strength` | string |  |
+| `report_families` | object |  |
+| `source` | string |  |
+| `stale_markets` | array |  |
+| `staleness` | string |  |
+| `updated` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/cot/comparison"
@@ -86,6 +107,23 @@ Historical COT positioning series.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 | `weeks` | query | no | Weeks of history. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | object |  |
+| `attribution` | string |  |
+| `data_class` | string |  |
+| `history` | array |  |
+| `is_live` | boolean |  |
+| `markets` | object |  |
+| `meta` | object |  |
+| `source` | string |  |
+| `staleness` | string |  |
+| `symbol` | string |  |
+| `updated` | integer |  |
+| `weeks` | integer |  |
 
 ```bash
 curl \
@@ -158,6 +196,33 @@ CFTC Commitments of Traders positioning summary.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | object |  |
+| `attribution` | string |  |
+| `categories` | object |  |
+| `data_class` | string |  |
+| `is_live` | boolean |  |
+| `macd_confirmation` | object |  |
+| `market` | object |  |
+| `meta` | object |  |
+| `net_change` | integer |  |
+| `net_long` | integer |  |
+| `open_interest` | integer |  |
+| `pct_long` | number |  |
+| `pct_short` | number |  |
+| `report_date` | string |  |
+| `report_family` | string |  |
+| `signal` | string |  |
+| `source` | string |  |
+| `speculator_category` | string |  |
+| `staleness` | string |  |
+| `symbol` | string |  |
+| `trend_4w` | array |  |
+| `updated` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/cot/summary"
@@ -172,6 +237,39 @@ Trend in COT net positioning.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `as_of` | object |  |
+| `attribution` | string |  |
+| `current_net_long` | integer |  |
+| `data_class` | string |  |
+| `divergence` | string |  |
+| `extreme` | — |  |
+| `hedger_category` | string |  |
+| `hedger_label` | string |  |
+| `hedger_net` | integer |  |
+| `is_live` | boolean |  |
+| `market` | object |  |
+| `mean_net_long` | integer |  |
+| `meta` | object |  |
+| `momentum_4w` | integer |  |
+| `percentile` | number |  |
+| `report_date` | string |  |
+| `report_family` | string |  |
+| `source` | string |  |
+| `speculator_category` | string |  |
+| `speculator_label` | string |  |
+| `speculator_net` | integer |  |
+| `staleness` | string |  |
+| `std_dev` | integer |  |
+| `symbol` | string |  |
+| `trend_series` | array |  |
+| `updated` | integer |  |
+| `weeks` | integer |  |
+| `z_score` | number |  |
 
 ```bash
 curl \
@@ -571,6 +669,21 @@ Cross-exchange funding spreads ranked by annualised carry.
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `corroboration` | object |  |
+| `limited` | boolean |  |
+| `min_spread_filter` | number |  |
+| `note` | string |  |
+| `opportunities` | array |  |
+| `public` | boolean |  |
+| `scan_refusal` | object |  |
+| `scan_state` | string |  |
+| `scanned_symbols` | integer |  |
+| `ts` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/derivatives/funding-arb"
@@ -586,7 +699,14 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `age_seconds` | number |  |
+| `empty` | boolean |  |
 | `heatmap` | array |  |
+| `last_build` | string |  |
+| `public` | boolean |  |
+| `stale` | boolean |  |
+| `updated` | integer |  |
+| `warming` | boolean |  |
 
 ```bash
 curl \
@@ -615,6 +735,16 @@ Open-interest change rankings. Anonymous callers get a fixed 24h/top-10 view; au
 | `timeframe` | query | no | Ranking window (authenticated only). Default `24h`. |
 | `limit` | query | no | Max rows, capped at 50 (authenticated only). Default `20`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `gainers` | array |  |
+| `losers` | array |  |
+| `public` | boolean |  |
+| `timeframe` | string |  |
+| `updated` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/derivatives/oi-rankings"
@@ -631,6 +761,8 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `backfilled` | object |  |
+| `instruments` | array |  |
+| `message` | string |  |
 | `not_claimed` | array |  |
 | `observed` | object | Per-venue earliest/latest ts and row count for the live (non-backfilled) derivatives table in THIS shard -- the daemon rotates the database, so earliest_ts_in_this_shard is a floor on collection start, not when collection began. |
 | `provenance_values_present` | array |  |
@@ -660,6 +792,19 @@ An entitled symbol with no snapshot recorded yet returns an empty `symbols` arra
 | `limit` | query | no | Max rows, capped at 200 (authenticated only). Default `50`. |
 | `min_oi` | query | no | Minimum open interest in USD (authenticated only). Default `0`. |
 | `crowding` | query | no | Filter by crowding state (authenticated only). Legacy alias: signal. One of: `crowded_long`, `crowded_short`, `neutral`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `limited` | boolean |  |
+| `meta` | object |  |
+| `public` | boolean |  |
+| `sort_by` | string |  |
+| `symbols` | array |  |
+| `total_count` | integer |  |
+| `unmeasured_for_sort` | integer |  |
+| `updated` | integer |  |
 
 ```bash
 curl \
@@ -1364,6 +1509,8 @@ Response fields:
 | `truncated` | boolean |  |
 | `window` | object |  |
 | `window_grain_s` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
 
 ```bash
 curl \
@@ -1383,6 +1530,7 @@ Response fields:
 | `index_available` | boolean |  |
 | `manifest_present` | boolean |  |
 | `partition_cap` | integer |  |
+| `partition_dir` | string |  |
 | `query_budget_s` | number |  |
 | `shard_index_available` | boolean |  |
 | `source_budget_s` | number |  |
@@ -1507,6 +1655,8 @@ Response fields:
 | `truncated` | boolean |  |
 | `window` | object |  |
 | `window_grain_s` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
 
 ```bash
 curl \
@@ -1549,6 +1699,8 @@ Response fields:
 | `truncated` | boolean |  |
 | `window` | object |  |
 | `window_grain_s` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
 
 ```bash
 curl \
@@ -1803,12 +1955,11 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `as_of` | — |  |
+| `as_of` | string |  |
 | `cached_count` | integer |  |
 | `engine` | string |  |
 | `fresh_count` | integer |  |
 | `full_analysis` | object |  |
-| `message` | string |  |
 | `note` | string |  |
 | `requested_count` | integer |  |
 | `stale_after_seconds` | integer |  |
@@ -2017,6 +2168,7 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `dataset_version` | string |  |
+| `not_collected_for_depth` | array |  |
 | `redistributable_venues` | array |  |
 | `refused` | object | Venues not collected, each with the specific blocker. |
 | `venues` | object | One entry per collected venue: venue, may_reach_subscriber, licence, origin, note, continuity model and the live evidence for it. |
@@ -2219,15 +2371,22 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `compute_ms` | integer |  |
 | `coverage` | object |  |
+| `current_context` | object |  |
+| `current_context_as_of` | integer |  |
 | `data_posture` | string | Fixed disclaimer: descriptive conditional statistics, not a signal. |
 | `event_definition` | string |  |
 | `generated_at` | integer |  |
+| `honesty` | string |  |
 | `horizons` | object | Keyed by horizon ('+5m', '+15m', '+1h', ...), each holding long_liq / short_liq / all blocks with n, mean_pct, median_pct, pos_frac, std_pct, ci95_low_pct, ci95_high_pct, perm_p and verdict. |
 | `n_events` | integer |  |
 | `n_long_liq_events` | integer |  |
 | `n_short_liq_events` | integer |  |
 | `price_source` | string |  |
+| `served_from` | string |  |
+| `study_age_s` | integer |  |
+| `study_refresh_interval_s` | integer |  |
 | `symbol` | string |  |
 
 ```bash
@@ -2245,15 +2404,20 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `by_regime` | object |  |
+| `compute_ms` | integer |  |
 | `dataset` | object |  |
 | `event_definition` | string |  |
 | `generated_at` | integer |  |
+| `honesty` | string |  |
 | `horizons` | array |  |
 | `kind` | string |  |
 | `n_events` | object |  |
 | `per_symbol` | object |  |
+| `pooled` | object |  |
 | `posture` | string | States that events are an OI-cascade PROXY, not realized liquidations. |
 | `span` | string |  |
+| `stats_legend` | object |  |
 
 ```bash
 curl \
@@ -2290,22 +2454,31 @@ Response fields:
 | `coverage_note` | string | Present only when coverage.gaps is non-empty: prose count and total hours of NOT-RECORDING inside this window. |
 | `error` | string | Present when source == 'unavailable'. |
 | `exchanges` | object | Event count per venue BACKING THIS RESPONSE. Read it instead of assuming all five tapes contributed — a venue missing here contributed nothing to this window. |
+| `exchanges_contributed` | array |  |
 | `generated_at` | integer |  |
 | `long_matrix` | array | Same grid, long liquidations only (longs force-sold). |
 | `matrix` | array | price_buckets x time_buckets of liquidated notional (USD). Long + short combined. |
+| `meta` | object |  |
 | `note` | string | Present only when totals.count == 0, and it says WHICH zero this is: a genuinely quiet window, or a failed read. |
+| `price_basis` | object |  |
+| `price_basis_mix` | object |  |
 | `price_bucket_size` | number |  |
 | `price_buckets` | integer |  |
 | `price_levels` | array | Row (price) axis, low to high. |
 | `price_max` | number |  |
 | `price_min` | number |  |
+| `price_range_clip` | object |  |
 | `public` | boolean |  |
+| `raw_price_max` | number |  |
+| `raw_price_min` | number |  |
 | `short_matrix` | array | Same grid, short liquidations only (shorts force-bought). |
 | `source` | string | 'memory' = served from the live 4h buffer. 'archive' = read from the persisted liquidation history. 'unavailable' = the read FAILED (archive absent in this process, or the query errored); the payload is a well-formed empty structure and an `error` field explains the failure. Empty and broken are not the same state. |
 | `symbol` | string |  |
 | `time_bucket_minutes` | integer | Width of one matrix column, derived from the window. |
 | `time_buckets` | array | Column (time) axis, epoch ms. |
 | `totals` | object |  |
+| `venue_counts_withheld` | string |  |
+| `venues_retired` | object |  |
 | `window_minutes` | integer |  |
 
 ```bash
@@ -2357,6 +2530,7 @@ Response fields:
 | `by_exchange` | object | Per-venue triggered notional: {venue: {long_usd, short_usd, total_usd}}. |
 | `cascade_depth` | number |  |
 | `cascade_risk` | string |  |
+| `cascade_status` | string |  |
 | `clusters` | array |  |
 | `current_price` | number |  |
 | `empty` | boolean | True when there was nothing to simulate (no positions/OI for this symbol). Distinct from ok=false, which is a failure. |
@@ -2366,8 +2540,12 @@ Response fields:
 | `move_pct` | number |  |
 | `nearest_long_wall` | object | Nearest modelled long liquidation wall, or null when none is derivable. |
 | `nearest_short_wall` | object |  |
+| `oi_band_status` | object |  |
 | `ok` | boolean |  |
 | `realized_context` | object | REAL executed liquidations shown alongside the model for scale. Context only — it never makes the projection realized, and its own coverage span is stated so a short sample is not mistaken for a long one. |
+| `served_from` | string |  |
+| `study_age_s` | integer |  |
+| `study_refresh_interval_s` | integer |  |
 | `symbol` | string |  |
 | `target_price` | number |  |
 | `total_oi_usd` | number |  |
@@ -2375,7 +2553,11 @@ Response fields:
 | `triggered_notional_usd` | number |  |
 | `triggered_whale_usd` | number |  |
 | `ts` | integer |  |
+| `whale_coverage_note` | string |  |
+| `whale_positions_dropped_no_notional` | integer |  |
 | `whale_positions_used` | integer |  |
+| `whale_wallets_24h` | integer |  |
+| `whale_window_s` | integer |  |
 
 ```bash
 curl \
@@ -2407,6 +2589,7 @@ Response fields:
 | `symbols` | array | Ordered by event count, descending. |
 | `total_symbols` | integer | Symbols on the tape before the limit was applied. |
 | `venues` | array | Distinct exchanges present in the archive. |
+| `venues_retired` | object |  |
 
 ```bash
 curl \
@@ -2565,6 +2748,19 @@ Returns 400 for a pair that is not listed upstream and 503 when the price cannot
 | `interval` | query | no | Candle interval. One of: `1m`, `3m`, `5m`, `15m`, `30m`, `1h`, `2h`, `4h`, `1d`. Default `5m`. |
 | `limit` | query | no | Number of candles returned, newest last. Default `68`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `candles` | array |  |
+| `count` | integer |  |
+| `fetched_at` | integer |  |
+| `interval` | string |  |
+| `meta` | object |  |
+| `pair` | string |  |
+| `source` | string |  |
+| `symbol` | string |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/market/candles"
@@ -2587,6 +2783,15 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 All market indices in one response. Public.
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `meta` | object |  |
+| `volatility` | object |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/market/indices"
@@ -2597,6 +2802,16 @@ curl \
 **Volatility index** — keyless
 
 Crypto volatility gauge (Deribit). Public.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `btc` | object |  |
+| `eth` | object |  |
+| `updated` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
 
 ```bash
 curl \
@@ -2612,6 +2827,19 @@ Composite market-mood reading built from funding, positioning and volatility inp
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `components` | object |  |
+| `gauge_zone` | string |  |
+| `label` | string |  |
+| `prev_score` | number |  |
+| `score` | number |  |
+| `symbol` | string |  |
+| `trend` | string |  |
+| `updated_at` | integer |  |
 
 ```bash
 curl \
@@ -2629,6 +2857,15 @@ Historical mood series for one symbol.
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 | `days` | query | no | Look-back window in days. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `days` | integer |  |
+| `history` | array |  |
+| `symbol` | string |  |
+| `updated` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/mood/history"
@@ -2639,6 +2876,15 @@ curl \
 **Mood overview** — keyless
 
 Mood reading across the tracked symbol universe. Served from cache; returns a warming-up marker rather than recomputing inline.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `meta` | object |  |
+| `symbols` | array |  |
+| `total` | integer |  |
+| `updated` | integer |  |
 
 ```bash
 curl \
@@ -2691,6 +2937,26 @@ Pattern projections across the symbol universe. Every row carries `operator_posi
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `avg_correlation` | number |  |
+| `count_matches` | integer |  |
+| `current_price` | number |  |
+| `direction` | string |  |
+| `horizon_days` | integer |  |
+| `operator_position_disclosure` | object |  |
+| `probability_bearish` | integer |  |
+| `probability_bullish` | integer |  |
+| `projected_pct_bear` | number |  |
+| `projected_pct_bull` | number |  |
+| `robustness` | integer |  |
+| `score` | integer |  |
+| `signal_strength` | string |  |
+| `symbol` | string |  |
+| `ts` | integer |  |
 
 ```bash
 curl \
@@ -2966,6 +3232,26 @@ curl \
 
 Measured accuracy of the news impact classifier, published with its sample size.
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `by_state` | object |  |
+| `combined_accuracy` | object |  |
+| `combined_formula_versions` | object |  |
+| `daily_trend` | array |  |
+| `days` | integer |  |
+| `dropout` | object |  |
+| `method` | string |  |
+| `n_is` | string |  |
+| `note` | — |  |
+| `recent_snapshots` | array |  |
+| `status` | string |  |
+| `timeframe_accuracy` | object |  |
+| `updated` | integer |  |
+| `window` | object |  |
+| `yield_accuracy` | object |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/accuracy"
@@ -2990,6 +3276,26 @@ The WHOLE retained news archive, not just the recent window that /v1/news/genera
 | `q` | query | no | Keyword search over headline and summary; multiple terms are ANDed. |
 | `include_trump` | query | no | Set 0 to exclude TRUMP_POLICY. Default 1. Default `1`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `count` | integer |  |
+| `coverage` | object |  |
+| `empty_reason` | — |  |
+| `events` | array |  |
+| `filters` | object |  |
+| `has_more` | boolean |  |
+| `max_page_limit` | integer |  |
+| `next_cursor` | string |  |
+| `page_limit` | integer |  |
+| `status` | string |  |
+| `total_is_capped` | boolean |  |
+| `total_matching` | integer |  |
+| `updated` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/archive"
@@ -3001,6 +3307,23 @@ curl \
 
 What the archive actually contains: row count, oldest and newest timestamps and dates, span in days, and breakdowns by category and by source. Use it to render an honest coverage statement rather than implying records exist for dates we never retained.
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `by_category` | object |  |
+| `by_source` | object |  |
+| `newest_date` | string |  |
+| `newest_ts` | integer |  |
+| `note` | string |  |
+| `oldest_date` | string |  |
+| `oldest_ts` | integer |  |
+| `span_days` | number |  |
+| `total_rows` | integer |  |
+| `updated` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/coverage"
@@ -3011,6 +3334,24 @@ curl \
 **Fear & Greed index** — keyless
 
 Crypto Fear & Greed index (Alternative.me).
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `attribution` | string |  |
+| `attribution_url` | string |  |
+| `avg_7d` | number |  |
+| `classification` | string |  |
+| `meta` | object |  |
+| `source` | string |  |
+| `source_ts` | integer |  |
+| `stale` | boolean |  |
+| `trend_7d` | string |  |
+| `ts` | integer |  |
+| `updated` | integer |  |
+| `value` | integer |  |
+| `values_7d` | array |  |
 
 ```bash
 curl \
@@ -3030,6 +3371,22 @@ General crypto/geopolitical news, keyword-classified into six categories (TRUMP_
 | `category` | query | no | Filter by category name. |
 | `include_trump` | query | no | Set 1 to stop excluding TRUMP_POLICY. The default (0) omits it; the response always declares what was withheld in `excluded_categories`. Default `0`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `archive_endpoint` | string |  |
+| `categories` | object |  |
+| `count` | integer |  |
+| `events` | array |  |
+| `excluded_categories` | array |  |
+| `limit_applied` | integer |  |
+| `truncated` | boolean |  |
+| `updated` | integer |  |
+| `window_hours` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/general"
@@ -3041,6 +3398,25 @@ curl \
 
 Current aggregated news impact state.
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `active_alerts` | array |  |
+| `active_count` | integer |  |
+| `confidence_modifier` | number |  |
+| `market_state` | string |  |
+| `net_sentiment` | string |  |
+| `news_direction` | integer |  |
+| `news_modifier` | number |  |
+| `news_severity` | number |  |
+| `treasury_yield` | object |  |
+| `updated` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
+| `yield_direction` | integer |  |
+| `yield_modifier` | number |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/news/impact"
@@ -3051,6 +3427,23 @@ curl \
 **Treasury yields** — keyless
 
 US Treasury yield levels used by the macro classifier.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `attribution` | string |  |
+| `change_7d` | number |  |
+| `change_90d` | number |  |
+| `daily_change` | number |  |
+| `history` | array |  |
+| `score` | number |  |
+| `signal` | string |  |
+| `source` | string |  |
+| `tenor` | string |  |
+| `ts` | integer |  |
+| `updated` | integer |  |
+| `yield_20y` | number |  |
 
 ```bash
 curl \
@@ -3067,6 +3460,17 @@ Trump/policy-classified news items with impact levels.
 |---|---|---|---|
 | `limit` | query | no | Max items. Default `20`. |
 | `hours` | query | no | Lookback window in hours. Default `24`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `count` | integer |  |
+| `events` | array |  |
+| `signal_types` | object |  |
+| `updated` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
 
 ```bash
 curl \
@@ -3315,6 +3719,17 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 Current Ethereum gas prices, derived from eth_feeHistory (base fee plus the 25th/50th/90th percentile priority tip over the last 20 blocks) against a public Ethereum RPC.
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `base_fee` | number |  |
+| `block` | string |  |
+| `fast` | number |  |
+| `proposed` | number |  |
+| `safe` | number |  |
+| `updated` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/onchain/gas"
@@ -3332,6 +3747,8 @@ Response fields:
 |---|---|---|
 | `meta` | object |  |
 | `rows` | array |  |
+| `sources_pending_licence_review` | array |  |
+| `store_present` | boolean |  |
 | `totals` | object |  |
 
 ```bash
@@ -3422,9 +3839,12 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `meta` | object |  |
 | `onchain` | object |  |
 | `public` | boolean |  |
 | `updated` | integer |  |
+| `withheld` | array |  |
+| `withheld_sources` | array |  |
 
 ```bash
 curl \
@@ -3813,6 +4233,17 @@ Composite symbol rankings with the methodology used to build them. Every row car
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `contrarian` | array |  |
+| `funding_arb` | array |  |
+| `momentum` | array |  |
+| `seasonal_plays` | array |  |
+| `updated_at` | integer |  |
+| `whale_favorites` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/rankings"
@@ -3827,6 +4258,19 @@ Order-block / imbalance scanner across the symbol universe.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `composite_score` | number |  |
+| `indicators` | object |  |
+| `price` | number |  |
+| `signal` | — |  |
+| `state` | string |  |
+| `strength` | integer |  |
+| `symbol` | string |  |
+| `ts` | integer |  |
 
 ```bash
 curl \
@@ -3843,6 +4287,19 @@ Most extreme order-block readings in the current scan.
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `composite_score` | number |  |
+| `indicators` | object |  |
+| `price` | number |  |
+| `signal` | string |  |
+| `state` | string |  |
+| `strength` | integer |  |
+| `symbol` | string |  |
+| `ts` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/scanner/obs/extremes"
@@ -3857,6 +4314,21 @@ Order-block scan detail for one symbol.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `composite_score` | number |  |
+| `history` | array |  |
+| `indicators` | object |  |
+| `multi_timeframe` | object |  |
+| `price` | number |  |
+| `signal` | — |  |
+| `state` | string |  |
+| `strength` | integer |  |
+| `symbol` | string |  |
+| `ts` | integer |  |
 
 ```bash
 curl \
@@ -3873,6 +4345,16 @@ Cross-symbol screener over derivatives, whale and technical factors, with a bull
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `direction` | string |  |
+| `sort_by` | string |  |
+| `symbols` | array |  |
+| `total_count` | integer |  |
+| `updated_at` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/screener"
@@ -3888,6 +4370,17 @@ Ranked screener output. Every row carries `operator_position_disclosure`, dated 
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `contrarian` | array |  |
+| `funding_arb` | array |  |
+| `momentum` | array |  |
+| `seasonal_plays` | array |  |
+| `updated_at` | integer |  |
+| `whale_favorites` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/screener/rankings"
@@ -3902,6 +4395,25 @@ Full screener factor breakdown for one symbol. Carries `operator_position_disclo
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `components` | object |  |
+| `composite_score` | number |  |
+| `direction` | string |  |
+| `grade` | string |  |
+| `operator_position_disclosure` | object |  |
+| `partial_data` | boolean |  |
+| `price` | number |  |
+| `rank` | integer |  |
+| `score_history` | array |  |
+| `signal` | string |  |
+| `symbol` | string |  |
+| `symbol_full` | string |  |
+| `total_symbols` | integer |  |
+| `updated_at` | integer |  |
 
 ```bash
 curl \
@@ -3920,6 +4432,20 @@ Calendar-seasonality statistics for one symbol.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `best_months` | array |  |
+| `current_month` | object |  |
+| `data_years` | integer |  |
+| `months` | array |  |
+| `symbol` | string |  |
+| `timeframe` | string |  |
+| `updated` | integer |  |
+| `worst_months` | array |  |
+| `yearly_returns` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/seasonality"
@@ -3934,6 +4460,17 @@ Day-of-week return distribution.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `best_day` | object |  |
+| `days` | array |  |
+| `symbol` | string |  |
+| `timeframe` | string |  |
+| `updated` | integer |  |
+| `worst_day` | object |  |
 
 ```bash
 curl \
@@ -3950,6 +4487,17 @@ Month-by-year return heatmap.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `data` | object |  |
+| `months` | array |  |
+| `symbols` | array |  |
+| `timeframe` | string |  |
+| `updated` | integer |  |
+| `win_rates` | object |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/seasonality/heatmap"
@@ -3964,6 +4512,17 @@ Current year overlaid on the historical seasonal path.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `cumulative_ytd` | object |  |
+| `months` | array |  |
+| `symbol` | string |  |
+| `timeframe` | string |  |
+| `updated` | integer |  |
+| `years` | object |  |
 
 ```bash
 curl \
@@ -3980,6 +4539,18 @@ Quarter-by-quarter return statistics.
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `best_quarter` | object |  |
+| `current_quarter` | object |  |
+| `quarters` | array |  |
+| `symbol` | string |  |
+| `timeframe` | string |  |
+| `updated` | integer |  |
+| `worst_quarter` | object |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/seasonality/quarters"
@@ -3994,6 +4565,14 @@ Symbols ranked by the current seasonal window.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `months` | array |  |
+| `timeframe` | string |  |
+| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4099,6 +4678,23 @@ Current capitulation reading per symbol from the liquidation and funding panel. 
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `backtest` | object |  |
+| `caveats` | array |  |
+| `compute_ms` | integer |  |
+| `generated_at` | integer |  |
+| `n_scanned` | integer |  |
+| `n_triggered` | integer |  |
+| `n_triggered_validated` | integer |  |
+| `posture` | string |  |
+| `regime` | object |  |
+| `spec` | object |  |
+| `trigger_definition` | string |  |
+| `triggered` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/signals/capitulation"
@@ -4114,6 +4710,23 @@ In-sample backtest of the capitulation reading. Published with its own disclaime
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `caveats` | array |  |
+| `costs` | string |  |
+| `cutoffs` | object |  |
+| `dataset` | object |  |
+| `generated_at` | integer |  |
+| `kind` | string |  |
+| `meta` | object |  |
+| `per_symbol_test_E1_L5` | object |  |
+| `profiles` | array |  |
+| `shuffle_control` | object |  |
+| `threshold_grid_E1_L5_test` | array |  |
+| `trigger` | string |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/signals/capitulation/backtest"
@@ -4128,6 +4741,24 @@ Walk-forward (out-of-sample) evaluation of the capitulation reading. Every `trad
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `accrual_start_ts` | integer |  |
+| `backfill_boundary_ts` | integer |  |
+| `generated_at` | integer |  |
+| `kind` | string |  |
+| `n_backfill` | integer |  |
+| `n_open` | integer |  |
+| `n_resolved` | integer |  |
+| `n_trades` | integer |  |
+| `n_void` | integer |  |
+| `notes` | array |  |
+| `posture` | string |  |
+| `profiles` | array |  |
+| `trades` | array |  |
 
 ```bash
 curl \
@@ -4521,7 +5152,9 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `count` | integer |  |
+| `meta` | object |  |
 | `positions` | array |  |
+| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4547,8 +5180,10 @@ Response fields:
 | `curve` | array |  |
 | `initial_equity` | number |  |
 | `max_drawdown_percent` | number |  |
+| `meta` | object |  |
 | `total_adjustments` | number |  |
 | `total_pnl_usdt` | number |  |
+| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4565,6 +5200,7 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `meta` | object |  |
 | `signal_types` | object |  |
 | `total_signals` | integer |  |
 | `unique_signal_types` | integer |  |
@@ -4589,12 +5225,32 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `account` | integer |  |
+| `account_growth_percent` | number |  |
+| `adjustments` | array |  |
+| `avg_duration_hours` | number |  |
+| `avg_leverage` | number |  |
+| `avg_loser_pnl` | number |  |
+| `avg_pnl_percent` | number |  |
+| `avg_pnl_usdt` | number |  |
+| `avg_winner_pnl` | number |  |
+| `best_trade` | object |  |
 | `current_equity` | number |  |
+| `initial_equity` | number |  |
+| `losing_trades` | integer |  |
 | `max_drawdown_portfolio` | number |  |
+| `max_drawdown_trade` | number |  |
+| `meta` | object |  |
 | `profit_factor` | number |  |
+| `total_adjustments` | number |  |
+| `total_pnl_percent` | number |  |
 | `total_pnl_usdt` | number |  |
 | `total_trades` | integer |  |
+| `trades_by_direction` | object |  |
+| `trades_by_exit_reason` | object |  |
+| `updated` | integer |  |
 | `win_rate` | number |  |
+| `winning_trades` | integer |  |
+| `worst_trade` | object |  |
 
 ```bash
 curl \
@@ -4610,6 +5266,17 @@ Per-symbol performance breakdown for a strategy account.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `account` | query | no | Strategy account id (1-10). Defaults to 1; out-of-range values fall back to 1. Default `1`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `account` | integer |  |
+| `all_symbols` | object |  |
+| `meta` | object |  |
+| `top_10` | array |  |
+| `total_symbols` | integer |  |
+| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4627,6 +5294,18 @@ Closed trades for a live strategy account (newest first).
 | `account` | query | no | Strategy account id (1-10). Defaults to 1; out-of-range values fall back to 1. Default `1`. |
 | `limit` | query | no | Max trades, capped at 500. Default `100`. |
 | `offset` | query | no | Pagination offset. Default `0`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `account` | integer |  |
+| `limit` | integer |  |
+| `meta` | object |  |
+| `offset` | integer |  |
+| `total` | integer |  |
+| `trades` | array |  |
+| `updated` | integer |  |
 
 ```bash
 curl \
@@ -4662,6 +5341,14 @@ Technical-indicator screener across the symbol universe.
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `interval` | string |  |
+| `symbols` | array |  |
+| `updated_at` | integer |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/ta/screener"
@@ -4676,6 +5363,23 @@ Indicator set (moving averages, RSI, MACD, ATR) for one symbol.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `bollinger` | object |  |
+| `dpo` | object |  |
+| `interval` | string |  |
+| `macd` | object |  |
+| `market_mood` | object |  |
+| `obos` | string |  |
+| `price` | object |  |
+| `rsi` | object |  |
+| `signals` | array |  |
+| `speed` | object |  |
+| `symbol` | string |  |
+| `ts` | integer |  |
 
 ```bash
 curl \
@@ -4856,10 +5560,28 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `aggregate` | object |  |
+| `atom_minutes` | integer |  |
+| `base_asset` | string |  |
+| `bucket_ms` | integer |  |
+| `buckets` | array |  |
 | `coverage` | object |  |
+| `exchanges` | object |  |
+| `from_ts` | integer |  |
+| `generated_at` | integer |  |
+| `measurement` | string |  |
+| `measurement_note` | string |  |
+| `meta` | object |  |
+| `points` | integer |  |
+| `public` | boolean |  |
+| `quote_currencies` | array |  |
+| `retention` | object |  |
 | `series` | object |  |
+| `source` | string |  |
 | `symbol` | string |  |
 | `timeframe` | string |  |
+| `to_ts` | integer |  |
+| `totals` | object |  |
 
 ```bash
 curl \
@@ -4884,10 +5606,27 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `aggregate` | object |  |
+| `atom_minutes` | integer |  |
+| `base_asset` | string |  |
+| `bucket_ms` | integer |  |
+| `buckets` | array |  |
 | `coverage` | object |  |
+| `from_ts` | integer |  |
+| `generated_at` | integer |  |
+| `measurement` | string |  |
+| `measurement_note` | string |  |
+| `meta` | object |  |
+| `points` | integer |  |
+| `public` | boolean |  |
+| `quote_currencies` | array |  |
+| `retention` | object |  |
 | `series` | array |  |
+| `source` | string |  |
 | `symbol` | string |  |
 | `timeframe` | string |  |
+| `to_ts` | integer |  |
+| `totals` | object |  |
 
 ```bash
 curl \
@@ -4932,8 +5671,17 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `coincidence_spread_seconds` | — |  |
+| `coincident_dark_venues` | integer |  |
+| `collector_stall` | boolean |  |
+| `dark_venues` | array |  |
+| `dropped_rows` | integer |  |
+| `now` | number |  |
+| `queue_depth` | integer |  |
+| `retention` | object |  |
 | `status` | string |  |
 | `venues` | object |  |
+| `verdict` | string |  |
 
 ```bash
 curl \
@@ -4950,8 +5698,19 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `atom_minutes` | integer |  |
 | `count` | integer |  |
+| `generated_at` | integer |  |
+| `measurement` | string |  |
+| `recording` | boolean |  |
+| `retention` | object |  |
+| `returned` | integer |  |
 | `symbols` | array |  |
+| `timeframes` | array |  |
+| `total_symbols` | integer |  |
+| `universe` | array |  |
+| `venues` | array |  |
+| `venues_with_data` | array |  |
 
 ```bash
 curl \
@@ -5145,6 +5904,7 @@ Response fields:
 |---|---|---|
 | `caveats` | array |  |
 | `gated` | boolean | true for anonymous (top-10 only); full list at Trader+. |
+| `hl_coverage` | object |  |
 | `min_notional` | number |  |
 | `n_symbols` | integer |  |
 | `ok` | boolean |  |
@@ -5169,6 +5929,18 @@ Open perpetual positions on GMX v2 (Arbitrum/Avalanche) and Jupiter (Solana).
 | `min_notional` | query | no | Minimum position notional in USD. |
 | `limit` | query | no | Max rows returned. |
 
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `count` | integer |  |
+| `filters` | object |  |
+| `ok` | boolean |  |
+| `positions` | array |  |
+| `total` | integer |  |
+| `ts` | integer |  |
+| `venues` | array |  |
+
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/whales/dex-positions"
@@ -5192,9 +5964,19 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `chain` | string |  |
 | `count` | integer |  |
+| `distinct` | integer |  |
 | `events` | array |  |
+| `hours` | integer |  |
+| `limit` | integer |  |
+| `max_id` | integer |  |
+| `meta` | object |  |
+| `next_url` | string |  |
+| `offset` | integer |  |
+| `since_id` | — |  |
 | `total` | integer |  |
+| `updated` | integer |  |
 
 ```bash
 curl \
@@ -5210,6 +5992,15 @@ Wallets classified as market makers rather than directional traders.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `count` | integer |  |
+| `market_makers` | array |  |
+| `meta` | object |  |
+| `window_days` | integer |  |
 
 ```bash
 curl \
@@ -5227,6 +6018,16 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `chains` | object |  |
+| `critical_24h` | integer |  |
+| `net_flows` | object |  |
+| `source_count` | integer |  |
+| `source_notes` | object |  |
+| `sources_contributing` | array |  |
+| `sources_silent` | array |  |
+| `sources_stale` | array |  |
+| `top_movers` | array |  |
+| `updated` | integer |  |
+| `volume_basis` | string |  |
 
 ```bash
 curl \

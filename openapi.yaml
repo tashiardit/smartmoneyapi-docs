@@ -21,7 +21,7 @@ info:
 
     Paid tiers ARE published: you should be able to read the exact shape of what a subscription returns before paying for it. Per-operation x-auth says whether a key is needed at all; x-tier names the plan that unlocks it. Public operations answer without a key at a reduced row cap and a per-IP throttle.
 
-    Mirror generated 2026-10-08 from https://smartmoneyapi.com/openapi.json: 249 of 306 live paths.
+    Mirror generated 2026-10-09 from https://smartmoneyapi.com/openapi.json: 249 of 306 live paths.
   contact:
     url: https://smartmoneyapi.com
   license:
@@ -89,8 +89,8 @@ paths:
       - XAU
       - XAG
       operationId: get_openapi_json
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /rpc/v1/avax-c:
@@ -287,8 +287,8 @@ paths:
       - XAU
       - XAG
       operationId: get_rpc_v1_health
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/analysis:
@@ -471,7 +471,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  as_of: {}
+                  as_of:
+                    type: string
                   cached_count:
                     type: integer
                   engine:
@@ -480,8 +481,6 @@ paths:
                     type: integer
                   full_analysis:
                     type: object
-                  message:
-                    type: string
                   note:
                     type: string
                   requested_count:
@@ -621,8 +620,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_analysis_status
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/billing/regime:
@@ -698,8 +697,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_billing_regime
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/confirm:
@@ -1478,6 +1477,39 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  BTC:
+                    type: object
+                  ETH:
+                    type: object
+                  XAG:
+                    type: object
+                  XAU:
+                    type: object
+                  as_of:
+                    type: object
+                  attribution:
+                    type: string
+                  data_class:
+                    type: string
+                  is_live:
+                    type: boolean
+                  markets:
+                    type: object
+                  meta:
+                    type: object
+                  relative_strength:
+                    type: string
+                  report_families:
+                    type: object
+                  source:
+                    type: string
+                  stale_markets:
+                    type: array
+                  staleness:
+                    type: string
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -1500,6 +1532,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_comparison
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/history:
     get:
       summary: COT history
@@ -1511,6 +1547,31 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  as_of:
+                    type: object
+                  attribution:
+                    type: string
+                  data_class:
+                    type: string
+                  history:
+                    type: array
+                  is_live:
+                    type: boolean
+                  markets:
+                    type: object
+                  meta:
+                    type: object
+                  source:
+                    type: string
+                  staleness:
+                    type: string
+                  symbol:
+                    type: string
+                  updated:
+                    type: integer
+                  weeks:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -1545,6 +1606,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_history
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/positioning:
     get:
       summary: COT positioning
@@ -1563,18 +1628,31 @@ paths:
                     type: integer
                     description: When the response was assembled -- never the data time (see `updated`,
                       `freshness`).
-                  updated:
+                  availability_rule:
+                    type: string
+                  available_ts:
                     type: integer
-                    description: The datum time (freshness.source_timestamp); absent when nothing measured
-                      dates the body.
-                  venue:
+                  basis:
                     type: string
-                  scope:
+                  categories:
+                    type: array
+                  caveats:
+                    type: array
+                  data_mode:
                     type: string
-                  licence_class:
-                    type: string
-                  rights:
+                    nullable: true
+                    enum:
+                    - live
+                    - backfilled
+                    - null
+                    description: live or backfilled; null where no capture backs the body (e.g. /validation,
+                      which is derived, before its first run).
+                  data_mode_counts:
                     type: object
+                  dataset_id:
+                    type: string
+                  expected_obs:
+                    type: integer
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
@@ -1606,21 +1684,12 @@ paths:
                         type: string
                       last_refresh_error:
                         type: object
-                  versions:
+                  licence_class:
+                    type: string
+                  lookback_weeks:
+                    type: integer
+                  market:
                     type: object
-                  data_mode:
-                    type: string
-                    nullable: true
-                    enum:
-                    - live
-                    - backfilled
-                    - null
-                    description: live or backfilled; null where no capture backs the body (e.g. /validation,
-                      which is derived, before its first run).
-                  basis:
-                    type: string
-                  note:
-                    type: string
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
@@ -1640,52 +1709,48 @@ paths:
                         - unknown
                       stale:
                         type: boolean
-                  symbol:
-                    type: string
-                  market:
+                  methods:
                     type: object
+                  metric:
+                    type: string
+                  n_obs:
+                    type: integer
+                  note:
+                    type: string
+                  released_ts:
+                    type: integer
+                  report_as_of:
+                    type: object
+                  report_date:
+                    type: string
                   report_family:
                     type: string
                   report_name:
                     type: string
-                  report_date:
-                    type: string
-                  report_as_of:
+                  rights:
                     type: object
-                  released_ts:
-                    type: integer
-                  available_ts:
-                    type: integer
-                  lookback_weeks:
-                    type: integer
-                  n_obs:
-                    type: integer
-                  expected_obs:
-                    type: integer
-                  window_complete:
-                    type: boolean
-                  window:
-                    type: object
-                  methods:
-                    type: object
-                  categories:
-                    type: array
                   rows_excluded:
                     type: object
-                  caveats:
-                    type: array
-                  validation:
-                    type: object
+                  scope:
+                    type: string
                   source:
                     type: string
-                  data_mode_counts:
+                  symbol:
+                    type: string
+                  updated:
+                    type: integer
+                    description: The datum time (freshness.source_timestamp); absent when nothing measured
+                      dates the body.
+                  validation:
                     type: object
-                  dataset_id:
+                  venue:
                     type: string
-                  metric:
-                    type: string
-                  availability_rule:
-                    type: string
+                  versions:
+                    type: object
+                  window:
+                    type: object
+                  window_complete:
+                    type: boolean
         '429':
           description: Rate limit exceeded
         '400':
@@ -1739,6 +1804,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_positioning
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/summary:
     get:
       summary: COT summary
@@ -1750,6 +1819,51 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  as_of:
+                    type: object
+                  attribution:
+                    type: string
+                  categories:
+                    type: object
+                  data_class:
+                    type: string
+                  is_live:
+                    type: boolean
+                  macd_confirmation:
+                    type: object
+                  market:
+                    type: object
+                  meta:
+                    type: object
+                  net_change:
+                    type: integer
+                  net_long:
+                    type: integer
+                  open_interest:
+                    type: integer
+                  pct_long:
+                    type: number
+                  pct_short:
+                    type: number
+                  report_date:
+                    type: string
+                  report_family:
+                    type: string
+                  signal:
+                    type: string
+                  source:
+                    type: string
+                  speculator_category:
+                    type: string
+                  staleness:
+                    type: string
+                  symbol:
+                    type: string
+                  trend_4w:
+                    type: array
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -1779,6 +1893,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_summary
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/trend:
     get:
       summary: COT trend
@@ -1790,6 +1908,62 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  as_of:
+                    type: object
+                  attribution:
+                    type: string
+                  current_net_long:
+                    type: integer
+                  data_class:
+                    type: string
+                  divergence:
+                    type: string
+                  extreme: {}
+                  hedger_category:
+                    type: string
+                  hedger_label:
+                    type: string
+                  hedger_net:
+                    type: integer
+                  is_live:
+                    type: boolean
+                  market:
+                    type: object
+                  mean_net_long:
+                    type: integer
+                  meta:
+                    type: object
+                  momentum_4w:
+                    type: integer
+                  percentile:
+                    type: number
+                  report_date:
+                    type: string
+                  report_family:
+                    type: string
+                  source:
+                    type: string
+                  speculator_category:
+                    type: string
+                  speculator_label:
+                    type: string
+                  speculator_net:
+                    type: integer
+                  staleness:
+                    type: string
+                  std_dev:
+                    type: integer
+                  symbol:
+                    type: string
+                  trend_series:
+                    type: array
+                  updated:
+                    type: integer
+                  weeks:
+                    type: integer
+                  z_score:
+                    type: number
         '429':
           description: Rate limit exceeded
         '400':
@@ -1819,6 +1993,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_trend
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/coverage:
     get:
       summary: Derivatives field coverage matrix
@@ -1839,46 +2017,46 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
+                  declaration:
+                    type: object
+                  declaration_conflicts:
+                    type: array
+                  fields:
+                    type: array
                   generated_at:
                     type: integer
+                  listing_source:
+                    type: object
+                  not_claimed:
+                    type: array
+                  per_field:
+                    type: object
+                    description: 'Per tracked field: distribution, buckets, per_venue counts, symbols_with_at_least_one_venue.
+                      Empty when status != ok.'
                   source_table:
                     type: string
-                  window:
+                  status:
+                    type: string
+                  status_buckets:
                     type: object
+                  status_labels:
+                    type: object
+                  symbol:
+                    type: string
                   symbols_observed:
                     type: integer
+                  venues:
+                    type: object
+                    description: 'Present only with ?symbol=: per-venue, per-field cell detail for that
+                      one symbol.'
                   venues_collected:
                     type: array
                   venues_in_instrument_registry:
                     type: array
                   venues_registry_only:
                     type: array
-                  fields:
-                    type: array
-                  status_labels:
+                  window:
                     type: object
-                  status_buckets:
-                    type: object
-                  listing_source:
-                    type: object
-                  declaration:
-                    type: object
-                  declaration_conflicts:
-                    type: array
-                  per_field:
-                    type: object
-                    description: 'Per tracked field: distribution, buckets, per_venue counts, symbols_with_at_least_one_venue.
-                      Empty when status != ok.'
-                  symbol:
-                    type: string
-                  venues:
-                    type: object
-                    description: 'Present only with ?symbol=: per-venue, per-field cell detail for that
-                      one symbol.'
-                  not_claimed:
-                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -1916,6 +2094,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_coverage
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/defillama/all:
     get:
       summary: All DeFiLlama data
@@ -2251,6 +2433,27 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  corroboration:
+                    type: object
+                  limited:
+                    type: boolean
+                  min_spread_filter:
+                    type: number
+                  note:
+                    type: string
+                  opportunities:
+                    type: array
+                  public:
+                    type: boolean
+                  scan_refusal:
+                    type: object
+                  scan_state:
+                    type: string
+                  scanned_symbols:
+                    type: integer
+                  ts:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -2279,6 +2482,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_funding_arb
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/funding-heatmap:
     get:
       summary: Funding heatmap
@@ -2291,8 +2498,22 @@ paths:
               schema:
                 type: object
                 properties:
+                  age_seconds:
+                    type: number
+                  empty:
+                    type: boolean
                   heatmap:
                     type: array
+                  last_build:
+                    type: string
+                  public:
+                    type: boolean
+                  stale:
+                    type: boolean
+                  updated:
+                    type: integer
+                  warming:
+                    type: boolean
         '429':
           description: Rate limit exceeded
         '400':
@@ -2315,6 +2536,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_funding_heatmap
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/heatmap:
     get:
       summary: Derivatives heatmap
@@ -2358,6 +2583,17 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  gainers:
+                    type: array
+                  losers:
+                    type: array
+                  public:
+                    type: boolean
+                  timeframe:
+                    type: string
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -2394,6 +2630,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_oi_rankings
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/provenance:
     get:
       summary: Derivatives data provenance
@@ -2413,10 +2653,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
-                  provenance_values_present:
-                    type: array
                   backfilled:
                     type: object
                     properties:
@@ -2430,15 +2666,23 @@ paths:
                         type: array
                       meaning:
                         type: string
+                  instruments:
+                    type: array
+                  message:
+                    type: string
+                  not_claimed:
+                    type: array
                   observed:
                     type: object
                     description: Per-venue earliest/latest ts and row count for the live (non-backfilled)
                       derivatives table in THIS shard -- the daemon rotates the database, so earliest_ts_in_this_shard
                       is a floor on collection start, not when collection began.
+                  provenance_values_present:
+                    type: array
                   read_this_view:
                     type: string
-                  not_claimed:
-                    type: array
+                  status:
+                    type: string
         '429':
           description: Rate limit exceeded
         '400':
@@ -2461,6 +2705,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_provenance
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/screener:
     get:
       summary: Derivatives screener
@@ -2479,6 +2727,23 @@ paths:
                 type: object
                 description: Screener rows plus total_count; anonymous responses include public and limited
                   flags. A by-name response carries requested_symbol and allowed_symbols.
+                properties:
+                  limited:
+                    type: boolean
+                  meta:
+                    type: object
+                  public:
+                    type: boolean
+                  sort_by:
+                    type: string
+                  symbols:
+                    type: array
+                  total_count:
+                    type: integer
+                  unmeasured_for_sort:
+                    type: integer
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -2545,6 +2810,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_screener
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/dex/pair:
     get:
       summary: Pair details
@@ -2874,8 +3143,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_equity_flow
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/equity-flow/dark-pool:
@@ -3006,8 +3275,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_equity_flow_stats
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/equity-flow/unusual-activity:
@@ -3178,8 +3447,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_exchange_health
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/flow/dark-pool:
@@ -3302,8 +3571,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_flow_status
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/flow/unusual:
@@ -3458,16 +3727,18 @@ paths:
               schema:
                 type: object
                 properties:
-                  status:
-                    type: string
                   basis:
                     type: string
                   how_measured:
                     type: string
-                  venues_measured:
+                  metadata_disagreements:
                     type: array
-                  venues_unmeasured:
+                  not_claimed:
                     type: array
+                  refuses_measurements_older_than_days:
+                    type: integer
+                  status:
+                    type: string
                   totals:
                     type: object
                     properties:
@@ -3477,16 +3748,14 @@ paths:
                         type: integer
                       settlement_gaps:
                         type: integer
-                  refuses_measurements_older_than_days:
-                    type: integer
                   venues:
                     type: object
                     description: Keyed by venue; each entry is the venue's raw coverage record plus measurement_age_days
                       (derived from the measurement's own timestamp, so a stale sweep is visible in the
                       payload).
-                  metadata_disagreements:
+                  venues_measured:
                     type: array
-                  not_claimed:
+                  venues_unmeasured:
                     type: array
         '429':
           description: Rate limit exceeded
@@ -3510,6 +3779,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_funding_clock
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/funding/normalised:
     get:
       summary: Cross-venue funding on one clock
@@ -3533,30 +3806,10 @@ paths:
                 type: object
                 description: On status=no_rows only status/symbol/message/venues_* are populated.
                 properties:
-                  status:
-                    type: string
-                  symbol:
-                    type: string
                   base:
                     type: string
-                  mean_annualised_pct:
-                    type: number
-                  mean_rate_8h_equivalent:
-                    type: number
                   basis:
                     type: string
-                  venues_contributing:
-                    type: array
-                  venues_refused:
-                    type: object
-                  venues_unmapped:
-                    type: object
-                  venues_with_a_stored_rate:
-                    type: array
-                  per_venue:
-                    type: object
-                  observed_ts:
-                    type: integer
                   comparison:
                     type: object
                     properties:
@@ -3568,7 +3821,27 @@ paths:
                         type: number
                       note:
                         type: string
+                  mean_annualised_pct:
+                    type: number
+                  mean_rate_8h_equivalent:
+                    type: number
                   not_claimed:
+                    type: array
+                  observed_ts:
+                    type: integer
+                  per_venue:
+                    type: object
+                  status:
+                    type: string
+                  symbol:
+                    type: string
+                  venues_contributing:
+                    type: array
+                  venues_refused:
+                    type: object
+                  venues_unmapped:
+                    type: object
+                  venues_with_a_stored_rate:
                     type: array
         '429':
           description: Rate limit exceeded
@@ -3599,6 +3872,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_funding_normalised
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/health:
     get:
       summary: Gateway health
@@ -3652,8 +3929,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_health
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/funding:
@@ -3668,14 +3945,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  symbol:
-                    type: string
-                  days:
-                    type: integer
                   count:
                     type: integer
                   data:
                     type: array
+                  days:
+                    type: integer
+                  symbol:
+                    type: string
         '429':
           description: Rate limit exceeded
         '400':
@@ -3711,6 +3988,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_funding
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/long-short:
     get:
       summary: Long/short ratio history
@@ -3723,14 +4004,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  symbol:
-                    type: string
-                  days:
-                    type: integer
                   count:
                     type: integer
                   data:
                     type: array
+                  days:
+                    type: integer
+                  symbol:
+                    type: string
         '429':
           description: Rate limit exceeded
         '400':
@@ -3766,6 +4047,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_long_short
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/market:
     get:
       summary: Market OHLCV history
@@ -3817,14 +4102,14 @@ paths:
               schema:
                 type: object
                 properties:
-                  symbol:
-                    type: string
-                  days:
-                    type: integer
                   count:
                     type: integer
                   data:
                     type: array
+                  days:
+                    type: integer
+                  symbol:
+                    type: string
         '429':
           description: Rate limit exceeded
         '400':
@@ -3860,6 +4145,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_open_interest
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/confirmations:
     get:
       summary: 'Deep history: confirmations'
@@ -3882,36 +4171,40 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -3981,6 +4274,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_confirmations
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/coverage:
     get:
       summary: Deep-history coverage
@@ -4000,22 +4297,24 @@ paths:
                   (not-yet-consolidated) shard range, and the index-served filter keys. index_available=false
                   means the archive index could not be read — NOT that there is no archive.'
                 properties:
-                  tables:
-                    type: object
-                  manifest_present:
-                    type: boolean
                   index_available:
                     type: boolean
-                  shard_index_available:
+                  manifest_present:
                     type: boolean
-                  unindexed_partitions:
-                    type: array
                   partition_cap:
                     type: integer
-                  source_budget_s:
-                    type: number
+                  partition_dir:
+                    type: string
                   query_budget_s:
                     type: number
+                  shard_index_available:
+                    type: boolean
+                  source_budget_s:
+                    type: number
+                  tables:
+                    type: object
+                  unindexed_partitions:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -4038,6 +4337,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_coverage
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/derivatives:
     get:
       summary: 'Deep history: derivatives'
@@ -4060,36 +4363,36 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -4149,6 +4452,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_derivatives
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/derivatives_agg:
     get:
       summary: 'Deep history: derivatives_agg'
@@ -4171,36 +4478,36 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -4255,6 +4562,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_derivatives_agg
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/onchain:
     get:
       summary: 'Deep history: onchain'
@@ -4277,36 +4588,40 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -4366,6 +4681,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_onchain
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/signal_log:
     get:
       summary: 'Deep history: signal_log'
@@ -4388,36 +4707,40 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -4487,6 +4810,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_signal_log
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/signal_outcomes:
     get:
       summary: 'Deep history: signal_outcomes'
@@ -4509,36 +4836,36 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -4593,6 +4920,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_signal_outcomes
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/wallet_relationships:
     get:
       summary: 'Deep history: wallet_relationships'
@@ -4615,36 +4946,36 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -4709,6 +5040,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_wallet_relationships
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/whale_consensus:
     get:
       summary: 'Deep history: whale_consensus'
@@ -4731,36 +5066,36 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -4815,6 +5150,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_whale_consensus
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/whale_positions:
     get:
       summary: 'Deep history: whale_positions'
@@ -4837,36 +5176,36 @@ paths:
                   as a quiet one. window echoes the SNAPPED window that was actually scanned (requests
                   are snapped to a window_grain_s grid).'
                 properties:
-                  table:
-                    type: string
-                  window:
-                    type: object
                   count:
                     type: integer
-                  limit:
-                    type: integer
-                  truncated:
-                    type: boolean
-                  rows:
-                    type: array
-                  sources:
-                    type: array
                   coverage:
                     type: array
+                  index_available:
+                    type: boolean
+                  limit:
+                    type: integer
                   live_starts_at:
                     type: integer
                   live_state:
                     type: string
-                  index_available:
-                    type: boolean
-                  shard_index_available:
-                    type: boolean
                   partition_cap:
                     type: integer
-                  window_grain_s:
-                    type: integer
+                  rows:
+                    type: array
+                  shard_index_available:
+                    type: boolean
+                  sources:
+                    type: array
+                  table:
+                    type: string
                   took_ms:
                     type: number
+                  truncated:
+                    type: boolean
+                  window:
+                    type: object
+                  window_grain_s:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -4931,6 +5270,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_whale_positions
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/hl/frequently-liquidated:
     get:
       summary: Frequently-liquidated HL wallets
@@ -5098,8 +5441,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_incidents
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/insiders/purchases:
@@ -5454,15 +5797,17 @@ paths:
                 properties:
                   dataset_version:
                     type: string
+                  not_collected_for_depth:
+                    type: array
                   redistributable_venues:
                     type: array
+                  refused:
+                    type: object
+                    description: Venues not collected, each with the specific blocker.
                   venues:
                     type: object
                     description: 'One entry per collected venue: venue, may_reach_subscriber, licence,
                       origin, note, continuity model and the live evidence for it.'
-                  refused:
-                    type: object
-                    description: Venues not collected, each with the specific blocker.
         '429':
           description: Rate limit exceeded
         '400':
@@ -5485,6 +5830,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_l2_depth_venues
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/l2/trades:
     get:
       summary: L2 trade tape
@@ -5637,6 +5986,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_l2_venues
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations:
     get:
       summary: Liquidation levels (modelled) + realized tape
@@ -5899,13 +6252,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  symbol:
-                    type: string
-                  generated_at:
+                  compute_ms:
                     type: integer
-                  data_posture:
-                    type: string
-                    description: 'Fixed disclaimer: descriptive conditional statistics, not a signal.'
                   coverage:
                     type: object
                     properties:
@@ -5915,21 +6263,40 @@ paths:
                         type: string
                       hours:
                         type: number
-                  price_source:
+                  current_context:
+                    type: object
+                  current_context_as_of:
+                    type: integer
+                  data_posture:
                     type: string
+                    description: 'Fixed disclaimer: descriptive conditional statistics, not a signal.'
                   event_definition:
                     type: string
+                  generated_at:
+                    type: integer
+                  honesty:
+                    type: string
+                  horizons:
+                    type: object
+                    description: Keyed by horizon ('+5m', '+15m', '+1h', ...), each holding long_liq /
+                      short_liq / all blocks with n, mean_pct, median_pct, pos_frac, std_pct, ci95_low_pct,
+                      ci95_high_pct, perm_p and verdict.
                   n_events:
                     type: integer
                   n_long_liq_events:
                     type: integer
                   n_short_liq_events:
                     type: integer
-                  horizons:
-                    type: object
-                    description: Keyed by horizon ('+5m', '+15m', '+1h', ...), each holding long_liq /
-                      short_liq / all blocks with n, mean_pct, median_pct, pos_frac, std_pct, ci95_low_pct,
-                      ci95_high_pct, perm_p and verdict.
+                  price_source:
+                    type: string
+                  served_from:
+                    type: string
+                  study_age_s:
+                    type: integer
+                  study_refresh_interval_s:
+                    type: integer
+                  symbol:
+                    type: string
         '429':
           description: Rate limit exceeded
         '400':
@@ -5959,6 +6326,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_aftermath
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/aftermath/historical:
     get:
       summary: Liquidation aftermath (2-year OI-cascade proxy)
@@ -5975,14 +6346,10 @@ paths:
               schema:
                 type: object
                 properties:
-                  generated_at:
+                  by_regime:
+                    type: object
+                  compute_ms:
                     type: integer
-                  kind:
-                    type: string
-                    example: liq_aftermath_historical
-                  posture:
-                    type: string
-                    description: States that events are an OI-cascade PROXY, not realized liquidations.
                   dataset:
                     type: object
                     properties:
@@ -5996,14 +6363,19 @@ paths:
                         type: string
                       span:
                         type: string
-                  span:
-                    type: string
                   event_definition:
+                    type: string
+                  generated_at:
+                    type: integer
+                  honesty:
                     type: string
                   horizons:
                     type: array
                     items:
                       type: string
+                  kind:
+                    type: string
+                    example: liq_aftermath_historical
                   n_events:
                     type: object
                     properties:
@@ -6014,6 +6386,15 @@ paths:
                       total:
                         type: integer
                   per_symbol:
+                    type: object
+                  pooled:
+                    type: object
+                  posture:
+                    type: string
+                    description: States that events are an OI-cascade PROXY, not realized liquidations.
+                  span:
+                    type: string
+                  stats_legend:
                     type: object
         '429':
           description: Rate limit exceeded
@@ -6037,6 +6418,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_aftermath_historical
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/heatmap:
     get:
       summary: Liquidation heatmap (realized)
@@ -6058,52 +6443,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  symbol:
-                    type: string
-                  window_minutes:
-                    type: integer
-                  price_buckets:
-                    type: integer
-                  time_bucket_minutes:
-                    type: integer
-                    description: Width of one matrix column, derived from the window.
-                  price_min:
-                    type: number
-                  price_max:
-                    type: number
-                  price_bucket_size:
-                    type: number
-                  price_levels:
-                    type: array
-                    items:
-                      type: number
-                    description: Row (price) axis, low to high.
-                  time_buckets:
-                    type: array
-                    items:
-                      type: integer
-                    description: Column (time) axis, epoch ms.
-                  matrix:
-                    type: array
-                    description: price_buckets x time_buckets of liquidated notional (USD). Long + short
-                      combined.
-                    items:
-                      type: array
-                      items:
+                  by_side:
+                    type: object
+                    properties:
+                      long:
                         type: number
-                  long_matrix:
-                    type: array
-                    description: Same grid, long liquidations only (longs force-sold).
-                    items:
-                      type: array
-                      items:
-                        type: number
-                  short_matrix:
-                    type: array
-                    description: Same grid, short liquidations only (shorts force-bought).
-                    items:
-                      type: array
-                      items:
+                      short:
                         type: number
                   clusters:
                     type: array
@@ -6123,40 +6468,6 @@ paths:
                           type: integer
                         dominant_side:
                           type: string
-                  by_side:
-                    type: object
-                    properties:
-                      long:
-                        type: number
-                      short:
-                        type: number
-                  totals:
-                    type: object
-                    properties:
-                      long_liq_notional:
-                        type: number
-                      short_liq_notional:
-                        type: number
-                      total_notional:
-                        type: number
-                      count:
-                        type: integer
-                  exchanges:
-                    type: object
-                    description: Event count per venue BACKING THIS RESPONSE. Read it instead of assuming
-                      all five tapes contributed — a venue missing here contributed nothing to this window.
-                  generated_at:
-                    type: integer
-                  source:
-                    type: string
-                    enum:
-                    - memory
-                    - archive
-                    - unavailable
-                    description: '''memory'' = served from the live 4h buffer. ''archive'' = read from
-                      the persisted liquidation history. ''unavailable'' = the read FAILED (archive absent
-                      in this process, or the query errored); the payload is a well-formed empty structure
-                      and an `error` field explains the failure. Empty and broken are not the same state.'
                   coverage:
                     type: object
                     description: Recording coverage for the requested window. Only present when source
@@ -6191,15 +6502,107 @@ paths:
                     type: string
                     description: 'Present only when coverage.gaps is non-empty: prose count and total
                       hours of NOT-RECORDING inside this window.'
+                  error:
+                    type: string
+                    description: Present when source == 'unavailable'.
+                  exchanges:
+                    type: object
+                    description: Event count per venue BACKING THIS RESPONSE. Read it instead of assuming
+                      all five tapes contributed — a venue missing here contributed nothing to this window.
+                  exchanges_contributed:
+                    type: array
+                  generated_at:
+                    type: integer
+                  long_matrix:
+                    type: array
+                    description: Same grid, long liquidations only (longs force-sold).
+                    items:
+                      type: array
+                      items:
+                        type: number
+                  matrix:
+                    type: array
+                    description: price_buckets x time_buckets of liquidated notional (USD). Long + short
+                      combined.
+                    items:
+                      type: array
+                      items:
+                        type: number
+                  meta:
+                    type: object
                   note:
                     type: string
                     description: 'Present only when totals.count == 0, and it says WHICH zero this is:
                       a genuinely quiet window, or a failed read.'
-                  error:
-                    type: string
-                    description: Present when source == 'unavailable'.
+                  price_basis:
+                    type: object
+                  price_basis_mix:
+                    type: object
+                  price_bucket_size:
+                    type: number
+                  price_buckets:
+                    type: integer
+                  price_levels:
+                    type: array
+                    items:
+                      type: number
+                    description: Row (price) axis, low to high.
+                  price_max:
+                    type: number
+                  price_min:
+                    type: number
+                  price_range_clip:
+                    type: object
                   public:
                     type: boolean
+                  raw_price_max:
+                    type: number
+                  raw_price_min:
+                    type: number
+                  short_matrix:
+                    type: array
+                    description: Same grid, short liquidations only (shorts force-bought).
+                    items:
+                      type: array
+                      items:
+                        type: number
+                  source:
+                    type: string
+                    enum:
+                    - memory
+                    - archive
+                    - unavailable
+                    description: '''memory'' = served from the live 4h buffer. ''archive'' = read from
+                      the persisted liquidation history. ''unavailable'' = the read FAILED (archive absent
+                      in this process, or the query errored); the payload is a well-formed empty structure
+                      and an `error` field explains the failure. Empty and broken are not the same state.'
+                  symbol:
+                    type: string
+                  time_bucket_minutes:
+                    type: integer
+                    description: Width of one matrix column, derived from the window.
+                  time_buckets:
+                    type: array
+                    items:
+                      type: integer
+                    description: Column (time) axis, epoch ms.
+                  totals:
+                    type: object
+                    properties:
+                      long_liq_notional:
+                        type: number
+                      short_liq_notional:
+                        type: number
+                      total_notional:
+                        type: number
+                      count:
+                        type: integer
+                  venue_counts_withheld:
+                    type: string
+                  venues_retired:
+                    type: object
+                  window_minutes:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -6247,6 +6650,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_heatmap
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/onchain:
     get:
       summary: On-chain DeFi liquidations
@@ -6323,45 +6730,66 @@ paths:
               schema:
                 type: object
                 properties:
-                  symbol:
-                    type: string
-                  move_pct:
-                    type: number
-                  estimated:
-                    type: boolean
-                    description: Always true. This endpoint is a model.
-                  ok:
-                    type: boolean
-                  empty:
-                    type: boolean
-                    description: True when there was nothing to simulate (no positions/OI for this symbol).
-                      Distinct from ok=false, which is a failure.
-                  current_price:
-                    type: number
-                  target_price:
-                    type: number
-                  total_oi_usd:
-                    type: number
-                  whale_positions_used:
-                    type: integer
-                  triggered_notional_usd:
-                    type: number
-                  triggered_whale_usd:
-                    type: number
-                  triggered_count:
-                    type: integer
+                  by_exchange:
+                    type: object
+                    description: 'Per-venue triggered notional: {venue: {long_usd, short_usd, total_usd}}.'
                   cascade_depth:
                     type: number
                   cascade_risk:
                     type: string
-                  by_exchange:
-                    type: object
-                    description: 'Per-venue triggered notional: {venue: {long_usd, short_usd, total_usd}}.'
+                  cascade_status:
+                    type: string
+                  clusters:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        price:
+                          type: number
+                        side:
+                          type: string
+                        notional_usd:
+                          type: number
+                        whale_usd:
+                          type: number
+                        oi_usd:
+                          type: number
+                  current_price:
+                    type: number
+                  empty:
+                    type: boolean
+                    description: True when there was nothing to simulate (no positions/OI for this symbol).
+                      Distinct from ok=false, which is a failure.
+                  estimated:
+                    type: boolean
+                    description: Always true. This endpoint is a model.
                   exchanges:
                     type: array
                     items:
                       type: string
                     description: Venue names contributing to this simulation.
+                  methodology:
+                    type: object
+                    description: Every model assumption, surfaced in the payload.
+                    properties:
+                      estimated:
+                        type: boolean
+                      disclaimer:
+                        type: string
+                      avg_leverage_source:
+                        type: string
+                      cascade_depth_def:
+                        type: string
+                      maint_margin_factor:
+                        type: number
+                      oi_leverage_bands:
+                        type: object
+                      oi_source:
+                        type: string
+                      whale_source:
+                        type: string
+                  move_pct:
+                    type: number
                   nearest_long_wall:
                     type: object
                     description: Nearest modelled long liquidation wall, or null when none is derivable.
@@ -6381,21 +6809,10 @@ paths:
                         type: number
                       source:
                         type: string
-                  clusters:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        price:
-                          type: number
-                        side:
-                          type: string
-                        notional_usd:
-                          type: number
-                        whale_usd:
-                          type: number
-                        oi_usd:
-                          type: number
+                  oi_band_status:
+                    type: object
+                  ok:
+                    type: boolean
                   realized_context:
                     type: object
                     description: REAL executed liquidations shown alongside the model for scale. Context
@@ -6422,27 +6839,35 @@ paths:
                         type: object
                       note:
                         type: string
-                  methodology:
-                    type: object
-                    description: Every model assumption, surfaced in the payload.
-                    properties:
-                      estimated:
-                        type: boolean
-                      disclaimer:
-                        type: string
-                      avg_leverage_source:
-                        type: string
-                      cascade_depth_def:
-                        type: string
-                      maint_margin_factor:
-                        type: number
-                      oi_leverage_bands:
-                        type: object
-                      oi_source:
-                        type: string
-                      whale_source:
-                        type: string
+                  served_from:
+                    type: string
+                  study_age_s:
+                    type: integer
+                  study_refresh_interval_s:
+                    type: integer
+                  symbol:
+                    type: string
+                  target_price:
+                    type: number
+                  total_oi_usd:
+                    type: number
+                  triggered_count:
+                    type: integer
+                  triggered_notional_usd:
+                    type: number
+                  triggered_whale_usd:
+                    type: number
                   ts:
+                    type: integer
+                  whale_coverage_note:
+                    type: string
+                  whale_positions_dropped_no_notional:
+                    type: integer
+                  whale_positions_used:
+                    type: integer
+                  whale_wallets_24h:
+                    type: integer
+                  whale_window_s:
                     type: integer
         '429':
           description: Rate limit exceeded
@@ -6482,6 +6907,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_simulate
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/symbols:
     get:
       summary: Liquidation tape inventory
@@ -6499,6 +6928,18 @@ paths:
               schema:
                 type: object
                 properties:
+                  error:
+                    type: string
+                    description: Present only when source == 'unavailable'.
+                  generated_at:
+                    type: integer
+                  returned:
+                    type: integer
+                  source:
+                    type: string
+                    enum:
+                    - archive
+                    - unavailable
                   symbols:
                     type: array
                     description: Ordered by event count, descending.
@@ -6515,8 +6956,6 @@ paths:
                           type: integer
                         total_notional:
                           type: number
-                  returned:
-                    type: integer
                   total_symbols:
                     type: integer
                     description: Symbols on the tape before the limit was applied.
@@ -6525,16 +6964,8 @@ paths:
                     items:
                       type: string
                     description: Distinct exchanges present in the archive.
-                  generated_at:
-                    type: integer
-                  source:
-                    type: string
-                    enum:
-                    - archive
-                    - unavailable
-                  error:
-                    type: string
-                    description: Present only when source == 'unavailable'.
+                  venues_retired:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -6567,6 +6998,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_symbols
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/live-swaps/export:
     get:
       summary: Export live swaps
@@ -6652,8 +7087,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_live_swaps_recent
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/live-swaps/status:
@@ -6706,8 +7141,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_live_swaps_status
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/altseason:
@@ -6777,6 +7212,23 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  candles:
+                    type: array
+                  count:
+                    type: integer
+                  fetched_at:
+                    type: integer
+                  interval:
+                    type: string
+                  meta:
+                    type: object
+                  pair:
+                    type: string
+                  source:
+                    type: string
+                  symbol:
+                    type: string
         '429':
           description: Rate limit exceeded
         '400':
@@ -6830,6 +7282,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_candles
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/dominance:
     get:
       summary: BTC dominance
@@ -6867,6 +7323,15 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  meta:
+                    type: object
+                  volatility:
+                    type: object
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -6889,6 +7354,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_indices
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/volatility:
     get:
       summary: Volatility index
@@ -6900,6 +7369,17 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  btc:
+                    type: object
+                  eth:
+                    type: object
+                  updated:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -6922,6 +7402,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_volatility
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mempool/pending:
     get:
       summary: Pending mempool swaps
@@ -6970,8 +7454,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mempool_pending
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mempool/stats:
@@ -7028,8 +7512,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mempool_stats
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood:
@@ -7043,6 +7527,23 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  components:
+                    type: object
+                  gauge_zone:
+                    type: string
+                  label:
+                    type: string
+                  prev_score:
+                    type: number
+                  score:
+                    type: number
+                  symbol:
+                    type: string
+                  trend:
+                    type: string
+                  updated_at:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -7072,6 +7573,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood/history:
     get:
       summary: Mood history
@@ -7083,6 +7588,15 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  days:
+                    type: integer
+                  history:
+                    type: array
+                  symbol:
+                    type: string
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -7117,6 +7631,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood_history
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood/overview:
     get:
       summary: Mood overview
@@ -7129,6 +7647,15 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  meta:
+                    type: object
+                  symbols:
+                    type: array
+                  total:
+                    type: integer
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -7151,6 +7678,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood_overview
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/accuracy:
     get:
       summary: News classifier accuracy
@@ -7162,6 +7693,36 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  by_state:
+                    type: object
+                  combined_accuracy:
+                    type: object
+                  combined_formula_versions:
+                    type: object
+                  daily_trend:
+                    type: array
+                  days:
+                    type: integer
+                  dropout:
+                    type: object
+                  method:
+                    type: string
+                  n_is:
+                    type: string
+                  note: {}
+                  recent_snapshots:
+                    type: array
+                  status:
+                    type: string
+                  timeframe_accuracy:
+                    type: object
+                  updated:
+                    type: integer
+                  window:
+                    type: object
+                  yield_accuracy:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -7184,6 +7745,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_accuracy
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/archive:
     get:
       summary: News archive (paginated)
@@ -7200,6 +7765,36 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  count:
+                    type: integer
+                  coverage:
+                    type: object
+                  empty_reason: {}
+                  events:
+                    type: array
+                  filters:
+                    type: object
+                  has_more:
+                    type: boolean
+                  max_page_limit:
+                    type: integer
+                  next_cursor:
+                    type: string
+                  page_limit:
+                    type: integer
+                  status:
+                    type: string
+                  total_is_capped:
+                    type: boolean
+                  total_matching:
+                    type: integer
+                  updated:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -7277,6 +7872,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_archive
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/coverage:
     get:
       summary: News archive coverage
@@ -7290,6 +7889,31 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  by_category:
+                    type: object
+                  by_source:
+                    type: object
+                  newest_date:
+                    type: string
+                  newest_ts:
+                    type: integer
+                  note:
+                    type: string
+                  oldest_date:
+                    type: string
+                  oldest_ts:
+                    type: integer
+                  span_days:
+                    type: number
+                  total_rows:
+                    type: integer
+                  updated:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -7312,6 +7936,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_coverage
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/fear-greed:
     get:
       summary: Fear & Greed index
@@ -7323,6 +7951,33 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  attribution:
+                    type: string
+                  attribution_url:
+                    type: string
+                  avg_7d:
+                    type: number
+                  classification:
+                    type: string
+                  meta:
+                    type: object
+                  source:
+                    type: string
+                  source_ts:
+                    type: integer
+                  stale:
+                    type: boolean
+                  trend_7d:
+                    type: string
+                  ts:
+                    type: integer
+                  updated:
+                    type: integer
+                  value:
+                    type: integer
+                  values_7d:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -7345,6 +8000,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_fear_greed
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/general:
     get:
       summary: General news
@@ -7357,6 +8016,29 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  archive_endpoint:
+                    type: string
+                  categories:
+                    type: object
+                  count:
+                    type: integer
+                  events:
+                    type: array
+                  excluded_categories:
+                    type: array
+                  limit_applied:
+                    type: integer
+                  truncated:
+                    type: boolean
+                  updated:
+                    type: integer
+                  window_hours:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -7404,6 +8086,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_general
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/impact:
     get:
       summary: News impact
@@ -7415,6 +8101,35 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  active_alerts:
+                    type: array
+                  active_count:
+                    type: integer
+                  confidence_modifier:
+                    type: number
+                  market_state:
+                    type: string
+                  net_sentiment:
+                    type: string
+                  news_direction:
+                    type: integer
+                  news_modifier:
+                    type: number
+                  news_severity:
+                    type: number
+                  treasury_yield:
+                    type: object
+                  updated:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
+                  yield_direction:
+                    type: integer
+                  yield_modifier:
+                    type: number
         '429':
           description: Rate limit exceeded
         '400':
@@ -7437,6 +8152,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_impact
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/treasury-yield:
     get:
       summary: Treasury yields
@@ -7448,6 +8167,31 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  attribution:
+                    type: string
+                  change_7d:
+                    type: number
+                  change_90d:
+                    type: number
+                  daily_change:
+                    type: number
+                  history:
+                    type: array
+                  score:
+                    type: number
+                  signal:
+                    type: string
+                  source:
+                    type: string
+                  tenor:
+                    type: string
+                  ts:
+                    type: integer
+                  updated:
+                    type: integer
+                  yield_20y:
+                    type: number
         '429':
           description: Rate limit exceeded
         '400':
@@ -7470,6 +8214,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_treasury_yield
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/trump:
     get:
       summary: Trump policy news
@@ -7481,6 +8229,19 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  count:
+                    type: integer
+                  events:
+                    type: array
+                  signal_types:
+                    type: object
+                  updated:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -7516,6 +8277,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_trump
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/node/health:
     get:
       summary: Node health
@@ -7555,8 +8320,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_node_health
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/node/{chain}/deployer/{address}:
@@ -8140,6 +8905,19 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  base_fee:
+                    type: number
+                  block:
+                    type: string
+                  fast:
+                    type: number
+                  proposed:
+                    type: number
+                  safe:
+                    type: number
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -8162,6 +8940,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_gas
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/liquidations/coverage:
     get:
       summary: On-chain liquidation coverage
@@ -8177,11 +8959,15 @@ paths:
               schema:
                 type: object
                 properties:
+                  meta:
+                    type: object
                   rows:
                     type: array
+                  sources_pending_licence_review:
+                    type: array
+                  store_present:
+                    type: boolean
                   totals:
-                    type: object
-                  meta:
                     type: object
         '429':
           description: Rate limit exceeded
@@ -8205,6 +8991,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_liquidations_coverage
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/liquidations/history:
     get:
       summary: On-chain liquidation events
@@ -8414,12 +9204,18 @@ paths:
               schema:
                 type: object
                 properties:
+                  meta:
+                    type: object
                   onchain:
                     type: object
-                  updated:
-                    type: integer
                   public:
                     type: boolean
+                  updated:
+                    type: integer
+                  withheld:
+                    type: array
+                  withheld_sources:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -8442,6 +9238,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_metrics
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/stablecoins:
     get:
       summary: Stablecoin supply
@@ -8882,8 +9682,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_performance
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/performance/export:
@@ -9042,8 +9842,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_performance_track_record
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/plans:
@@ -9091,8 +9891,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_plans
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/projection:
@@ -9172,8 +9972,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_projection
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/projection/screener:
@@ -9187,7 +9987,40 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                type: array
+                items:
+                  type: object
+                  properties:
+                    symbol:
+                      type: string
+                    direction:
+                      type: string
+                    probability_bullish:
+                      type: integer
+                    probability_bearish:
+                      type: integer
+                    signal_strength:
+                      type: string
+                    robustness:
+                      type: integer
+                    count_matches:
+                      type: integer
+                    avg_correlation:
+                      type: number
+                    current_price:
+                      type: number
+                    horizon_days:
+                      type: integer
+                    projected_pct_bull:
+                      type: number
+                    projected_pct_bear:
+                      type: number
+                    score:
+                      type: integer
+                    ts:
+                      type: integer
+                    operator_position_disclosure:
+                      type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -9216,6 +10049,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_projection_screener
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/rankings:
     get:
       summary: Symbol rankings
@@ -9228,6 +10065,19 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  contrarian:
+                    type: array
+                  funding_arb:
+                    type: array
+                  momentum:
+                    type: array
+                  seasonal_plays:
+                    type: array
+                  updated_at:
+                    type: integer
+                  whale_favorites:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -9256,6 +10106,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_rankings
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/regimes/history:
     get:
       summary: Regime history
@@ -9496,7 +10350,25 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                type: array
+                items:
+                  type: object
+                  properties:
+                    symbol:
+                      type: string
+                    price:
+                      type: number
+                    composite_score:
+                      type: number
+                    state:
+                      type: string
+                    signal: {}
+                    strength:
+                      type: integer
+                    indicators:
+                      type: object
+                    ts:
+                      type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -9525,6 +10397,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/scanner/obs/extremes:
     get:
       summary: Order-block extremes
@@ -9535,7 +10411,26 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                type: array
+                items:
+                  type: object
+                  properties:
+                    symbol:
+                      type: string
+                    price:
+                      type: number
+                    composite_score:
+                      type: number
+                    state:
+                      type: string
+                    signal:
+                      type: string
+                    strength:
+                      type: integer
+                    indicators:
+                      type: object
+                    ts:
+                      type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -9564,6 +10459,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs_extremes
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/scanner/obs/symbol:
     get:
       summary: Order-block detail
@@ -9575,6 +10474,26 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  composite_score:
+                    type: number
+                  history:
+                    type: array
+                  indicators:
+                    type: object
+                  multi_timeframe:
+                    type: object
+                  price:
+                    type: number
+                  signal: {}
+                  state:
+                    type: string
+                  strength:
+                    type: integer
+                  symbol:
+                    type: string
+                  ts:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -9604,6 +10523,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs_symbol
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener:
     get:
       summary: Multi-factor screener
@@ -9617,6 +10540,17 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  direction:
+                    type: string
+                  sort_by:
+                    type: string
+                  symbols:
+                    type: array
+                  total_count:
+                    type: integer
+                  updated_at:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -9645,6 +10579,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener/rankings:
     get:
       summary: Screener rankings
@@ -9657,6 +10595,19 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  contrarian:
+                    type: array
+                  funding_arb:
+                    type: array
+                  momentum:
+                    type: array
+                  seasonal_plays:
+                    type: array
+                  updated_at:
+                    type: integer
+                  whale_favorites:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -9685,6 +10636,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener_rankings
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener/symbol:
     get:
       summary: Screener detail
@@ -9697,6 +10652,35 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  components:
+                    type: object
+                  composite_score:
+                    type: number
+                  direction:
+                    type: string
+                  grade:
+                    type: string
+                  operator_position_disclosure:
+                    type: object
+                  partial_data:
+                    type: boolean
+                  price:
+                    type: number
+                  rank:
+                    type: integer
+                  score_history:
+                    type: array
+                  signal:
+                    type: string
+                  symbol:
+                    type: string
+                  symbol_full:
+                    type: string
+                  total_symbols:
+                    type: integer
+                  updated_at:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -9726,6 +10710,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener_symbol
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality:
     get:
       summary: Seasonality summary
@@ -9737,6 +10725,25 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  best_months:
+                    type: array
+                  current_month:
+                    type: object
+                  data_years:
+                    type: integer
+                  months:
+                    type: array
+                  symbol:
+                    type: string
+                  timeframe:
+                    type: string
+                  updated:
+                    type: integer
+                  worst_months:
+                    type: array
+                  yearly_returns:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -9766,6 +10773,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/dow:
     get:
       summary: Day-of-week seasonality
@@ -9777,6 +10788,19 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  best_day:
+                    type: object
+                  days:
+                    type: array
+                  symbol:
+                    type: string
+                  timeframe:
+                    type: string
+                  updated:
+                    type: integer
+                  worst_day:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -9806,6 +10830,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_dow
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/heatmap:
     get:
       summary: Seasonality heatmap
@@ -9817,6 +10845,19 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  data:
+                    type: object
+                  months:
+                    type: array
+                  symbols:
+                    type: array
+                  timeframe:
+                    type: string
+                  updated:
+                    type: integer
+                  win_rates:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -9846,6 +10887,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_heatmap
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/overlay:
     get:
       summary: Seasonality overlay
@@ -9857,6 +10902,19 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  cumulative_ytd:
+                    type: object
+                  months:
+                    type: array
+                  symbol:
+                    type: string
+                  timeframe:
+                    type: string
+                  updated:
+                    type: integer
+                  years:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -9886,6 +10944,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_overlay
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/quarters:
     get:
       summary: Quarterly seasonality
@@ -9897,6 +10959,21 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  best_quarter:
+                    type: object
+                  current_quarter:
+                    type: object
+                  quarters:
+                    type: array
+                  symbol:
+                    type: string
+                  timeframe:
+                    type: string
+                  updated:
+                    type: integer
+                  worst_quarter:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -9926,6 +11003,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_quarters
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/rankings:
     get:
       summary: Seasonality rankings
@@ -9937,6 +11018,13 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  months:
+                    type: array
+                  timeframe:
+                    type: string
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -9965,6 +11053,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_rankings
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/sentiment:
     get:
       summary: Sentiment snapshot
@@ -10058,6 +11150,31 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  backtest:
+                    type: object
+                  caveats:
+                    type: array
+                  compute_ms:
+                    type: integer
+                  generated_at:
+                    type: integer
+                  n_scanned:
+                    type: integer
+                  n_triggered:
+                    type: integer
+                  n_triggered_validated:
+                    type: integer
+                  posture:
+                    type: string
+                  regime:
+                    type: object
+                  spec:
+                    type: object
+                  trigger_definition:
+                    type: string
+                  triggered:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -10087,6 +11204,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/capitulation/backtest:
     get:
       summary: Capitulation backtest
@@ -10099,6 +11220,31 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  caveats:
+                    type: array
+                  costs:
+                    type: string
+                  cutoffs:
+                    type: object
+                  dataset:
+                    type: object
+                  generated_at:
+                    type: integer
+                  kind:
+                    type: string
+                  meta:
+                    type: object
+                  per_symbol_test_E1_L5:
+                    type: object
+                  profiles:
+                    type: array
+                  shuffle_control:
+                    type: object
+                  threshold_grid_E1_L5_test:
+                    type: array
+                  trigger:
+                    type: string
         '429':
           description: Rate limit exceeded
         '400':
@@ -10128,6 +11274,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation_backtest
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/capitulation/walkforward:
     get:
       summary: Capitulation walk-forward
@@ -10141,6 +11291,33 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  accrual_start_ts:
+                    type: integer
+                  backfill_boundary_ts:
+                    type: integer
+                  generated_at:
+                    type: integer
+                  kind:
+                    type: string
+                  n_backfill:
+                    type: integer
+                  n_open:
+                    type: integer
+                  n_resolved:
+                    type: integer
+                  n_trades:
+                    type: integer
+                  n_void:
+                    type: integer
+                  notes:
+                    type: array
+                  posture:
+                    type: string
+                  profiles:
+                    type: array
+                  trades:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -10170,6 +11347,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation_walkforward
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/performance:
     get:
       summary: Signal performance
@@ -10237,8 +11418,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_performance
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/recent:
@@ -10333,8 +11514,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_recent
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/{signal_id}/outcome:
@@ -10945,18 +12126,36 @@ paths:
                     type: integer
                     description: When the response was assembled -- never the data time (see `updated`,
                       `freshness`).
-                  updated:
-                    type: integer
-                    description: The datum time (freshness.source_timestamp); absent when nothing measured
-                      dates the body.
-                  venue:
+                  basis:
                     type: string
-                  scope:
-                    type: string
-                  licence_class:
-                    type: string
-                  rights:
+                  cohorts:
+                    type: array
+                  coverage:
                     type: object
+                    description: 'The complete-sweep snapshot''s own coverage, exactly as recorded; before
+                      the first snapshot {state: missing, missing_reason: no_snapshot}.'
+                    properties:
+                      state:
+                        type: string
+                      complete:
+                        type: boolean
+                      watchlist_size:
+                        type: integer
+                      wallets_scanned_in_window:
+                        type: integer
+                      coverage_ratio:
+                        type: number
+                      missing_reason:
+                        type: string
+                  data_mode:
+                    type: string
+                    nullable: true
+                    enum:
+                    - live
+                    - backfilled
+                    - null
+                    description: live or backfilled; null where no capture backs the body (e.g. /validation,
+                      which is derived, before its first run).
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
@@ -10988,20 +12187,7 @@ paths:
                         type: string
                       last_refresh_error:
                         type: object
-                  versions:
-                    type: object
-                  data_mode:
-                    type: string
-                    nullable: true
-                    enum:
-                    - live
-                    - backfilled
-                    - null
-                    description: live or backfilled; null where no capture backs the body (e.g. /validation,
-                      which is derived, before its first run).
-                  basis:
-                    type: string
-                  note:
+                  licence_class:
                     type: string
                   meta:
                     type: object
@@ -11022,27 +12208,22 @@ paths:
                         - unknown
                       stale:
                         type: boolean
-                  cohorts:
-                    type: array
+                  note:
+                    type: string
                   prereg_sha256:
                     type: string
-                  coverage:
+                  rights:
                     type: object
-                    description: 'The complete-sweep snapshot''s own coverage, exactly as recorded; before
-                      the first snapshot {state: missing, missing_reason: no_snapshot}.'
-                    properties:
-                      state:
-                        type: string
-                      complete:
-                        type: boolean
-                      watchlist_size:
-                        type: integer
-                      wallets_scanned_in_window:
-                        type: integer
-                      coverage_ratio:
-                        type: number
-                      missing_reason:
-                        type: string
+                  scope:
+                    type: string
+                  updated:
+                    type: integer
+                    description: The datum time (freshness.source_timestamp); absent when nothing measured
+                      dates the body.
+                  venue:
+                    type: string
+                  versions:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -11075,6 +12256,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_smart_money_cohorts
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/smart-money/flow:
     get:
       summary: Smart-money flow
@@ -11815,18 +13000,19 @@ paths:
                     type: integer
                     description: When the response was assembled -- never the data time (see `updated`,
                       `freshness`).
-                  updated:
-                    type: integer
-                    description: The datum time (freshness.source_timestamp); absent when nothing measured
-                      dates the body.
-                  venue:
+                  basis:
                     type: string
-                  scope:
-                    type: string
-                  licence_class:
-                    type: string
-                  rights:
+                  cohort_status:
                     type: object
+                  data_mode:
+                    type: string
+                    nullable: true
+                    enum:
+                    - live
+                    - backfilled
+                    - null
+                    description: live or backfilled; null where no capture backs the body (e.g. /validation,
+                      which is derived, before its first run).
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
@@ -11858,20 +13044,7 @@ paths:
                         type: string
                       last_refresh_error:
                         type: object
-                  versions:
-                    type: object
-                  data_mode:
-                    type: string
-                    nullable: true
-                    enum:
-                    - live
-                    - backfilled
-                    - null
-                    description: live or backfilled; null where no capture backs the body (e.g. /validation,
-                      which is derived, before its first run).
-                  basis:
-                    type: string
-                  note:
+                  licence_class:
                     type: string
                   meta:
                     type: object
@@ -11892,14 +13065,26 @@ paths:
                         - unknown
                       stale:
                         type: boolean
+                  note:
+                    type: string
                   prereg:
-                    type: object
-                  studies:
-                    type: array
-                  cohort_status:
                     type: object
                   published_failures:
                     type: array
+                  rights:
+                    type: object
+                  scope:
+                    type: string
+                  studies:
+                    type: array
+                  updated:
+                    type: integer
+                    description: The datum time (freshness.source_timestamp); absent when nothing measured
+                      dates the body.
+                  venue:
+                    type: string
+                  versions:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -11932,6 +13117,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_smart_money_validation
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/smart-stop:
     get:
       summary: Smart stop levels
@@ -12311,8 +13500,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stats
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stats/calls:
@@ -12335,8 +13524,9 @@ paths:
                 type: object
                 description: calls is null whenever state is not 'ok'.
                 properties:
-                  state:
+                  as_of:
                     type: string
+                    nullable: true
                   calls:
                     type: integer
                     nullable: true
@@ -12348,9 +13538,8 @@ paths:
                       type: string
                   seed_is_a_floor:
                     type: boolean
-                  as_of:
+                  state:
                     type: string
-                    nullable: true
                 example:
                   state: ok
                   calls: 137708
@@ -12384,6 +13573,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stats_calls
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks:
     get:
       summary: Stock universe
@@ -12422,8 +13615,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/activist-alerts:
@@ -12470,8 +13663,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_activist_alerts
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/congress/{ticker}:
@@ -12569,8 +13762,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_insider_clusters
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/insiders/{ticker}:
@@ -12698,8 +13891,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_new_listings
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/rankings:
@@ -12748,8 +13941,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_rankings
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/short-interest/{ticker}:
@@ -12835,8 +14028,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_stats
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/tokenized:
@@ -12881,8 +14074,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_tokenized
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/universe:
@@ -12923,8 +14116,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_universe
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/whale-signals:
@@ -12973,8 +14166,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_whale_signals
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/whales/{ticker}:
@@ -13071,8 +14264,12 @@ paths:
                 properties:
                   count:
                     type: integer
+                  meta:
+                    type: object
                   positions:
                     type: array
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -13104,6 +14301,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_active
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/equity:
     get:
       summary: Strategy equity curve
@@ -13120,18 +14321,22 @@ paths:
                 properties:
                   account:
                     type: integer
-                  initial_equity:
-                    type: number
                   current_equity:
                     type: number
+                  curve:
+                    type: array
+                  initial_equity:
+                    type: number
+                  max_drawdown_percent:
+                    type: number
+                  meta:
+                    type: object
                   total_adjustments:
                     type: number
                   total_pnl_usdt:
                     type: number
-                  max_drawdown_percent:
-                    type: number
-                  curve:
-                    type: array
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -13163,6 +14368,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_equity
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/signals:
     get:
       summary: Strategy signal-filter stats
@@ -13176,12 +14385,14 @@ paths:
               schema:
                 type: object
                 properties:
+                  meta:
+                    type: object
+                  signal_types:
+                    type: object
                   total_signals:
                     type: integer
                   unique_signal_types:
                     type: integer
-                  signal_types:
-                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -13204,6 +14415,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_signals
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/stats:
     get:
       summary: Strategy statistics
@@ -13219,18 +14434,58 @@ paths:
                 properties:
                   account:
                     type: integer
-                  total_trades:
+                  account_growth_percent:
+                    type: number
+                  adjustments:
+                    type: array
+                  avg_duration_hours:
+                    type: number
+                  avg_leverage:
+                    type: number
+                  avg_loser_pnl:
+                    type: number
+                  avg_pnl_percent:
+                    type: number
+                  avg_pnl_usdt:
+                    type: number
+                  avg_winner_pnl:
+                    type: number
+                  best_trade:
+                    type: object
+                  current_equity:
+                    type: number
+                  initial_equity:
+                    type: number
+                  losing_trades:
                     type: integer
-                  win_rate:
-                    type: number
-                  profit_factor:
-                    type: number
                   max_drawdown_portfolio:
                     type: number
-                  current_equity:
+                  max_drawdown_trade:
+                    type: number
+                  meta:
+                    type: object
+                  profit_factor:
+                    type: number
+                  total_adjustments:
+                    type: number
+                  total_pnl_percent:
                     type: number
                   total_pnl_usdt:
                     type: number
+                  total_trades:
+                    type: integer
+                  trades_by_direction:
+                    type: object
+                  trades_by_exit_reason:
+                    type: object
+                  updated:
+                    type: integer
+                  win_rate:
+                    type: number
+                  winning_trades:
+                    type: integer
+                  worst_trade:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -13262,6 +14517,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_stats
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/symbols:
     get:
       summary: Per-symbol strategy stats
@@ -13273,6 +14532,19 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  account:
+                    type: integer
+                  all_symbols:
+                    type: object
+                  meta:
+                    type: object
+                  top_10:
+                    type: array
+                  total_symbols:
+                    type: integer
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -13304,6 +14576,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_symbols
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/trades:
     get:
       summary: Strategy trades
@@ -13317,6 +14593,21 @@ paths:
                 type: object
                 description: Trade rows with id, symbol, direction, entry/exit prices and times, pnl,
                   pnl_percent, exit_reason.
+                properties:
+                  account:
+                    type: integer
+                  limit:
+                    type: integer
+                  meta:
+                    type: object
+                  offset:
+                    type: integer
+                  total:
+                    type: integer
+                  trades:
+                    type: array
+                  updated:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -13361,6 +14652,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_trades
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/symbols:
     get:
       summary: Tracked symbols
@@ -13409,8 +14704,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_symbols
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/symbols/available:
@@ -13677,6 +14972,13 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  interval:
+                    type: string
+                  symbols:
+                    type: array
+                  updated_at:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -13705,6 +15007,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_ta_screener
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/ta/technicals:
     get:
       summary: Technical indicators
@@ -13716,6 +15022,31 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  bollinger:
+                    type: object
+                  dpo:
+                    type: object
+                  interval:
+                    type: string
+                  macd:
+                    type: object
+                  market_mood:
+                    type: object
+                  obos:
+                    type: string
+                  price:
+                    type: object
+                  rsi:
+                    type: object
+                  signals:
+                    type: array
+                  speed:
+                    type: object
+                  symbol:
+                    type: string
+                  ts:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -13745,6 +15076,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_ta_technicals
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/top-traders/history:
     get:
       summary: One top trader's closed episodes in a window
@@ -14012,13 +15347,49 @@ paths:
                 description: series is keyed by venue; coverage reports which venues were readable for
                   the window.
                 properties:
+                  aggregate:
+                    type: object
+                  atom_minutes:
+                    type: integer
+                  base_asset:
+                    type: string
+                  bucket_ms:
+                    type: integer
+                  buckets:
+                    type: array
+                  coverage:
+                    type: object
+                  exchanges:
+                    type: object
+                  from_ts:
+                    type: integer
+                  generated_at:
+                    type: integer
+                  measurement:
+                    type: string
+                  measurement_note:
+                    type: string
+                  meta:
+                    type: object
+                  points:
+                    type: integer
+                  public:
+                    type: boolean
+                  quote_currencies:
+                    type: array
+                  retention:
+                    type: object
+                  series:
+                    type: object
+                  source:
+                    type: string
                   symbol:
                     type: string
                   timeframe:
                     type: string
-                  series:
-                    type: object
-                  coverage:
+                  to_ts:
+                    type: integer
+                  totals:
                     type: object
         '429':
           description: Rate limit exceeded
@@ -14080,6 +15451,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/aggregate:
     get:
       summary: Aggregate volume series
@@ -14095,13 +15470,47 @@ paths:
               schema:
                 type: object
                 properties:
+                  aggregate:
+                    type: object
+                  atom_minutes:
+                    type: integer
+                  base_asset:
+                    type: string
+                  bucket_ms:
+                    type: integer
+                  buckets:
+                    type: array
+                  coverage:
+                    type: object
+                  from_ts:
+                    type: integer
+                  generated_at:
+                    type: integer
+                  measurement:
+                    type: string
+                  measurement_note:
+                    type: string
+                  meta:
+                    type: object
+                  points:
+                    type: integer
+                  public:
+                    type: boolean
+                  quote_currencies:
+                    type: array
+                  retention:
+                    type: object
+                  series:
+                    type: array
+                  source:
+                    type: string
                   symbol:
                     type: string
                   timeframe:
                     type: string
-                  series:
-                    type: array
-                  coverage:
+                  to_ts:
+                    type: integer
+                  totals:
                     type: object
         '429':
           description: Rate limit exceeded
@@ -14163,6 +15572,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_aggregate
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/exchange:
     get:
       summary: Single-venue volume series
@@ -14268,9 +15681,26 @@ paths:
               schema:
                 type: object
                 properties:
-                  venues:
+                  coincidence_spread_seconds: {}
+                  coincident_dark_venues:
+                    type: integer
+                  collector_stall:
+                    type: boolean
+                  dark_venues:
+                    type: array
+                  dropped_rows:
+                    type: integer
+                  now:
+                    type: number
+                  queue_depth:
+                    type: integer
+                  retention:
                     type: object
                   status:
+                    type: string
+                  venues:
+                    type: object
+                  verdict:
                     type: string
         '429':
           description: Rate limit exceeded
@@ -14294,6 +15724,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_health
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/symbols:
     get:
       summary: Symbols held in the volume archive
@@ -14308,10 +15742,32 @@ paths:
               schema:
                 type: object
                 properties:
-                  symbols:
-                    type: array
+                  atom_minutes:
+                    type: integer
                   count:
                     type: integer
+                  generated_at:
+                    type: integer
+                  measurement:
+                    type: string
+                  recording:
+                    type: boolean
+                  retention:
+                    type: object
+                  returned:
+                    type: integer
+                  symbols:
+                    type: array
+                  timeframes:
+                    type: array
+                  total_symbols:
+                    type: integer
+                  universe:
+                    type: array
+                  venues:
+                    type: array
+                  venues_with_data:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -14334,6 +15790,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_symbols
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/wallet/{address}/positions:
     get:
       summary: Wallet positions
@@ -14585,8 +16045,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_wallets_relationships_stats
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/wallets/{address}/relationships:
@@ -14732,8 +16192,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whale_consensus
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whale-events:
@@ -14903,14 +16363,21 @@ paths:
               schema:
                 type: object
                 properties:
-                  ok:
+                  caveats:
+                    type: array
+                    items:
+                      type: string
+                  gated:
                     type: boolean
-                  ts:
-                    type: integer
+                    description: true for anonymous (top-10 only); full list at Trader+.
+                  hl_coverage:
+                    type: object
                   min_notional:
                     type: number
                   n_symbols:
                     type: integer
+                  ok:
+                    type: boolean
                   symbols:
                     type: array
                     items:
@@ -14958,13 +16425,8 @@ paths:
                           type: number
                           nullable: true
                           description: '|skew|*conc_top3*min(lev/20,1); null if no leverage.'
-                  gated:
-                    type: boolean
-                    description: true for anonymous (top-10 only); full list at Trader+.
-                  caveats:
-                    type: array
-                    items:
-                      type: string
+                  ts:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -14994,6 +16456,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_crowding
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/dex-positions:
     get:
       summary: On-chain perp positions
@@ -15005,6 +16471,21 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  count:
+                    type: integer
+                  filters:
+                    type: object
+                  ok:
+                    type: boolean
+                  positions:
+                    type: array
+                  total:
+                    type: integer
+                  ts:
+                    type: integer
+                  venues:
+                    type: array
         '429':
           description: Rate limit exceeded
         '400':
@@ -15049,6 +16530,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_dex_positions
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/events:
     get:
       summary: Whale events
@@ -15062,11 +16547,30 @@ paths:
               schema:
                 type: object
                 properties:
-                  events:
-                    type: array
+                  chain:
+                    type: string
                   count:
                     type: integer
+                  distinct:
+                    type: integer
+                  events:
+                    type: array
+                  hours:
+                    type: integer
+                  limit:
+                    type: integer
+                  max_id:
+                    type: integer
+                  meta:
+                    type: object
+                  next_url:
+                    type: string
+                  offset:
+                    type: integer
+                  since_id: {}
                   total:
+                    type: integer
+                  updated:
                     type: integer
         '429':
           description: Rate limit exceeded
@@ -15120,6 +16624,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_events
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/market-makers:
     get:
       summary: Market-maker wallets
@@ -15131,6 +16639,15 @@ paths:
             application/json:
               schema:
                 type: object
+                properties:
+                  count:
+                    type: integer
+                  market_makers:
+                    type: array
+                  meta:
+                    type: object
+                  window_days:
+                    type: integer
         '429':
           description: Rate limit exceeded
         '400':
@@ -15159,6 +16676,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_market_makers
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/summary:
     get:
       summary: Whale activity summary
@@ -15173,6 +16694,26 @@ paths:
                 properties:
                   chains:
                     type: object
+                  critical_24h:
+                    type: integer
+                  net_flows:
+                    type: object
+                  source_count:
+                    type: integer
+                  source_notes:
+                    type: object
+                  sources_contributing:
+                    type: array
+                  sources_silent:
+                    type: array
+                  sources_stale:
+                    type: array
+                  top_movers:
+                    type: array
+                  updated:
+                    type: integer
+                  volume_basis:
+                    type: string
         '429':
           description: Rate limit exceeded
         '400':
@@ -15195,6 +16736,10 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_summary
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/universe:
     get:
       summary: Whale universe stats
@@ -15252,7 +16797,7 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_universe
-      x-response-measured: '2026-10-08'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-08,
+      x-response-measured: '2026-10-09'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-09,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
