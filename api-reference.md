@@ -676,10 +676,9 @@ Response fields:
 | `corroboration` | object |  |
 | `limited` | boolean |  |
 | `min_spread_filter` | number |  |
-| `note` | string |  |
 | `opportunities` | array |  |
 | `public` | boolean |  |
-| `scan_refusal` | object |  |
+| `scan_refusal` | — |  |
 | `scan_state` | string |  |
 | `scanned_symbols` | integer |  |
 | `ts` | integer |  |
@@ -1388,7 +1387,7 @@ Historical funding rates (Binance).
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
-| `symbol` | query | no | Perpetual symbol. Default `BTCUSDT`. |
+| `symbol` | query | no | Base symbol (BTC, btc, BTCUSDT and BTC-USDT all resolve to the stored BTCUSDT; echoed back as `symbol` and `resolved_symbol`). Unknown symbols answer 400 symbol_not_covered with the covered list. Default `BTC`. |
 | `days` | query | no | Days of history. Default `30`. |
 
 Response fields:
@@ -1398,6 +1397,7 @@ Response fields:
 | `count` | integer |  |
 | `data` | array |  |
 | `days` | integer |  |
+| `resolved_symbol` | string |  |
 | `symbol` | string |  |
 
 ```bash
@@ -1413,7 +1413,7 @@ Historical long/short account ratio (Binance).
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
-| `symbol` | query | no | Perpetual symbol. Default `BTCUSDT`. |
+| `symbol` | query | no | Base symbol (BTC, btc, BTCUSDT and BTC-USDT all resolve to the stored BTCUSDT; echoed back as `symbol` and `resolved_symbol`). Unknown symbols answer 400 symbol_not_covered with the covered list. Default `BTC`. |
 | `days` | query | no | Days of history. Default `30`. |
 
 Response fields:
@@ -1423,6 +1423,7 @@ Response fields:
 | `count` | integer |  |
 | `data` | array |  |
 | `days` | integer |  |
+| `resolved_symbol` | string |  |
 | `symbol` | string |  |
 
 ```bash
@@ -1454,7 +1455,7 @@ Historical open interest (Binance).
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
-| `symbol` | query | no | Perpetual symbol. Default `BTCUSDT`. |
+| `symbol` | query | no | Base symbol (BTC, btc, BTCUSDT and BTC-USDT all resolve to the stored BTCUSDT; echoed back as `symbol` and `resolved_symbol`). Unknown symbols answer 400 symbol_not_covered with the covered list. Default `BTC`. |
 | `days` | query | no | Days of history. Default `30`. |
 
 Response fields:
@@ -1464,6 +1465,7 @@ Response fields:
 | `count` | integer |  |
 | `data` | array |  |
 | `days` | integer |  |
+| `resolved_symbol` | string |  |
 | `symbol` | string |  |
 
 ```bash
@@ -2490,22 +2492,28 @@ curl \
 
 **Archived liquidation map (modelled) at a past time** — key required — Trader (3,000 calls/day)
 
-The ESTIMATED liquidation map `/v1/liquidations` served, as it stood at a past time. Maps are computed every 5 minutes from the moment the archive started; there is nothing before that. Returns the newest map MEASURED at or before `at` (never one computed after it), with its exact `snapshot_ts`, shaped for your tier exactly as the live endpoint shapes a live map (same field list, same ladder depth). `archived` and `estimated` are always true: this is a model's output, not a record of positions or of liquidations that happened. The realized price x time matrices are NOT archived (`realized_heatmap_archived: false`). Answers 404 `no_snapshot_before` when nothing was measured at or before `at` (with `earliest_snapshot_ts`), 404 `symbol_not_archived` (with `archived_symbols`) for a symbol outside the archive, 400 for a time that is not between 1970 and the year 3000, 451 when a licence gate closes the live route, and 503 when the archive is unavailable. `degraded: true` marks a map built while an input (open interest/funding or the whale book) was missing.
+The ESTIMATED liquidation map `/v1/liquidations` as it stood at a past time, stored when it was computed or reconstructed from recorded inputs. Maps are computed every 5 minutes from the moment the archive started. Earlier times are served from RECONSTRUCTED maps (`reconstructed: true`, `archived: false`, with a `basis` sentence, `inputs_recorded_through`, `inputs_age_s`, `avail_basis` and `computed_ts`): the same model run later on inputs Smart Money recorded, each stamped no earlier than the time it was observed and recorded (`inputs_age_s` is how much older than `snapshot_ts` the newest input is: up to about an hour before September 2026), not the map served then; a gap in those inputs stays a gap. Pass `archived_only=1` to exclude them. Every map carries `regime`: `exchange_reported_liq_prices` or `modelled_whale_levels_only`; maps before 2026-08-28 have modelled whale levels only (no exchange-reported liquidation prices were recorded), so treat their whale ladder as indicative. A reconstructed price is the recorded perpetual-swap price (`price_source` `recorded:<venue>_perp`), not the spot ticker the live map uses. Returns the newest map MEASURED at or before `at` (never one computed after it), with its exact `snapshot_ts`, shaped for your tier exactly as the live endpoint shapes a live map (same field list, same ladder depth). `estimated` is always true: this is a model's output, not a record of positions or of liquidations that happened. `archived` is true only for a map stored when it was computed. The realized price x time matrices are NOT archived (`realized_heatmap_archived: false`). Answers 404 `no_snapshot_before` when nothing was measured at or before `at` (with `earliest_snapshot_ts`), 404 `no_snapshot_near` when the nearest earlier map is more than 3,600 s older than `at` (with `nearest_before_ts` and `next_after_ts`: a gap is a gap, never the last map before it), 404 `symbol_not_archived` (with `archived_symbols`) for a symbol outside the archive, 400 for a time that is not between 1970 and the year 3000, 451 when a licence gate closes the live route, and 503 when the archive is unavailable. `degraded: true` marks a map built while an input (open interest/funding or the whale book) was missing.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
 | `at` | query | yes | Required. The moment to look up: unix seconds (or ms) or an ISO-8601 time. The newest snapshot AT OR BEFORE it is returned. |
+| `archived_only` | query | no | Optional. `1`/`true` restricts the answer to maps that were stored when they were computed, excluding RECONSTRUCTED rows (computed later from inputs recorded at the time). Default `False`. |
 
 Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `archived` | boolean |  |
+| `archived` | boolean | True when this exact map was stored at the time; false for a reconstructed one. |
+| `avail_basis` | string | Reconstructed only: how snapshot_ts was set (newest input's observed time plus a write-lag margin, or one second after the next collection cycle). |
+| `basis` | string | Present when reconstructed: computed with model <v> from inputs recorded by Smart Money, each stamped at the time it was observed and recorded; not the map served at the time. |
 | `cascade_risk` | string |  |
+| `computed_ts` | integer | Reconstructed only: when the backfill computed it. |
 | `current_price` | number |  |
 | `degraded` | boolean | True when the map was built with an input missing (see source flags). |
 | `estimated` | boolean |  |
+| `inputs_age_s` | integer | Reconstructed only: snapshot_ts minus the newest input's observed/recorded timestamp. Up to about an hour before September 2026. |
+| `inputs_recorded_through` | integer | Reconstructed only: the time the newest input was available (equals snapshot_ts). |
 | `latest_snapshot_age_s` | integer | Seconds since latest_snapshot_ts. |
 | `latest_snapshot_ts` | integer | Newest map in the archive for this symbol (freshness). |
 | `longs` | array |  |
@@ -2513,6 +2521,9 @@ Response fields:
 | `price_age_s` | number | Seconds between the price fetch and the map being computed. |
 | `price_source` | string |  |
 | `realized_heatmap_archived` | boolean |  |
+| `reconstructed` | boolean | True when the map was computed LATER from inputs recorded at snapshot_ts. |
+| `regime` | string | Which liquidation prices the whale ladder rests on. Before 2026-08-28 the ladder is modelled only. |
+| `regime_note` | string |  |
 | `requested_at` | integer |  |
 | `shorts` | array |  |
 | `snapshot_age_s` | integer | requested_at minus snapshot_ts. |
@@ -2529,7 +2540,7 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 **Archived liquidation map: snapshot times in a window** — key required — Trader (3,000 calls/day)
 
-Which measurement times the archive holds for a symbol between `start` and `end`, ascending. Timestamps only; read a map with `/v1/liquidations/map/history?at=`. Also reports `latest_snapshot_ts` / `latest_snapshot_age_s` (archive freshness). 404 `symbol_not_archived` for a symbol outside the archive.
+Which measurement times the archive holds for a symbol between `start` and `end`, ascending. Timestamps only; read a map with `/v1/liquidations/map/history?at=`. Also reports `latest_snapshot_ts` / `latest_snapshot_age_s` (archive freshness). `snapshots` lists every time; `reconstructed_snapshots` is the subset that was reconstructed from recorded inputs rather than stored when computed (`archived_only=1` lists stored maps only). `regimes` splits the same times by liquidation-price regime (`exchange_reported_liq_prices` / `modelled_whale_levels_only`; boundary `regime_boundary_ts` = 2026-08-28). Top-level `archived` is true only when no listed map is reconstructed. 404 `symbol_not_archived` for a symbol outside the archive.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -2537,12 +2548,15 @@ Which measurement times the archive holds for a symbol between `start` and `end`
 | `start` | query | yes | Required. Window start: unix seconds/ms or ISO-8601. |
 | `end` | query | yes | Required. Window end: unix seconds/ms or ISO-8601. |
 | `limit` | query | no | Max snapshot timestamps returned (default 500, capped at 2000). When more exist `truncated` is true and `next_start` continues the list. Default `500`. |
+| `archived_only` | query | no | Optional. `1`/`true` restricts the answer to maps that were stored when they were computed, excluding RECONSTRUCTED rows (computed later from inputs recorded at the time). Default `False`. |
 
 Response fields:
 
 | Field | Type | Description |
 |---|---|---|
 | `archived` | boolean |  |
+| `archived_count` | integer |  |
+| `archived_only` | boolean |  |
 | `bucket_s` | integer |  |
 | `count` | integer |  |
 | `end` | integer |  |
@@ -2551,6 +2565,12 @@ Response fields:
 | `latest_snapshot_ts` | integer |  |
 | `limit` | integer |  |
 | `next_start` | integer |  |
+| `reconstructed_count` | integer |  |
+| `reconstructed_snapshots` | array |  |
+| `regime_boundary_ts` | integer |  |
+| `regime_notes` | object |  |
+| `regimes` | object | Snapshot times grouped by regime. |
+| `serving_version` | integer |  |
 | `snapshots` | array |  |
 | `start` | integer |  |
 | `symbol` | string |  |
@@ -6067,15 +6087,6 @@ Wallets classified as market makers rather than directional traders.
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `limit` | query | no | Max rows returned. |
-
-Response fields:
-
-| Field | Type | Description |
-|---|---|---|
-| `count` | integer |  |
-| `market_makers` | array |  |
-| `meta` | object |  |
-| `window_days` | integer |  |
 
 ```bash
 curl \
