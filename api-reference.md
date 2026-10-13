@@ -1,6 +1,6 @@
 # SmartMoneyAPI — API reference
 
-**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-09. It documents 249 of the 306 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
+**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-13. It documents 251 of the 308 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
 
 Base URL: `https://api.smartmoneyapi.com`
 
@@ -28,7 +28,7 @@ Errors: `429` is a quota or throttle rejection; `403` means your tier does not i
 - [JSON-RPC](#json-rpc) — 6 endpoints
 - [L2 order-book depth](#l2-order-book-depth) — 2 endpoints
 - [L2 trade tape](#l2-trade-tape) — 2 endpoints
-- [Liquidations](#liquidations) — 10 endpoints
+- [Liquidations](#liquidations) — 12 endpoints
 - [Live chain](#live-chain) — 5 endpoints
 - [Market](#market) — 11 endpoints
 - [Meta](#meta) — 9 endpoints
@@ -2484,6 +2484,81 @@ Response fields:
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/liquidations/heatmap"
+```
+
+### `GET /v1/liquidations/map/history`
+
+**Archived liquidation map (modelled) at a past time** — key required — Trader (3,000 calls/day)
+
+The ESTIMATED liquidation map `/v1/liquidations` served, as it stood at a past time. Maps are computed every 5 minutes from the moment the archive started; there is nothing before that. Returns the newest map MEASURED at or before `at` (never one computed after it), with its exact `snapshot_ts`, shaped for your tier exactly as the live endpoint shapes a live map (same field list, same ladder depth). `archived` and `estimated` are always true: this is a model's output, not a record of positions or of liquidations that happened. The realized price x time matrices are NOT archived (`realized_heatmap_archived: false`). Answers 404 `no_snapshot_before` when nothing was measured at or before `at` (with `earliest_snapshot_ts`), 404 `symbol_not_archived` (with `archived_symbols`) for a symbol outside the archive, 400 for a time that is not between 1970 and the year 3000, 451 when a licence gate closes the live route, and 503 when the archive is unavailable. `degraded: true` marks a map built while an input (open interest/funding or the whale book) was missing.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+| `at` | query | yes | Required. The moment to look up: unix seconds (or ms) or an ISO-8601 time. The newest snapshot AT OR BEFORE it is returned. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `archived` | boolean |  |
+| `cascade_risk` | string |  |
+| `current_price` | number |  |
+| `degraded` | boolean | True when the map was built with an input missing (see source flags). |
+| `estimated` | boolean |  |
+| `latest_snapshot_age_s` | integer | Seconds since latest_snapshot_ts. |
+| `latest_snapshot_ts` | integer | Newest map in the archive for this symbol (freshness). |
+| `longs` | array |  |
+| `model_version` | string | Identifies the estimator settings that produced the map. |
+| `price_age_s` | number | Seconds between the price fetch and the map being computed. |
+| `price_source` | string |  |
+| `realized_heatmap_archived` | boolean |  |
+| `requested_at` | integer |  |
+| `shorts` | array |  |
+| `snapshot_age_s` | integer | requested_at minus snapshot_ts. |
+| `snapshot_ts` | integer | When the map was actually computed (unix seconds). Never later than `requested_at`. |
+| `symbol` | string |  |
+| `ts` | integer |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/liquidations/map/history"
+```
+
+### `GET /v1/liquidations/map/history/range`
+
+**Archived liquidation map: snapshot times in a window** — key required — Trader (3,000 calls/day)
+
+Which measurement times the archive holds for a symbol between `start` and `end`, ascending. Timestamps only; read a map with `/v1/liquidations/map/history?at=`. Also reports `latest_snapshot_ts` / `latest_snapshot_age_s` (archive freshness). 404 `symbol_not_archived` for a symbol outside the archive.
+
+| Parameter | In | Required | Description |
+|---|---|---|---|
+| `symbol` | query | no | Base symbol, e.g. BTC. Default `BTC`. |
+| `start` | query | yes | Required. Window start: unix seconds/ms or ISO-8601. |
+| `end` | query | yes | Required. Window end: unix seconds/ms or ISO-8601. |
+| `limit` | query | no | Max snapshot timestamps returned (default 500, capped at 2000). When more exist `truncated` is true and `next_start` continues the list. Default `500`. |
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `archived` | boolean |  |
+| `bucket_s` | integer |  |
+| `count` | integer |  |
+| `end` | integer |  |
+| `estimated` | boolean |  |
+| `latest_snapshot_age_s` | integer |  |
+| `latest_snapshot_ts` | integer |  |
+| `limit` | integer |  |
+| `next_start` | integer |  |
+| `snapshots` | array |  |
+| `start` | integer |  |
+| `symbol` | string |  |
+| `truncated` | boolean |  |
+
+```bash
+curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
+  "https://api.smartmoneyapi.com/v1/liquidations/map/history/range"
 ```
 
 ### `GET /v1/liquidations/onchain`
