@@ -21,7 +21,7 @@ info:
 
     Paid tiers ARE published: you should be able to read the exact shape of what a subscription returns before paying for it. Per-operation x-auth says whether a key is needed at all; x-tier names the plan that unlocks it. Public operations answer without a key at a reduced row cap and a per-IP throttle.
 
-    Mirror generated 2026-10-13 from https://smartmoneyapi.com/openapi.json: 251 of 308 live paths.
+    Mirror generated 2026-10-16 from https://smartmoneyapi.com/openapi.json: 252 of 309 live paths.
   contact:
     url: https://smartmoneyapi.com
   license:
@@ -89,8 +89,8 @@ paths:
       - XAU
       - XAG
       operationId: get_openapi_json
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /rpc/v1/avax-c:
@@ -220,8 +220,12 @@ paths:
   /rpc/v1/bsc:
     post:
       summary: BSC JSON-RPC
-      description: JSON-RPC proxy to the self-hosted BSC full node. Authenticated with a dedicated rpc_
-        key, NOT the main API key, and metered separately from the plans.json call quotas.
+      description: 'JSON-RPC proxy to the self-hosted BSC node (a pruned node: roughly the last 2-3 days
+        of logs, ~128 blocks of state; not an archive). Authenticated with a dedicated rpc_ key (X-API-Key
+        header), NOT the main API key, and metered separately from the plans.json call quotas. Only an
+        allowlist of read methods is served; every call in a batch counts and eth_getLogs counts as several;
+        eth_getLogs is bounded in block range and result count. When the shared node or box is under pressure
+        customer traffic is refused first with 503 + Retry-After (never charged).'
       responses:
         '200':
           description: Successful response
@@ -252,7 +256,10 @@ paths:
   /rpc/v1/health:
     get:
       summary: RPC health
-      description: Health of the resold BSC/Avalanche JSON-RPC endpoints. Public.
+      description: 'Health of the resold BSC/Avalanche JSON-RPC endpoints, plus the plan catalogue, the
+        live protection state (node head age, round-trip time, whether customer traffic is currently being
+        shed) and the exact limits (getLogs range/results, body/response size, batch size). Also states
+        what the product is not: no SLA, no archive, shared infrastructure, no third-party fallback. Public.'
       responses:
         '200':
           description: Successful response
@@ -265,6 +272,10 @@ paths:
                     type: object
                   plans:
                     type: array
+                  protection:
+                    type: object
+                  service:
+                    type: object
         '429':
           description: Rate limit exceeded
         '400':
@@ -287,8 +298,8 @@ paths:
       - XAU
       - XAG
       operationId: get_rpc_v1_health
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/analysis:
@@ -471,8 +482,7 @@ paths:
               schema:
                 type: object
                 properties:
-                  as_of:
-                    type: string
+                  as_of: {}
                   cached_count:
                     type: integer
                   engine:
@@ -481,6 +491,8 @@ paths:
                     type: integer
                   full_analysis:
                     type: object
+                  message:
+                    type: string
                   note:
                     type: string
                   requested_count:
@@ -620,8 +632,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_analysis_status
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/billing/regime:
@@ -697,8 +709,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_billing_regime
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/confirm:
@@ -1532,8 +1544,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_comparison
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/history:
@@ -1606,8 +1618,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_history
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/positioning:
@@ -1804,8 +1816,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_positioning
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/summary:
@@ -1893,8 +1905,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_summary
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/trend:
@@ -1993,8 +2005,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_trend
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/coverage:
@@ -2094,8 +2106,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_coverage
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/defillama/all:
@@ -2479,8 +2491,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_funding_arb
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/funding-heatmap:
@@ -2533,8 +2545,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_funding_heatmap
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/heatmap:
@@ -2627,8 +2639,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_oi_rankings
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/provenance:
@@ -2702,8 +2714,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_provenance
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/screener:
@@ -2807,8 +2819,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_screener
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/dex/pair:
@@ -3140,8 +3152,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_equity_flow
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/equity-flow/dark-pool:
@@ -3272,8 +3284,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_equity_flow_stats
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/equity-flow/unusual-activity:
@@ -3444,8 +3456,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_exchange_health
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/flow/dark-pool:
@@ -3568,8 +3580,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_flow_status
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/flow/unusual:
@@ -3776,8 +3788,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_funding_clock
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/funding/normalised:
@@ -3869,8 +3881,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_funding_normalised
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/health:
@@ -3887,8 +3899,7 @@ paths:
                 properties:
                   ingestion:
                     type: object
-                  loop_stall:
-                    type: object
+                  loop_stall: {}
                   status:
                     type: string
                   subsystems:
@@ -3926,8 +3937,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_health
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/funding:
@@ -3989,8 +4000,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_funding
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/long-short:
@@ -4052,8 +4063,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_long_short
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/market:
@@ -4154,8 +4165,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_open_interest
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/confirmations:
@@ -4283,8 +4294,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_confirmations
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/coverage:
@@ -4346,8 +4357,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_coverage
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/derivatives:
@@ -4461,8 +4472,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_derivatives
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/derivatives_agg:
@@ -4571,8 +4582,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_derivatives_agg
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/onchain:
@@ -4690,8 +4701,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_onchain
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/signal_log:
@@ -4819,8 +4830,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_signal_log
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/signal_outcomes:
@@ -4929,8 +4940,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_signal_outcomes
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/wallet_relationships:
@@ -5049,8 +5060,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_wallet_relationships
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/whale_consensus:
@@ -5159,8 +5170,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_whale_consensus
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/whale_positions:
@@ -5279,8 +5290,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_whale_positions
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/hl/frequently-liquidated:
@@ -5450,8 +5461,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_incidents
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/insiders/purchases:
@@ -5839,8 +5850,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_l2_depth_venues
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/l2/trades:
@@ -5995,8 +6006,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_l2_venues
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations:
@@ -6335,8 +6346,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_aftermath
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/aftermath/historical:
@@ -6427,8 +6438,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_aftermath_historical
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/heatmap:
@@ -6659,8 +6670,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_heatmap
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/map/history:
@@ -7209,8 +7220,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_simulate
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/symbols:
@@ -7300,8 +7311,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_symbols
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/live-swaps/export:
@@ -7389,8 +7400,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_live_swaps_recent
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/live-swaps/status:
@@ -7443,8 +7454,62 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_live_swaps_status
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+        not written by hand. A field absent from that response is absent here even if the endpoint can
+        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
+  /v1/live/presence/now:
+    get:
+      summary: Visitors online now
+      description: 'The visitors-online-now set behind the public Visitor Map: `cells` (one entry per
+        ~11 km cell with `lat`, `lng`, `precision` = city or country, `country` and `count`; never one
+        entry per visitor), `totals` (web, ios, android, countries, cities; countries and cities are null
+        when unknown, never 0), `online`, `generated_at` and `window_seconds` (300). Counts people who
+        opened any page of the site in the last 5 minutes. A visitor who has not allowed analytics is
+        shown at country precision only. A country-precision cell sits at the middle of the country, not
+        where anyone is. Public, keyless. An outage answers 503, never a zero.'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cells:
+                    type: array
+                  generated_at:
+                    type: integer
+                  online:
+                    type: integer
+                  totals:
+                    type: object
+                  window_seconds:
+                    type: integer
+        '429':
+          description: Rate limit exceeded
+        '400':
+          description: 'error=non_canonical_path: Request paths must be canonical: no ''.'' or ''..''
+            segments, no empty segments (''//''), no backslashes, and no percent-encoded ''.'', ''/''
+            or ''\''. Send the path as documented. Refused before routing, on every route; `reason` is
+            one of dot_segment, empty_segment, backslash, encoded_separator. The query string is never
+            checked; one trailing slash and any letter case are accepted.'
+      security:
+      - {}
+      - ApiKeyAuth: []
+      tags:
+      - Site
+      x-auth: none
+      x-tier: public
+      x-free-tier-symbols:
+      - BTC
+      - ETH
+      - SOL
+      - XAU
+      - XAG
+      operationId: get_v1_live_presence_now
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/altseason:
@@ -7584,8 +7649,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_candles
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/dominance:
@@ -7656,8 +7721,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_indices
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/volatility:
@@ -7704,8 +7769,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_volatility
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mempool/pending:
@@ -7756,8 +7821,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mempool_pending
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mempool/stats:
@@ -7814,8 +7879,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mempool_stats
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood:
@@ -7875,8 +7940,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood/history:
@@ -7933,8 +7998,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood_history
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood/overview:
@@ -7958,6 +8023,8 @@ paths:
                     type: integer
                   updated:
                     type: integer
+                  warming_up:
+                    type: boolean
         '429':
           description: Rate limit exceeded
         '400':
@@ -7980,8 +8047,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood_overview
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/accuracy:
@@ -8047,8 +8114,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_accuracy
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/archive:
@@ -8174,8 +8241,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_archive
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/coverage:
@@ -8238,8 +8305,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_coverage
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/fear-greed:
@@ -8302,8 +8369,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_fear_greed
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/general:
@@ -8388,8 +8455,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_general
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/impact:
@@ -8454,8 +8521,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_impact
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/treasury-yield:
@@ -8516,8 +8583,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_treasury_yield
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/trump:
@@ -8579,8 +8646,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_trump
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/node/health:
@@ -8622,8 +8689,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_node_health
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/node/{chain}/deployer/{address}:
@@ -9242,8 +9309,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_gas
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/liquidations/coverage:
@@ -9293,8 +9360,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_liquidations_coverage
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/liquidations/history:
@@ -9540,8 +9607,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_metrics
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/stablecoins:
@@ -9984,8 +10051,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_performance
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/performance/export:
@@ -10144,8 +10211,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_performance_track_record
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/plans:
@@ -10193,8 +10260,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_plans
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/projection:
@@ -10274,8 +10341,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_projection
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/projection/screener:
@@ -10351,8 +10418,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_projection_screener
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/rankings:
@@ -10408,8 +10475,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_rankings
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/regimes/history:
@@ -10699,8 +10766,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/scanner/obs/extremes:
@@ -10761,8 +10828,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs_extremes
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/scanner/obs/symbol:
@@ -10825,8 +10892,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs_symbol
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener:
@@ -10881,8 +10948,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener/rankings:
@@ -10938,8 +11005,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener_rankings
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener/symbol:
@@ -11012,8 +11079,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener_symbol
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality:
@@ -11075,8 +11142,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/dow:
@@ -11132,8 +11199,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_dow
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/heatmap:
@@ -11189,8 +11256,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_heatmap
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/overlay:
@@ -11246,8 +11313,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_overlay
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/quarters:
@@ -11305,8 +11372,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_quarters
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/rankings:
@@ -11355,8 +11422,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_rankings
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/sentiment:
@@ -11506,8 +11573,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/capitulation/backtest:
@@ -11576,8 +11643,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation_backtest
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/capitulation/walkforward:
@@ -11649,8 +11716,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation_walkforward
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/performance:
@@ -11720,8 +11787,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_performance
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/recent:
@@ -11816,8 +11883,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_recent
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/{signal_id}/outcome:
@@ -12558,8 +12625,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_smart_money_cohorts
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/smart-money/flow:
@@ -13419,8 +13486,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_smart_money_validation
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/smart-stop:
@@ -13802,8 +13869,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stats
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stats/calls:
@@ -13875,8 +13942,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stats_calls
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks:
@@ -13917,8 +13984,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/activist-alerts:
@@ -13965,8 +14032,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_activist_alerts
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/congress/{ticker}:
@@ -14064,8 +14131,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_insider_clusters
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/insiders/{ticker}:
@@ -14193,8 +14260,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_new_listings
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/rankings:
@@ -14243,8 +14310,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_rankings
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/short-interest/{ticker}:
@@ -14330,8 +14397,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_stats
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/tokenized:
@@ -14376,8 +14443,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_tokenized
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/universe:
@@ -14418,8 +14485,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_universe
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/whale-signals:
@@ -14468,8 +14535,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_whale_signals
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/whales/{ticker}:
@@ -14603,8 +14670,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_active
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/equity:
@@ -14670,8 +14737,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_equity
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/signals:
@@ -14717,8 +14784,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_signals
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/stats:
@@ -14819,8 +14886,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_stats
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/symbols:
@@ -14878,8 +14945,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_symbols
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/trades:
@@ -14954,8 +15021,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_trades
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/symbols:
@@ -15006,8 +15073,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_symbols
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/symbols/available:
@@ -15309,8 +15376,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_ta_screener
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/ta/technicals:
@@ -15378,8 +15445,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_ta_technicals
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/top-traders/history:
@@ -15753,8 +15820,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/aggregate:
@@ -15874,8 +15941,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_aggregate
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/exchange:
@@ -16026,8 +16093,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_health
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/symbols:
@@ -16092,8 +16159,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_symbols
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/wallet/{address}/positions:
@@ -16347,8 +16414,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_wallets_relationships_stats
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/wallets/{address}/relationships:
@@ -16494,8 +16561,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whale_consensus
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whale-events:
@@ -16758,8 +16825,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_crowding
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/dex-positions:
@@ -16832,8 +16899,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_dex_positions
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/events:
@@ -16926,8 +16993,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_events
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/market-makers:
@@ -17025,8 +17092,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_summary
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/universe:
@@ -17086,7 +17153,7 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_universe
-      x-response-measured: '2026-10-13'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-13,
+      x-response-measured: '2026-10-16'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.

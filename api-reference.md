@@ -1,6 +1,6 @@
 # SmartMoneyAPI — API reference
 
-**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-13. It documents 251 of the 308 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
+**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-16. It documents 252 of the 309 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
 
 Base URL: `https://api.smartmoneyapi.com`
 
@@ -42,6 +42,7 @@ Errors: `429` is a quota or throttle rejection; `403` means your tier does not i
 - [Screener](#screener) — 7 endpoints
 - [Seasonality](#seasonality) — 6 endpoints
 - [Signals](#signals) — 9 endpoints
+- [Site](#site) — 1 endpoint
 - [Smart-money cohorts](#smart-money-cohorts) — 7 endpoints
 - [Strategies](#strategies) — 6 endpoints
 - [Technicals](#technicals) — 3 endpoints
@@ -1957,11 +1958,12 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `as_of` | string |  |
+| `as_of` | — |  |
 | `cached_count` | integer |  |
 | `engine` | string |  |
 | `fresh_count` | integer |  |
 | `full_analysis` | object |  |
+| `message` | string |  |
 | `note` | string |  |
 | `requested_count` | integer |  |
 | `stale_after_seconds` | integer |  |
@@ -2092,7 +2094,7 @@ curl -X POST -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 **BSC JSON-RPC** — key required — rpc key (metered separately)
 
-JSON-RPC proxy to the self-hosted BSC full node. Authenticated with a dedicated rpc_ key, NOT the main API key, and metered separately from the plans.json call quotas.
+JSON-RPC proxy to the self-hosted BSC node (a pruned node: roughly the last 2-3 days of logs, ~128 blocks of state; not an archive). Authenticated with a dedicated rpc_ key (X-API-Key header), NOT the main API key, and metered separately from the plans.json call quotas. Only an allowlist of read methods is served; every call in a batch counts and eth_getLogs counts as several; eth_getLogs is bounded in block range and result count. When the shared node or box is under pressure customer traffic is refused first with 503 + Retry-After (never charged).
 
 ```bash
 curl -X POST -H "X-API-Key: $SMARTMONEY_API_KEY" \
@@ -2105,7 +2107,7 @@ curl -X POST -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 **RPC health** — keyless
 
-Health of the resold BSC/Avalanche JSON-RPC endpoints. Public.
+Health of the resold BSC/Avalanche JSON-RPC endpoints, plus the plan catalogue, the live protection state (node head age, round-trip time, whether customer traffic is currently being shed) and the exact limits (getLogs range/results, body/response size, batch size). Also states what the product is not: no SLA, no archive, shared infrastructure, no third-party fallback. Public.
 
 Response fields:
 
@@ -2113,6 +2115,8 @@ Response fields:
 |---|---|---|
 | `chains` | object |  |
 | `plans` | array |  |
+| `protection` | object |  |
+| `service` | object |  |
 
 ```bash
 curl \
@@ -2980,6 +2984,7 @@ Response fields:
 | `symbols` | array |  |
 | `total` | integer |  |
 | `updated` | integer |  |
+| `warming_up` | boolean |  |
 
 ```bash
 curl \
@@ -3140,7 +3145,7 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `ingestion` | object |  |
-| `loop_stall` | object |  |
+| `loop_stall` | — |  |
 | `status` | string |  |
 | `subsystems` | object |  |
 | `subsystems_down` | array |  |
@@ -4932,6 +4937,29 @@ The resolved 4h/12h/24h/72h outcome of one logged signal, with the `operator_pos
 ```bash
 curl \
   "https://api.smartmoneyapi.com/v1/signals/{signal_id}/outcome"
+```
+
+## Site
+
+### `GET /v1/live/presence/now`
+
+**Visitors online now** — keyless
+
+The visitors-online-now set behind the public Visitor Map: `cells` (one entry per ~11 km cell with `lat`, `lng`, `precision` = city or country, `country` and `count`; never one entry per visitor), `totals` (web, ios, android, countries, cities; countries and cities are null when unknown, never 0), `online`, `generated_at` and `window_seconds` (300). Counts people who opened any page of the site in the last 5 minutes. A visitor who has not allowed analytics is shown at country precision only. A country-precision cell sits at the middle of the country, not where anyone is. Public, keyless. An outage answers 503, never a zero.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `cells` | array |  |
+| `generated_at` | integer |  |
+| `online` | integer |  |
+| `totals` | object |  |
+| `window_seconds` | integer |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/live/presence/now"
 ```
 
 ## Smart-money cohorts
