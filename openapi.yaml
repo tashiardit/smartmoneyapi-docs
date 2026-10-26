@@ -21,7 +21,7 @@ info:
 
     Paid tiers ARE published: you should be able to read the exact shape of what a subscription returns before paying for it. Per-operation x-auth says whether a key is needed at all; x-tier names the plan that unlocks it. Public operations answer without a key at a reduced row cap and a per-IP throttle.
 
-    Mirror generated 2026-10-16 from https://smartmoneyapi.com/openapi.json: 252 of 309 live paths.
+    Mirror generated 2026-10-26 from https://smartmoneyapi.com/openapi.json (read from a local copy): 252 of 309 live paths.
   contact:
     url: https://smartmoneyapi.com
   license:
@@ -89,8 +89,8 @@ paths:
       - XAU
       - XAG
       operationId: get_openapi_json
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /rpc/v1/avax-c:
@@ -298,8 +298,8 @@ paths:
       - XAU
       - XAG
       operationId: get_rpc_v1_health
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/analysis:
@@ -482,7 +482,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  as_of: {}
+                  as_of:
+                    type: string
                   cached_count:
                     type: integer
                   engine:
@@ -491,8 +492,6 @@ paths:
                     type: integer
                   full_analysis:
                     type: object
-                  message:
-                    type: string
                   note:
                     type: string
                   requested_count:
@@ -632,8 +631,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_analysis_status
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/billing/regime:
@@ -709,8 +708,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_billing_regime
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/confirm:
@@ -1544,8 +1543,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_comparison
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/history:
@@ -1618,8 +1617,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_history
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/positioning:
@@ -1668,7 +1667,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -1705,7 +1706,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -1816,14 +1818,15 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_positioning
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/summary:
     get:
       summary: COT summary
-      description: CFTC Commitments of Traders positioning summary.
+      description: CFTC Commitments of Traders positioning summary. Also available as /v1/cot (same parameters,
+        limits and auth).
       responses:
         '200':
           description: Successful response
@@ -1905,8 +1908,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_summary
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/cot/trend:
@@ -1931,7 +1934,8 @@ paths:
                     type: string
                   divergence:
                     type: string
-                  extreme: {}
+                  extreme:
+                    type: string
                   hedger_category:
                     type: string
                   hedger_label:
@@ -2005,8 +2009,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_cot_trend
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/coverage:
@@ -2106,8 +2110,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_coverage
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/defillama/all:
@@ -2491,8 +2495,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_funding_arb
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/funding-heatmap:
@@ -2545,8 +2549,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_funding_heatmap
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/heatmap:
@@ -2639,8 +2643,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_oi_rankings
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/provenance:
@@ -2714,8 +2718,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_provenance
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/derivatives/screener:
@@ -2819,8 +2823,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_derivatives_screener
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/dex/pair:
@@ -3152,8 +3156,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_equity_flow
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/equity-flow/dark-pool:
@@ -3284,8 +3288,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_equity_flow_stats
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/equity-flow/unusual-activity:
@@ -3456,8 +3460,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_exchange_health
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/flow/dark-pool:
@@ -3580,8 +3584,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_flow_status
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/flow/unusual:
@@ -3788,8 +3792,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_funding_clock
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/funding/normalised:
@@ -3881,8 +3885,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_funding_normalised
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/health:
@@ -3899,7 +3903,8 @@ paths:
                 properties:
                   ingestion:
                     type: object
-                  loop_stall: {}
+                  loop_stall:
+                    type: object
                   status:
                     type: string
                   subsystems:
@@ -3937,8 +3942,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_health
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/funding:
@@ -4000,8 +4005,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_funding
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/long-short:
@@ -4063,8 +4068,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_long_short
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/historical/market:
@@ -4165,8 +4170,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_historical_open_interest
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/confirmations:
@@ -4294,8 +4299,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_confirmations
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/coverage:
@@ -4357,8 +4362,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_coverage
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/derivatives:
@@ -4472,8 +4477,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_derivatives
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/derivatives_agg:
@@ -4582,8 +4587,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_derivatives_agg
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/onchain:
@@ -4701,8 +4706,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_onchain
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/signal_log:
@@ -4830,8 +4835,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_signal_log
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/signal_outcomes:
@@ -4940,8 +4945,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_signal_outcomes
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/wallet_relationships:
@@ -5060,8 +5065,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_wallet_relationships
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/whale_consensus:
@@ -5170,8 +5175,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_whale_consensus
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/history/whale_positions:
@@ -5290,8 +5295,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_history_whale_positions
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/hl/frequently-liquidated:
@@ -5461,8 +5466,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_incidents
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/insiders/purchases:
@@ -5499,7 +5504,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -5545,7 +5552,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -5850,8 +5858,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_l2_depth_venues
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/l2/trades:
@@ -6006,8 +6014,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_l2_venues
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations:
@@ -6346,8 +6354,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_aftermath
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/aftermath/historical:
@@ -6438,8 +6446,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_aftermath_historical
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/heatmap:
@@ -6670,8 +6678,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_heatmap
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/map/history:
@@ -7220,8 +7228,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_simulate
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/liquidations/symbols:
@@ -7241,18 +7249,6 @@ paths:
               schema:
                 type: object
                 properties:
-                  error:
-                    type: string
-                    description: Present only when source == 'unavailable'.
-                  generated_at:
-                    type: integer
-                  returned:
-                    type: integer
-                  source:
-                    type: string
-                    enum:
-                    - archive
-                    - unavailable
                   symbols:
                     type: array
                     description: Ordered by event count, descending.
@@ -7269,6 +7265,8 @@ paths:
                           type: integer
                         total_notional:
                           type: number
+                  returned:
+                    type: integer
                   total_symbols:
                     type: integer
                     description: Symbols on the tape before the limit was applied.
@@ -7277,8 +7275,16 @@ paths:
                     items:
                       type: string
                     description: Distinct exchanges present in the archive.
-                  venues_retired:
-                    type: object
+                  generated_at:
+                    type: integer
+                  source:
+                    type: string
+                    enum:
+                    - archive
+                    - unavailable
+                  error:
+                    type: string
+                    description: Present only when source == 'unavailable'.
         '429':
           description: Rate limit exceeded
         '400':
@@ -7311,10 +7317,6 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_liquidations_symbols
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
-        not written by hand. A field absent from that response is absent here even if the endpoint can
-        return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/live-swaps/export:
     get:
       summary: Export live swaps
@@ -7400,8 +7402,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_live_swaps_recent
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/live-swaps/status:
@@ -7454,8 +7456,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_live_swaps_status
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/live/presence/now:
@@ -7465,9 +7467,10 @@ paths:
         ~11 km cell with `lat`, `lng`, `precision` = city or country, `country` and `count`; never one
         entry per visitor), `totals` (web, ios, android, countries, cities; countries and cities are null
         when unknown, never 0), `online`, `generated_at` and `window_seconds` (300). Counts people who
-        opened any page of the site in the last 5 minutes. A visitor who has not allowed analytics is
-        shown at country precision only. A country-precision cell sits at the middle of the country, not
-        where anyone is. Public, keyless. An outage answers 503, never a zero.'
+        opened any page of the site, or made an authenticated API request, in the last 5 minutes; nothing
+        in the answer says which. A website visitor who has not allowed analytics is shown at country
+        precision only. A country-precision cell sits at the middle of the country, not where anyone is.
+        Public, keyless. An outage answers 503, never a zero.'
       responses:
         '200':
           description: Successful response
@@ -7508,8 +7511,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_live_presence_now
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/altseason:
@@ -7649,8 +7652,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_candles
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/dominance:
@@ -7721,8 +7724,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_indices
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/market/volatility:
@@ -7769,8 +7772,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_market_volatility
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mempool/pending:
@@ -7821,8 +7824,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mempool_pending
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mempool/stats:
@@ -7879,8 +7882,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mempool_stats
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood:
@@ -7940,8 +7943,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood/history:
@@ -7998,8 +8001,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood_history
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/mood/overview:
@@ -8023,8 +8026,6 @@ paths:
                     type: integer
                   updated:
                     type: integer
-                  warming_up:
-                    type: boolean
         '429':
           description: Rate limit exceeded
         '400':
@@ -8047,8 +8048,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_mood_overview
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/accuracy:
@@ -8114,8 +8115,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_accuracy
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/archive:
@@ -8241,8 +8242,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_archive
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/coverage:
@@ -8305,8 +8306,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_coverage
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/fear-greed:
@@ -8369,8 +8370,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_fear_greed
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/general:
@@ -8455,8 +8456,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_general
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/impact:
@@ -8521,8 +8522,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_impact
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/treasury-yield:
@@ -8583,8 +8584,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_treasury_yield
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/news/trump:
@@ -8646,8 +8647,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_news_trump
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/node/health:
@@ -8689,8 +8690,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_node_health
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/node/{chain}/deployer/{address}:
@@ -9309,8 +9310,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_gas
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/liquidations/coverage:
@@ -9360,8 +9361,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_liquidations_coverage
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/liquidations/history:
@@ -9607,8 +9608,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_onchain_metrics
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/onchain/stablecoins:
@@ -10051,8 +10052,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_performance
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/performance/export:
@@ -10211,8 +10212,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_performance_track_record
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/plans:
@@ -10260,8 +10261,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_plans
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/projection:
@@ -10341,8 +10342,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_projection
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/projection/screener:
@@ -10418,8 +10419,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_projection_screener
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/rankings:
@@ -10475,8 +10476,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_rankings
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/regimes/history:
@@ -10766,8 +10767,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/scanner/obs/extremes:
@@ -10828,8 +10829,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs_extremes
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/scanner/obs/symbol:
@@ -10892,8 +10893,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_scanner_obs_symbol
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener:
@@ -10948,8 +10949,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener/rankings:
@@ -11005,8 +11006,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener_rankings
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/screener/symbol:
@@ -11079,8 +11080,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_screener_symbol
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality:
@@ -11142,8 +11143,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/dow:
@@ -11199,8 +11200,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_dow
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/heatmap:
@@ -11256,8 +11257,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_heatmap
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/overlay:
@@ -11313,8 +11314,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_overlay
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/quarters:
@@ -11372,8 +11373,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_quarters
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/seasonality/rankings:
@@ -11422,8 +11423,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_seasonality_rankings
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/sentiment:
@@ -11573,8 +11574,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/capitulation/backtest:
@@ -11643,8 +11644,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation_backtest
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/capitulation/walkforward:
@@ -11716,8 +11717,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_capitulation_walkforward
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/performance:
@@ -11787,8 +11788,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_performance
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/recent:
@@ -11883,8 +11884,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_signals_recent
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/signals/{signal_id}/outcome:
@@ -11937,14 +11938,17 @@ paths:
         answer 451 withheld_for_licence until the rights registry clears them; the shape is what they
         serve once cleared. A price move is never an activity event. The span is at most 7 days; the lookback
         is per plan (`features.sm_history_days`) and a clamp is reported in `lookback_clamped_by_tier`.
-        `execution_context` separates observations from labelled estimates; on bsc/avalanche the honeypot
-        probe is an estimate that does not execute the token''s transfer hooks, and the Etherscan-derived
-        contract source scan is withheld. No safety score, rating or recommendation is ever returned.
-        Per-address cohort tags would list a cohort''s members, so they are served only when membership
-        is published; otherwise `cohorts` is null with `cohorts_state: "withheld"`, and a `cohort` filter
-        answers 451 `withheld` with reason `member_lists`. An address on the privacy suppression list
-        is never returned (on bsc/avalanche, neither as the wallet nor as the counterparty); if the list
-        cannot be read the request answers 503.'
+        Hyperliquid events are kept raw for 365 days from the capture start; a window that reaches before
+        that is not silently cut short: `history_coverage` and `history_note` say where the raw history
+        begins, and /activity/summary answers from hourly summaries kept indefinitely. `execution_context`
+        separates observations from labelled estimates; on bsc/avalanche the honeypot probe is an estimate
+        that does not execute the token''s transfer hooks, and the Etherscan-derived contract source scan
+        is withheld. No safety score, rating or recommendation is ever returned. Per-address cohort tags
+        would list a cohort''s members, so they are served only when membership is published; otherwise
+        `cohorts` is null with `cohorts_state: "withheld"`, and a `cohort` filter answers 451 `withheld`
+        with reason `member_lists`. An address on the privacy suppression list is never returned (on bsc/avalanche,
+        neither as the wallet nor as the counterparty); if the list cannot be read the request answers
+        503.'
       responses:
         '200':
           description: Successful response
@@ -11972,7 +11976,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -12018,7 +12024,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -12054,6 +12061,21 @@ paths:
                     type: object
                   events:
                     type: array
+                  history_coverage:
+                    type: object
+                    description: How far back the RAW event store reaches (events are kept 365 days; the
+                      capture began at `history_from_ts`) and how the window sits against it; `covered`
+                      is full, partial or none. Older activity is answered by /activity/summary from the
+                      hourly summaries.
+                  history_note:
+                    type: string
+                    description: present when the window reaches before the raw history
+                  partial_reason:
+                    type: string
+                    description: '`capture_lag` when the window ends after (or less than 5 minutes before)
+                      the fill capture''s last copy, so its newest minutes may not be stored yet (always,
+                      for a window ending now); `capture_gap`, `capture_stalled` or `capture_disabled`
+                      otherwise'
                   cohort_labels:
                     type: object
                     description: cohort id -> label, for the cohorts the events carry (empty while tags
@@ -12208,7 +12230,41 @@ paths:
         `cohort` filter other than `all_observed` answers 451 `withheld` with reason `member_lists` unless
         membership is published. USDC ledger transfers are listed by /activity, not summed here. Served
         on the hour grid; when `window` is not given it is `1d`, the last complete UTC day. Replaces the
-        retired /flows design.'
+        retired /flows design. WHAT IT COVERS (tiered retention): the live fill capture keeps raw events
+        for 365 days (`capture.retention_days`) and raw fills for 30 days (`capture.fills_retention_days`),
+        and rolls every closed UTC hour into an hourly summary that is kept indefinitely. Windows up to
+        7d are answered from the raw events (`answered_from: "raw_events"`, `granularity: "event"`); `30d`,
+        `90d`, `365d` and every explicit from/to range are answered from the hourly summaries (`answered_from:
+        "hourly_rollup"`, `granularity: "hour"`), up to the plan''s `sm_history_days` (unlimited plans:
+        all the history there is). History accrues from the capture start (`capture.capture_start_ts`):
+        nothing earlier was captured, and `coverage_horizon` says how the window sits against it (`covered`:
+        full, partial or none; `reason`: `before_capture_start` or `before_retention`). A window that
+        ends before the history reaches back is `missing`; one that straddles it is `partial`. HOW OFTEN
+        IT UPDATES: new fills are copied about every 10 minutes and closed hours are rolled up at the
+        same time. Named windows are rebuilt in the background when their cached copy expires and a response
+        is read from memory: 1h, 4h and 24h about every 5 minutes, 7d every 10 minutes, the UTC day (1d)
+        every 5 minutes (every 30 minutes where cohort cells are served under disclosure control), 30d/90d/365d
+        every hour; a 30d/90d/365d answer built before the newest closed hour was rolled up (about ten
+        minutes after the hour) is `partial` and is replaced as soon as that hour is rolled. COMPLETENESS:
+        `capture.covered_to_ts` is when our server received the newest trade copied into the store (the
+        ingestion high-water mark, not a guarantee that every venue fill reached us). A window is `complete`
+        only once `covered_to_ts` is at least 5 minutes past its end (a fill can reach us shortly after
+        it trades); until then it is `partial` with `partial_reason: "capture_lag"` (hourly answers apply
+        the same rule through the hourly summary''s watermark). A served answer turns `complete` about
+        20 minutes after the window closes for 1h, 4h, 24h and 1d, about 25 for 7d, up to 45 for a 1d
+        answer with cohort cells under disclosure control, and about 25 for 30d, 90d, 365d and explicit
+        ranges. A window ending now is therefore always `partial`. A recorded capture gap inside the window
+        makes it `partial` with `capture_gap`, a capture that has stopped with `capture_stalled`, and
+        one that is switched off with `capture_disabled`. SIGN CONVENTION: `net_position_change_usd` is
+        the sum over the window''s trades of the signed size change in coins (a buy adds its size, a sell
+        subtracts it), times the latest mark when the summary was built: positive is a net move toward
+        long, including shorts bought back. It is not gross exposure and never includes deposits or withdrawals;
+        opens/adds/reduces/closes/flips `usd` are traded notional, always positive. A window being computed
+        for the first time answers 503 `computing` (retry in `retry_after_s`; a long explicit range can
+        take up to about a minute to build the first time), and a build that failed answers 503 `build_failed`.
+        An empty answer says why in `missing_reason` (`capture_starting`, `capture_disabled`, `capture_stalled`,
+        `capture_paused_low_disk`, `before_capture_start`, `before_retention` or `no_events_in_window`)
+        and `capture` reports the capture''s state.'
       responses:
         '200':
           description: Successful response
@@ -12236,7 +12292,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -12282,7 +12340,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -12312,6 +12371,90 @@ paths:
                     description: the window= asked for; null with from/to
                   lookback_clamped_by_tier:
                     type: boolean
+                  answered_from:
+                    type: string
+                    enum:
+                    - raw_events
+                    - hourly_rollup
+                    description: which store answered
+                  granularity:
+                    type: string
+                    enum:
+                    - event
+                    - hour
+                    description: the finest unit the answer was built from
+                  coverage_horizon:
+                    type: object
+                    description: How far back the answering store reaches and how the window sits against
+                      it.
+                    properties:
+                      covered:
+                        type: string
+                        enum:
+                        - full
+                        - partial
+                        - none
+                        - unknown
+                      reason:
+                        type: string
+                        enum:
+                        - before_capture_start
+                        - before_retention
+                      history_from_ts:
+                        type: integer
+                        nullable: true
+                      answered_from:
+                        type: string
+                      granularity:
+                        type: string
+                      raw_events_retention_days:
+                        type: integer
+                  partial_reason:
+                    type: string
+                    description: 'present when the window is partial: `before_capture_start` or `before_retention`
+                      (it straddles the history horizon) or `capture_lag` (it ends less than 5 minutes
+                      before `capture.covered_to_ts`, or after it), `capture_gap`, `capture_stalled` or
+                      `capture_disabled`'
+                  capture:
+                    type: object
+                    description: The live fill capture behind the counts.
+                    properties:
+                      enabled:
+                        type: boolean
+                      state:
+                        type: string
+                        enum:
+                        - starting
+                        - running
+                        - stalled
+                        - disabled
+                        - paused_low_disk
+                      retention_days:
+                        type: integer
+                        description: raw activity events kept (days)
+                      fills_retention_days:
+                        type: integer
+                        description: raw fills kept (days)
+                      hourly_summaries_kept:
+                        type: string
+                        description: '"indefinitely"'
+                      capture_start_ts:
+                        type: integer
+                        nullable: true
+                      last_run_ts:
+                        type: integer
+                        nullable: true
+                      covered_to_ts:
+                        type: integer
+                        nullable: true
+                        description: 'UTC Unix seconds: when our server received the newest trade copied
+                          into the store'
+                      missing_reason:
+                        type: string
+                        nullable: true
+                  missing_reason:
+                    type: string
+                    description: present when `symbols` is empty
                   disclosure_control:
                     type: object
                     description: 'States the disclosure setting this response was served under. Present
@@ -12426,7 +12569,9 @@ paths:
       - name: window
         in: query
         description: 1d = the last complete UTC day (the only window that carries membership-cohort cells
-          under disclosure control); 1h/4h/24h/7d = the last 1, 4, 24 or 168 complete hours.
+          under disclosure control); 1h/4h/24h/7d = the last 1, 4, 24 or 168 complete hours; 30d/90d/365d
+          = the last 30, 90 or 365 days of complete hours, answered from the hourly summaries and limited
+          by the plan's sm_history_days.
         schema:
           type: string
           default: 1d
@@ -12436,10 +12581,17 @@ paths:
           - 4h
           - 24h
           - 7d
+          - 30d
+          - 90d
+          - 365d
       - name: from
         in: query
         description: Explicit start, a whole hour (multiple of 3600; with `to`, instead of window). The
-          window is [from, to).
+          window is [from, to), at most the plan's `sm_history_days` long, answered from the hourly summaries.
+          A range longer than 7 days has its start moved forward to the next UTC day boundary (the end
+          stays on the hour) so callers share one cached build (`range_snapped_to_days` holds what you
+          asked); a new uncached range may be started once per 20 seconds per caller, otherwise `503 busy`
+          with `retry_after_s`.
         schema:
           type: integer
       - name: to
@@ -12528,7 +12680,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -12561,7 +12715,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -12625,8 +12780,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_smart_money_cohorts
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/smart-money/flow:
@@ -12685,7 +12840,16 @@ paths:
         withheld (`withheld_fields`), and concentration and divergence are withheld; where membership
         is published the cells are exact. `include` adds concentration and divergence to the exact rows.
         Every cell that is served carries `state` (observed|missing|stale); a measured zero is observed
-        0, a missing value is null with a missing_reason. Descriptive, not a forecast.'
+        0, a missing value is null with a missing_reason. HOW OFTEN IT UPDATES: the everyone row is recomputed
+        about every 10 minutes (`snapshot_kind` = `live`, `refresh_interval_s`), valued at the newest
+        Hyperliquid mark; the 4-hourly snapshot (`grid_snapshot_ts`, 00/04/08/12/16/20 UTC plus the run
+        lag) stays the history and the source of the UTC-day cohort cells. HOW OLD THE INPUTS ARE: each
+        wallet is shown as of its own latest scan, and the ~16,000 tracked wallets are rotated, so the
+        typical wallet was last scanned hours ago -- `coverage.scan_age_s` gives the median, p95 and max,
+        and `freshness.source_timestamp` is the time of the typical input (as_of minus the median scan
+        age), not of the newest scan. The response is `fresh` until `freshness.stale_after_s` (28800 s
+        = 8 h) has passed since that timestamp, and reads `stale` earlier if the live view has not been
+        refreshed for 45 minutes. Descriptive, not a forecast.'
       responses:
         '200':
           description: Successful response
@@ -12713,7 +12877,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -12759,7 +12925,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -12781,6 +12948,20 @@ paths:
                     type: array
                   validation_by_cohort:
                     type: object
+                  snapshot_kind:
+                    type: string
+                    enum:
+                    - live
+                    - grid
+                    description: '`live` = recomputed about every 10 minutes from each wallet''s newest
+                      scan; `grid` = the 4-hourly snapshot (served while no live view is current)'
+                  grid_snapshot_ts:
+                    type: integer
+                    nullable: true
+                    description: newest 4-hourly snapshot, UTC Unix seconds
+                  refresh_interval_s:
+                    type: integer
+                    description: how often this kind of snapshot is rebuilt
                   coverage:
                     type: object
                     description: 'The complete-sweep snapshot''s own coverage, exactly as recorded; before
@@ -12940,7 +13121,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -12986,7 +13169,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -13206,7 +13390,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -13252,7 +13438,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -13385,7 +13572,9 @@ paths:
                   freshness:
                     type: object
                     description: 'Computed when the response is SERVED, not when it was cached: a last-good
-                      copy older than stale_after_s reads `stale`.'
+                      copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and
+                      `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp,
+                      worked out on our server when the response is built (`meta.age_s` is the same number).'
                     properties:
                       source_timestamp:
                         type: integer
@@ -13418,7 +13607,8 @@ paths:
                   meta:
                     type: object
                     description: 'Read from `freshness` alone: no measured source timestamp -> state unknown,
-                      stale true.'
+                      stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server
+                      when the response is built, not by the client.'
                     properties:
                       source_ts:
                         type: integer
@@ -13486,8 +13676,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_smart_money_validation
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/smart-stop:
@@ -13498,7 +13688,7 @@ paths:
 
         The cluster it may be aware of is the MODELLED ladder from /v1/liquidations, not an observed order book, and it carries that endpoint's caveats.
 
-        TIERS. Trader receives 16 of the 22 fields, tagged per field below. Pro additionally receives `stops`, `stop_detail`, `avoid_zones`, `take_profit_suggestions`, `take_profit_basis`, `error`. Trader alone receives `recommended_stop`, `recommended_stop_detail`, `withheld`, `withheld_reason` — `recommended_stop` is the single stop lifted out of the Pro `stops` dict, and `recommended_stop_detail` is its slice of `stop_detail`. Whatever a plan removed is named per response in `withheld` (`withheld_reason: "trader_plan"`), and the qualifier fields for the stop that IS returned are never removed.
+        TIERS. Trader receives 17 of the 23 fields, tagged per field below. Pro additionally receives `stops`, `stop_detail`, `avoid_zones`, `take_profit_suggestions`, `take_profit_basis`, `error`. Trader alone receives `recommended_stop`, `recommended_stop_detail`, `withheld`, `withheld_reason` — `recommended_stop` is the single stop lifted out of the Pro `stops` dict, and `recommended_stop_detail` is its slice of `stop_detail`. Whatever a plan removed is named per response in `withheld` (`withheld_reason: "trader_plan"`), and the qualifier fields for the stop that IS returned are never removed.
 
         Every type below was resolved from the expression that fills the field; where none could be, the property carries no `type` and says so, rather than a plausible guess a generated client would enforce.
       responses:
@@ -13523,26 +13713,35 @@ paths:
                     type: number
                     nullable: true
                     description: '[Trader and Pro] The entry the stop distance is measured from. null
-                      when none was supplied and no daemon price was readable — read `entry_price_source`
+                      when none was supplied and no market price was readable — read `entry_price_source`
                       before treating it as the caller''s own number.'
                   entry_price_source:
                     type: string
                     description: '[Trader and Pro] Where `entry_price` came from: ''caller'' (you supplied
-                      it), ''daemon_snapshot'' (inferred from the mark), or ''none''.'
+                      it); a market source when inferred — ''binance_ticker'' or ''binance_futures'' (live),
+                      ''last_known'' or ''derivatives_snapshot'' (older; see `current_price_age_s`), ''daemon_snapshot''
+                      (fallback); or ''none''.'
                   current_price:
                     type: number
                     nullable: true
-                    description: '[Trader and Pro] The daemon mark at computation time, or null when it
-                      could not be read. It is never the entry price wearing the mark''s name.'
+                    description: '[Trader and Pro] The market price at computation time, or null when
+                      it could not be read. It is never the entry price wearing the mark''s name.'
+                  current_price_age_s:
+                    type: number
+                    nullable: true
+                    description: '[Trader and Pro] Seconds between the market reading and this response;
+                      null when there is no market price. A ''last_known'' or ''derivatives_snapshot''
+                      price can be minutes old.'
                   price_reference:
                     type: number
                     nullable: true
                     description: '[Trader and Pro] The price the liquidation model was actually run against.'
                   price_reference_source:
                     type: string
-                    description: '[Trader and Pro] ''daemon_snapshot'' when the mark was readable, ''caller_entry_price''
-                      when it was not and your entry stood in for it. The second case is a stop measured
-                      against your own input, not against the market.'
+                    description: '[Trader and Pro] The market source (same values as `entry_price_source`)
+                      when a market price was readable, ''caller_entry_price'' when it was not and your
+                      entry stood in for it. The second case is a stop measured against your own input,
+                      not against the market.'
                   recommended_stop:
                     type: number
                     nullable: true
@@ -13869,8 +14068,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stats
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stats/calls:
@@ -13942,8 +14141,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stats_calls
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks:
@@ -13984,8 +14183,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/activist-alerts:
@@ -14032,8 +14231,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_activist_alerts
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/congress/{ticker}:
@@ -14131,8 +14330,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_insider_clusters
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/insiders/{ticker}:
@@ -14260,8 +14459,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_new_listings
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/rankings:
@@ -14310,8 +14509,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_rankings
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/short-interest/{ticker}:
@@ -14397,8 +14596,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_stats
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/tokenized:
@@ -14443,8 +14642,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_tokenized
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/universe:
@@ -14485,8 +14684,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_universe
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/whale-signals:
@@ -14535,8 +14734,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_stocks_whale_signals
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/stocks/whales/{ticker}:
@@ -14670,8 +14869,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_active
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/equity:
@@ -14737,8 +14936,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_equity
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/signals:
@@ -14784,8 +14983,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_signals
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/stats:
@@ -14886,8 +15085,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_stats
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/symbols:
@@ -14945,8 +15144,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_symbols
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/strategies/trades:
@@ -15021,8 +15220,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_strategies_trades
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/symbols:
@@ -15073,8 +15272,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_symbols
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/symbols/available:
@@ -15376,14 +15575,15 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_ta_screener
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/ta/technicals:
     get:
       summary: Technical indicators
-      description: Indicator set (moving averages, RSI, MACD, ATR) for one symbol.
+      description: Indicator set (moving averages, RSI, MACD, ATR) for one symbol. Also available as /v1/technicals
+        (same parameters, limits and auth).
       responses:
         '200':
           description: Successful response
@@ -15445,8 +15645,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_ta_technicals
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/top-traders/history:
@@ -15820,8 +16020,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/aggregate:
@@ -15941,8 +16141,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_aggregate
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/exchange:
@@ -16093,8 +16293,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_health
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/volume/symbols:
@@ -16159,8 +16359,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_volume_symbols
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/wallet/{address}/positions:
@@ -16414,8 +16614,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_wallets_relationships_stats
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/wallets/{address}/relationships:
@@ -16561,8 +16761,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whale_consensus
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whale-events:
@@ -16825,8 +17025,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_crowding
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/dex-positions:
@@ -16899,8 +17099,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_dex_positions
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/events:
@@ -16993,8 +17193,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_events
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/market-makers:
@@ -17092,8 +17292,8 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_summary
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.
   /v1/whales/universe:
@@ -17153,7 +17353,7 @@ paths:
       - XAU
       - XAG
       operationId: get_v1_whales_universe
-      x-response-measured: '2026-10-16'
-      x-response-note: Field names and types below were recorded from one real response on 2026-10-16,
+      x-response-measured: '2026-10-26'
+      x-response-note: Field names and types below were recorded from one real response on 2026-10-26,
         not written by hand. A field absent from that response is absent here even if the endpoint can
         return it, and optional fields are not marked required. Treat this as a floor, not a closed set.

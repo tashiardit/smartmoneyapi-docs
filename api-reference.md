@@ -1,12 +1,12 @@
 # SmartMoneyAPI — API reference
 
-**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-16. It documents 252 of the 309 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
+**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-26. It documents 252 of the 309 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
 
 Base URL: `https://api.smartmoneyapi.com`
 
 Auth: send `X-API-Key: <key>` on every request. Operations marked **keyless** answer without one, at a reduced row cap and a per-IP throttle. Never put a key in a URL.
 
-Errors: `429` is a quota or throttle rejection; `403` means your tier does not include that operation or symbol. Errors a browser can reach are returned as `503`, never `502`/`504`.
+Errors: `429` is a quota or throttle rejection; `403` means your tier does not include that operation or symbol. Errors a browser can reach are returned as `503`, never `502`/`504`. An unknown `/v1/...` path requested with a valid key answers `404` `{"error":"not_found","message":...}`, plus `suggestions` (real endpoint paths) and `docs` when there is a close match; anonymous requests to an unknown path get `401` first.
 
 > Not financial advice. Scores are a multi-factor confluence read, not a guaranteed win-rate. Past signal accuracy does not guarantee future results.
 
@@ -156,11 +156,11 @@ Response fields:
 | `data_mode_counts` | object |  |
 | `dataset_id` | string |  |
 | `expected_obs` | integer |  |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
 | `licence_class` | string |  |
 | `lookback_weeks` | integer |  |
 | `market` | object |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `methods` | object |  |
 | `metric` | string |  |
 | `n_obs` | integer |  |
@@ -191,7 +191,7 @@ curl \
 
 **COT summary** — keyless
 
-CFTC Commitments of Traders positioning summary.
+CFTC Commitments of Traders positioning summary. Also available as /v1/cot (same parameters, limits and auth).
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -248,7 +248,7 @@ Response fields:
 | `current_net_long` | integer |  |
 | `data_class` | string |  |
 | `divergence` | string |  |
-| `extreme` | — |  |
+| `extreme` | string |  |
 | `hedger_category` | string |  |
 | `hedger_label` | string |  |
 | `hedger_net` | integer |  |
@@ -1899,9 +1899,9 @@ Response fields:
 | `definition` | object |  |
 | `filing_lag_days` | object |  |
 | `filters` | object |  |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
 | `licence_class` | string |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `note` | string |  |
 | `rights` | object |  |
 | `rows` | array |  |
@@ -1958,12 +1958,11 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
-| `as_of` | — |  |
+| `as_of` | string |  |
 | `cached_count` | integer |  |
 | `engine` | string |  |
 | `fresh_count` | integer |  |
 | `full_analysis` | object |  |
-| `message` | string |  |
 | `note` | string |  |
 | `requested_count` | integer |  |
 | `stale_after_seconds` | integer |  |
@@ -2688,7 +2687,6 @@ Response fields:
 | `symbols` | array | Ordered by event count, descending. |
 | `total_symbols` | integer | Symbols on the tape before the limit was applied. |
 | `venues` | array | Distinct exchanges present in the archive. |
-| `venues_retired` | object |  |
 
 ```bash
 curl \
@@ -2984,7 +2982,6 @@ Response fields:
 | `symbols` | array |  |
 | `total` | integer |  |
 | `updated` | integer |  |
-| `warming_up` | boolean |  |
 
 ```bash
 curl \
@@ -3145,7 +3142,7 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `ingestion` | object |  |
-| `loop_stall` | — |  |
+| `loop_stall` | object |  |
 | `status` | string |  |
 | `subsystems` | object |  |
 | `subsystems_down` | array |  |
@@ -4945,7 +4942,7 @@ curl \
 
 **Visitors online now** — keyless
 
-The visitors-online-now set behind the public Visitor Map: `cells` (one entry per ~11 km cell with `lat`, `lng`, `precision` = city or country, `country` and `count`; never one entry per visitor), `totals` (web, ios, android, countries, cities; countries and cities are null when unknown, never 0), `online`, `generated_at` and `window_seconds` (300). Counts people who opened any page of the site in the last 5 minutes. A visitor who has not allowed analytics is shown at country precision only. A country-precision cell sits at the middle of the country, not where anyone is. Public, keyless. An outage answers 503, never a zero.
+The visitors-online-now set behind the public Visitor Map: `cells` (one entry per ~11 km cell with `lat`, `lng`, `precision` = city or country, `country` and `count`; never one entry per visitor), `totals` (web, ios, android, countries, cities; countries and cities are null when unknown, never 0), `online`, `generated_at` and `window_seconds` (300). Counts people who opened any page of the site, or made an authenticated API request, in the last 5 minutes; nothing in the answer says which. A website visitor who has not allowed analytics is shown at country precision only. A country-precision cell sits at the middle of the country, not where anyone is. Public, keyless. An outage answers 503, never a zero.
 
 Response fields:
 
@@ -4968,7 +4965,7 @@ curl \
 
 **Wallet activity** — key required — Trader (3,000 calls/day)
 
-What wallets did in an interval: open, add, reduce, close, flip, deposit, withdraw and transfers on Hyperliquid, or swap and transfer legs on bsc/avalanche read from our own node's scan (no cohorts; swap legs carry no direction because the ingest does not record one). bsc/avalanche answer 451 withheld_for_licence until the rights registry clears them; the shape is what they serve once cleared. A price move is never an activity event. The span is at most 7 days; the lookback is per plan (`features.sm_history_days`) and a clamp is reported in `lookback_clamped_by_tier`. `execution_context` separates observations from labelled estimates; on bsc/avalanche the honeypot probe is an estimate that does not execute the token's transfer hooks, and the Etherscan-derived contract source scan is withheld. No safety score, rating or recommendation is ever returned. Per-address cohort tags would list a cohort's members, so they are served only when membership is published; otherwise `cohorts` is null with `cohorts_state: "withheld"`, and a `cohort` filter answers 451 `withheld` with reason `member_lists`. An address on the privacy suppression list is never returned (on bsc/avalanche, neither as the wallet nor as the counterparty); if the list cannot be read the request answers 503.
+What wallets did in an interval: open, add, reduce, close, flip, deposit, withdraw and transfers on Hyperliquid, or swap and transfer legs on bsc/avalanche read from our own node's scan (no cohorts; swap legs carry no direction because the ingest does not record one). bsc/avalanche answer 451 withheld_for_licence until the rights registry clears them; the shape is what they serve once cleared. A price move is never an activity event. The span is at most 7 days; the lookback is per plan (`features.sm_history_days`) and a clamp is reported in `lookback_clamped_by_tier`. Hyperliquid events are kept raw for 365 days from the capture start; a window that reaches before that is not silently cut short: `history_coverage` and `history_note` say where the raw history begins, and /activity/summary answers from hourly summaries kept indefinitely. `execution_context` separates observations from labelled estimates; on bsc/avalanche the honeypot probe is an estimate that does not execute the token's transfer hooks, and the Etherscan-derived contract source scan is withheld. No safety score, rating or recommendation is ever returned. Per-address cohort tags would list a cohort's members, so they are served only when membership is published; otherwise `cohorts` is null with `cohorts_state: "withheld"`, and a `cohort` filter answers 451 `withheld` with reason `member_lists`. An address on the privacy suppression list is never returned (on bsc/avalanche, neither as the wallet nor as the counterparty); if the list cannot be read the request answers 503.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -4992,15 +4989,18 @@ Response fields:
 | `cohort_labels` | object | cohort id -> label, for the cohorts the events carry (empty while tags are withheld) |
 | `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
 | `events` | array |  |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
 | `from` | integer |  |
 | `from_requested` | integer |  |
+| `history_coverage` | object | How far back the RAW event store reaches (events are kept 365 days; the capture began at `history_from_ts`) and how the window sits against it; `covered` is full, partial or none. Older activity is answered by /activity/summary from the hourly summaries. |
 | `history_days_limit` | integer |  |
+| `history_note` | string | present when the window reaches before the raw history |
 | `licence_class` | string |  |
 | `lookback_clamped_by_tier` | boolean |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `next_cursor` | string | null on the last page |
 | `note` | string |  |
+| `partial_reason` | string | `capture_lag` when the window ends after (or less than 5 minutes before) the fill capture's last copy, so its newest minutes may not be stored yet (always, for a window ending now); `capture_gap`, `capture_stalled` or `capture_disabled` otherwise |
 | `rights` | object |  |
 | `scan` | object |  |
 | `scope` | string |  |
@@ -5019,12 +5019,12 @@ curl -H "X-API-Key: $SMARTMONEY_API_KEY" \
 
 **Wallet activity summary** — key required — Trader (3,000 calls/day)
 
-Per symbol: counts and USD of opens, adds, reduces, closes and flips, the price-neutral net_position_change_usd, and mark_to_market_change_usd reported beside it (never summed into it). The everyone rows are `all_observed`, which counts every wallet with an event (`cohort=all_observed` selects it), and `all_tracked`; they are served for any window. The row of a membership cohort is added only when cohort disclosure is enabled (see `disclosure_control`) and, under disclosure control, only for one complete UTC day (`window=1d`, or from/to on 00:00 UTC one day apart). A `cohort` filter other than `all_observed` answers 451 `withheld` with reason `member_lists` unless membership is published. USDC ledger transfers are listed by /activity, not summed here. Served on the hour grid; when `window` is not given it is `1d`, the last complete UTC day. Replaces the retired /flows design.
+Per symbol: counts and USD of opens, adds, reduces, closes and flips, the price-neutral net_position_change_usd, and mark_to_market_change_usd reported beside it (never summed into it). The everyone rows are `all_observed`, which counts every wallet with an event (`cohort=all_observed` selects it), and `all_tracked`; they are served for any window. The row of a membership cohort is added only when cohort disclosure is enabled (see `disclosure_control`) and, under disclosure control, only for one complete UTC day (`window=1d`, or from/to on 00:00 UTC one day apart). A `cohort` filter other than `all_observed` answers 451 `withheld` with reason `member_lists` unless membership is published. USDC ledger transfers are listed by /activity, not summed here. Served on the hour grid; when `window` is not given it is `1d`, the last complete UTC day. Replaces the retired /flows design. WHAT IT COVERS (tiered retention): the live fill capture keeps raw events for 365 days (`capture.retention_days`) and raw fills for 30 days (`capture.fills_retention_days`), and rolls every closed UTC hour into an hourly summary that is kept indefinitely. Windows up to 7d are answered from the raw events (`answered_from: "raw_events"`, `granularity: "event"`); `30d`, `90d`, `365d` and every explicit from/to range are answered from the hourly summaries (`answered_from: "hourly_rollup"`, `granularity: "hour"`), up to the plan's `sm_history_days` (unlimited plans: all the history there is). History accrues from the capture start (`capture.capture_start_ts`): nothing earlier was captured, and `coverage_horizon` says how the window sits against it (`covered`: full, partial or none; `reason`: `before_capture_start` or `before_retention`). A window that ends before the history reaches back is `missing`; one that straddles it is `partial`. HOW OFTEN IT UPDATES: new fills are copied about every 10 minutes and closed hours are rolled up at the same time. Named windows are rebuilt in the background when their cached copy expires and a response is read from memory: 1h, 4h and 24h about every 5 minutes, 7d every 10 minutes, the UTC day (1d) every 5 minutes (every 30 minutes where cohort cells are served under disclosure control), 30d/90d/365d every hour; a 30d/90d/365d answer built before the newest closed hour was rolled up (about ten minutes after the hour) is `partial` and is replaced as soon as that hour is rolled. COMPLETENESS: `capture.covered_to_ts` is when our server received the newest trade copied into the store (the ingestion high-water mark, not a guarantee that every venue fill reached us). A window is `complete` only once `covered_to_ts` is at least 5 minutes past its end (a fill can reach us shortly after it trades); until then it is `partial` with `partial_reason: "capture_lag"` (hourly answers apply the same rule through the hourly summary's watermark). A served answer turns `complete` about 20 minutes after the window closes for 1h, 4h, 24h and 1d, about 25 for 7d, up to 45 for a 1d answer with cohort cells under disclosure control, and about 25 for 30d, 90d, 365d and explicit ranges. A window ending now is therefore always `partial`. A recorded capture gap inside the window makes it `partial` with `capture_gap`, a capture that has stopped with `capture_stalled`, and one that is switched off with `capture_disabled`. SIGN CONVENTION: `net_position_change_usd` is the sum over the window's trades of the signed size change in coins (a buy adds its size, a sell subtracts it), times the latest mark when the summary was built: positive is a net move toward long, including shorts bought back. It is not gross exposure and never includes deposits or withdrawals; opens/adds/reduces/closes/flips `usd` are traded notional, always positive. A window being computed for the first time answers 503 `computing` (retry in `retry_after_s`; a long explicit range can take up to about a minute to build the first time), and a build that failed answers 503 `build_failed`. An empty answer says why in `missing_reason` (`capture_starting`, `capture_disabled`, `capture_stalled`, `capture_paused_low_disk`, `before_capture_start`, `before_retention` or `no_events_in_window`) and `capture` reports the capture's state.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
-| `window` | query | no | 1d = the last complete UTC day (the only window that carries membership-cohort cells under disclosure control); 1h/4h/24h/7d = the last 1, 4, 24 or 168 complete hours. One of: `1d`, `1h`, `4h`, `24h`, `7d`. Default `1d`. |
-| `from` | query | no | Explicit start, a whole hour (multiple of 3600; with `to`, instead of window). The window is [from, to). |
+| `window` | query | no | 1d = the last complete UTC day (the only window that carries membership-cohort cells under disclosure control); 1h/4h/24h/7d = the last 1, 4, 24 or 168 complete hours; 30d/90d/365d = the last 30, 90 or 365 days of complete hours, answered from the hourly summaries and limited by the plan's sm_history_days. One of: `1d`, `1h`, `4h`, `24h`, `7d`, `30d`, `90d`, `365d`. Default `1d`. |
+| `from` | query | no | Explicit start, a whole hour (multiple of 3600; with `to`, instead of window). The window is [from, to), at most the plan's `sm_history_days` long, answered from the hourly summaries. A range longer than 7 days has its start moved forward to the next UTC day boundary (the end stays on the hour) so callers share one cached build (`range_snapped_to_days` holds what you asked); a new uncached range may be started once per 20 seconds per caller, otherwise `503 busy` with `retry_after_s`. |
 | `to` | query | no | Explicit end, a whole hour, at least one hour after `from`; clamped to the last complete hour. |
 | `cohort` | query | no | Comma-separated cohort ids from /v1/smart-money/cohorts. |
 | `symbol` | query | no | Hyperliquid coin, matched case-insensitively (e.g. BTC, kPEPE). |
@@ -5034,17 +5034,23 @@ Response fields:
 
 | Field | Type | Description |
 |---|---|---|
+| `answered_from` | string | which store answered |
 | `as_of` | integer | When the response was assembled -- never the data time (see `updated`, `freshness`). |
 | `basis` | string |  |
+| `capture` | object | The live fill capture behind the counts. |
+| `coverage_horizon` | object | How far back the answering store reaches and how the window sits against it. |
 | `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
 | `disclosure_control` | object | States the disclosure setting this response was served under. Present unless membership is published (where it is published the field is absent and the cells are exact). `mode` is `withheld`: only the everyone rows (`all_observed`, `all_tracked`) are served and no membership-cohort aggregate is (a week of controlled cells joined in one MILP was measured to rebuild the members). `mode` is `controlled` (an operator decision): membership-cohort cells are served under the disclosure control -- one UTC day, at least 10 distinct addresses inside a cell and 10 outside it in its row, per cell and per sub-aggregate; counts rounded to 5 and USD to 2 significant figures; a quantity that would decide one address's membership withheld; account-value tiers all or none. Not differential privacy. |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
 | `from` | integer |  |
+| `granularity` | string | the finest unit the answer was built from |
 | `licence_class` | string |  |
 | `lookback_clamped_by_tier` | boolean |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `method` | string |  |
+| `missing_reason` | string | present when `symbols` is empty |
 | `note` | string |  |
+| `partial_reason` | string | present when the window is partial: `before_capture_start` or `before_retention` (it straddles the history horizon) or `capture_lag` (it ends less than 5 minutes before `capture.covered_to_ts`, or after it), `capture_gap`, `capture_stalled` or `capture_disabled` |
 | `rights` | object |  |
 | `scope` | string |  |
 | `symbols` | array |  |
@@ -5074,9 +5080,9 @@ Response fields:
 | `cohorts` | array |  |
 | `coverage` | object | The complete-sweep snapshot's own coverage, exactly as recorded; before the first snapshot {state: missing, missing_reason: no_snapshot}. |
 | `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
 | `licence_class` | string |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `note` | string |  |
 | `prereg_sha256` | string |  |
 | `rights` | object |  |
@@ -5094,7 +5100,7 @@ curl \
 
 **Cohort positioning** — key required — Trader (3,000 calls/day)
 
-What the tracked accounts hold on Hyperliquid perps, per symbol, from a complete sweep of the tracked accounts: long/short/net/gross USD, counts, observed addresses and an independent-participant estimate. The everyone row (`all_tracked`) is always served. The row of a membership cohort is added only when cohort disclosure is enabled (see `disclosure_control`); otherwise the response carries the everyone row alone, and a `cohort` filter naming a membership cohort that is not served returns no rows. Under disclosure control a membership cohort's cells come from the newest UTC-day snapshot (`cohort_snapshot_ts`) and are rounded, a cell or side under the floor is omitted or withheld (`withheld_fields`), and concentration and divergence are withheld; where membership is published the cells are exact. `include` adds concentration and divergence to the exact rows. Every cell that is served carries `state` (observed|missing|stale); a measured zero is observed 0, a missing value is null with a missing_reason. Descriptive, not a forecast.
+What the tracked accounts hold on Hyperliquid perps, per symbol, from a complete sweep of the tracked accounts: long/short/net/gross USD, counts, observed addresses and an independent-participant estimate. The everyone row (`all_tracked`) is always served. The row of a membership cohort is added only when cohort disclosure is enabled (see `disclosure_control`); otherwise the response carries the everyone row alone, and a `cohort` filter naming a membership cohort that is not served returns no rows. Under disclosure control a membership cohort's cells come from the newest UTC-day snapshot (`cohort_snapshot_ts`) and are rounded, a cell or side under the floor is omitted or withheld (`withheld_fields`), and concentration and divergence are withheld; where membership is published the cells are exact. `include` adds concentration and divergence to the exact rows. Every cell that is served carries `state` (observed|missing|stale); a measured zero is observed 0, a missing value is null with a missing_reason. HOW OFTEN IT UPDATES: the everyone row is recomputed about every 10 minutes (`snapshot_kind` = `live`, `refresh_interval_s`), valued at the newest Hyperliquid mark; the 4-hourly snapshot (`grid_snapshot_ts`, 00/04/08/12/16/20 UTC plus the run lag) stays the history and the source of the UTC-day cohort cells. HOW OLD THE INPUTS ARE: each wallet is shown as of its own latest scan, and the ~16,000 tracked wallets are rotated, so the typical wallet was last scanned hours ago -- `coverage.scan_age_s` gives the median, p95 and max, and `freshness.source_timestamp` is the time of the typical input (as_of minus the median scan age), not of the newest scan. The response is `fresh` until `freshness.stale_after_s` (28800 s = 8 h) has passed since that timestamp, and reads `stale` earlier if the live view has not been refreshed for 45 minutes. Descriptive, not a forecast.
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -5114,12 +5120,15 @@ Response fields:
 | `coverage` | object | The complete-sweep snapshot's own coverage, exactly as recorded; before the first snapshot {state: missing, missing_reason: no_snapshot}. |
 | `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
 | `disclosure_control` | object | States the disclosure setting this response was served under. Present unless membership is published (where it is published the field is absent and the cells are exact). `mode` is `withheld`: only the everyone rows (`all_observed`, `all_tracked`) are served and no membership-cohort aggregate is (a week of controlled cells joined in one MILP was measured to rebuild the members). `mode` is `controlled` (an operator decision): membership-cohort cells are served under the disclosure control -- one UTC day, at least 10 distinct addresses inside a cell and 10 outside it in its row, per cell and per sub-aggregate; counts rounded to 5 and USD to 2 significant figures; a quantity that would decide one address's membership withheld; account-value tiers all or none. Not differential privacy. |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
+| `grid_snapshot_ts` | integer | newest 4-hourly snapshot, UTC Unix seconds |
 | `licence_class` | string |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `note` | string |  |
+| `refresh_interval_s` | integer | how often this kind of snapshot is rebuilt |
 | `rights` | object |  |
 | `scope` | string |  |
+| `snapshot_kind` | string | `live` = recomputed about every 10 minutes from each wallet's newest scan; `grid` = the 4-hourly snapshot (served while no live view is current) |
 | `snapshot_ts` | integer |  |
 | `symbols` | array |  |
 | `updated` | integer | The datum time (freshness.source_timestamp); absent when nothing measured dates the body. |
@@ -5156,11 +5165,11 @@ Response fields:
 | `days` | integer |  |
 | `days_requested` | integer |  |
 | `disclosure_control` | object | States the disclosure setting this response was served under. Present unless membership is published (where it is published the field is absent and the cells are exact). `mode` is `withheld`: only the everyone rows (`all_observed`, `all_tracked`) are served and no membership-cohort aggregate is (a week of controlled cells joined in one MILP was measured to rebuild the members). `mode` is `controlled` (an operator decision): membership-cohort cells are served under the disclosure control -- one UTC day, at least 10 distinct addresses inside a cell and 10 outside it in its row, per cell and per sub-aggregate; counts rounded to 5 and USD to 2 significant figures; a quantity that would decide one address's membership withheld; account-value tiers all or none. Not differential privacy. |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
 | `history_days_limit` | integer |  |
 | `history_start_ts` | integer |  |
 | `licence_class` | string |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `note` | string |  |
 | `points` | array |  |
 | `rights` | object |  |
@@ -5206,10 +5215,10 @@ Response fields:
 | `evidence` | object |  |
 | `evidence_grade` | string |  |
 | `exclusion_reason` | string |  |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
 | `independence` | object |  |
 | `licence_class` | string |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `note` | string |  |
 | `rights` | object |  |
 | `risk` | object |  |
@@ -5240,9 +5249,9 @@ Response fields:
 | `basis` | string |  |
 | `cohort_status` | object |  |
 | `data_mode` | string | live or backfilled; null where no capture backs the body (e.g. /validation, which is derived, before its first run). |
-| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. |
+| `freshness` | object | Computed when the response is SERVED, not when it was cached: a last-good copy older than stale_after_s reads `stale`. `source_timestamp`, `received_at` and `served_at` are UTC Unix seconds; `staleness_s` is served_at - source_timestamp, worked out on our server when the response is built (`meta.age_s` is the same number). |
 | `licence_class` | string |  |
-| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. |
+| `meta` | object | Read from `freshness` alone: no measured source timestamp -> state unknown, stale true. `source_ts` is a UTC Unix second; `age_s` is computed on our server when the response is built, not by the client. |
 | `note` | string |  |
 | `prereg` | object |  |
 | `published_failures` | array |  |
@@ -5481,7 +5490,7 @@ curl \
 
 **Technical indicators** — keyless
 
-Indicator set (moving averages, RSI, MACD, ATR) for one symbol.
+Indicator set (moving averages, RSI, MACD, ATR) for one symbol. Also available as /v1/technicals (same parameters, limits and auth).
 
 | Parameter | In | Required | Description |
 |---|---|---|---|
@@ -5620,7 +5629,7 @@ A stop price WITH the basis it was derived from. `stop_basis` records whether th
 
 The cluster it may be aware of is the MODELLED ladder from /v1/liquidations, not an observed order book, and it carries that endpoint's caveats.
 
-TIERS. Trader receives 16 of the 22 fields, tagged per field below. Pro additionally receives `stops`, `stop_detail`, `avoid_zones`, `take_profit_suggestions`, `take_profit_basis`, `error`. Trader alone receives `recommended_stop`, `recommended_stop_detail`, `withheld`, `withheld_reason` — `recommended_stop` is the single stop lifted out of the Pro `stops` dict, and `recommended_stop_detail` is its slice of `stop_detail`. Whatever a plan removed is named per response in `withheld` (`withheld_reason: "trader_plan"`), and the qualifier fields for the stop that IS returned are never removed.
+TIERS. Trader receives 17 of the 23 fields, tagged per field below. Pro additionally receives `stops`, `stop_detail`, `avoid_zones`, `take_profit_suggestions`, `take_profit_basis`, `error`. Trader alone receives `recommended_stop`, `recommended_stop_detail`, `withheld`, `withheld_reason` — `recommended_stop` is the single stop lifted out of the Pro `stops` dict, and `recommended_stop_detail` is its slice of `stop_detail`. Whatever a plan removed is named per response in `withheld` (`withheld_reason: "trader_plan"`), and the qualifier fields for the stop that IS returned are never removed.
 
 Every type below was resolved from the expression that fills the field; where none could be, the property carries no `type` and says so, rather than a plausible guess a generated client would enforce.
 
@@ -5636,14 +5645,15 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `avoid_zones` | array | [PRO/ENTERPRISE ONLY] The liquidation clusters the stops were placed around. |
-| `current_price` | number | [Trader and Pro] The daemon mark at computation time, or null when it could not be read. It is never the entry price wearing the mark's name. |
+| `current_price` | number | [Trader and Pro] The market price at computation time, or null when it could not be read. It is never the entry price wearing the mark's name. |
+| `current_price_age_s` | number | [Trader and Pro] Seconds between the market reading and this response; null when there is no market price. A 'last_known' or 'derivatives_snapshot' price can be minutes old. |
 | `direction` | string | [Trader and Pro] Position direction the stop was placed for: long or short. |
-| `entry_price` | number | [Trader and Pro] The entry the stop distance is measured from. null when none was supplied and no daemon price was readable — read `entry_price_source` before treating it as the caller's own number. |
-| `entry_price_source` | string | [Trader and Pro] Where `entry_price` came from: 'caller' (you supplied it), 'daemon_snapshot' (inferred from the mark), or 'none'. |
+| `entry_price` | number | [Trader and Pro] The entry the stop distance is measured from. null when none was supplied and no market price was readable — read `entry_price_source` before treating it as the caller's own number. |
+| `entry_price_source` | string | [Trader and Pro] Where `entry_price` came from: 'caller' (you supplied it); a market source when inferred — 'binance_ticker' or 'binance_futures' (live), 'last_known' or 'derivatives_snapshot' (older; see `current_price_age_s`), 'daemon_snapshot' (fallback); or 'none'. |
 | `error` | string | [PRO/ENTERPRISE ONLY] Set only on the degraded response where no entry price could be determined at all. NOTE: the Trader reshape does not forward it, so on that plan the same condition is readable from `stop_basis.unavailable_reason` instead. |
 | `liq_cascade_risk` | — | [Trader and Pro] The estimator's cascade bucket for this symbol, or its word for an absence. It is not smoothed into a reassuring value when unknown. NO JSON TYPE IS PUBLISHED for this field: no type could be derived from the source expression that fills it, and a guessed type in a schema that clients generate against is worse than a missing one. Unstated is not permissive — treat the shape as unverified. |
 | `price_reference` | number | [Trader and Pro] The price the liquidation model was actually run against. |
-| `price_reference_source` | string | [Trader and Pro] 'daemon_snapshot' when the mark was readable, 'caller_entry_price' when it was not and your entry stood in for it. The second case is a stop measured against your own input, not against the market. |
+| `price_reference_source` | string | [Trader and Pro] The market source (same values as `entry_price_source`) when a market price was readable, 'caller_entry_price' when it was not and your entry stood in for it. The second case is a stop measured against your own input, not against the market. |
 | `recommended_stop` | number | [TRADER ONLY] The one stop price on this plan. null when no stop could be placed. Read `stop_basis.status` before sizing: an identical number means completely different things depending on it. |
 | `recommended_stop_detail` | object | [TRADER ONLY] Provenance of THIS stop only: which cluster informed it, how far away it is, or the note saying no cluster did. The other labels' detail is in `stop_detail`. |
 | `risk_pct_reference` | object | [Trader and Pro] The risk_pct arithmetic, LABELLED as arithmetic, offered only when no cluster informed the stops. null otherwise. It is not a recommendation. |

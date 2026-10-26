@@ -275,7 +275,11 @@ def reference_md(spec: dict, source: str, live_total: int) -> str:
         "",
         "Errors: `429` is a quota or throttle rejection; `403` means your tier "
         "does not include that operation or symbol. Errors a browser can reach "
-        "are returned as `503`, never `502`/`504`.",
+        "are returned as `503`, never `502`/`504`. An unknown `/v1/...` path "
+        "requested with a valid key answers `404` "
+        "`{\"error\":\"not_found\",\"message\":...}`, plus `suggestions` (real "
+        "endpoint paths) and `docs` when there is a close match; anonymous "
+        "requests to an unknown path get `401` first.",
         "",
         "> Not financial advice. Scores are a multi-factor confluence read, not "
         "a guaranteed win-rate. Past signal accuracy does not guarantee future "
