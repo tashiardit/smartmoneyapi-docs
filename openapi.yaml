@@ -21,7 +21,7 @@ info:
 
     Paid tiers ARE published: you should be able to read the exact shape of what a subscription returns before paying for it. Per-operation x-auth says whether a key is needed at all; x-tier names the plan that unlocks it. Public operations answer without a key at a reduced row cap and a per-IP throttle.
 
-    Mirror generated 2026-10-26 from https://smartmoneyapi.com/openapi.json (read from a local copy): 252 of 309 live paths.
+    Mirror generated 2026-10-26 from https://smartmoneyapi.com/openapi.json: 252 of 309 live paths.
   contact:
     url: https://smartmoneyapi.com
   license:
