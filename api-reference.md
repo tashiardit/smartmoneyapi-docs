@@ -1,6 +1,6 @@
 # SmartMoneyAPI — API reference
 
-**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-26. It documents 252 of the 309 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
+**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-27. It documents 253 of the 310 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
 
 Base URL: `https://api.smartmoneyapi.com`
 
@@ -30,7 +30,7 @@ Errors: `429` is a quota or throttle rejection; `403` means your tier does not i
 - [L2 trade tape](#l2-trade-tape) — 2 endpoints
 - [Liquidations](#liquidations) — 12 endpoints
 - [Live chain](#live-chain) — 5 endpoints
-- [Market](#market) — 11 endpoints
+- [Market](#market) — 12 endpoints
 - [Meta](#meta) — 9 endpoints
 - [News](#news) — 8 endpoints
 - [Node](#node) — 13 endpoints
@@ -2687,6 +2687,7 @@ Response fields:
 | `symbols` | array | Ordered by event count, descending. |
 | `total_symbols` | integer | Symbols on the tape before the limit was applied. |
 | `venues` | array | Distinct exchanges present in the archive. |
+| `venues_retired` | object |  |
 
 ```bash
 curl \
@@ -2808,6 +2809,31 @@ curl \
 ```
 
 ## Market
+
+### `GET /v1/macro`
+
+**Macro composite** — keyless
+
+One composite object: realized volatility, Fear & Greed, our own derivatives-regime aggregate (label crowded_long, neutral or crowded_short; thresholds in `basis`), and a compact weekly COT summary. Built only from data this API already serves; components deliberately not served (BTC dominance, altcoin season, CME basis) are listed in `withheld` with the reason. Each component carries `status` (ok or warming), `updated` (unix seconds) and `stale`; a cold component answers status=warming instead of blocking. Funding is restated per 8 hours per reporting venue before averaging; derivatives_regime publishes included_oi_share and excluded_oi_usd and answers status=unavailable (no label) below 50% coverage or without BTC/ETH. Top-level updated is the oldest component time and stale is true while any component is warming, unavailable or stale. Implied-volatility fields are listed in `withheld` as volatility.implied. Public.
+
+Response fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `cot` | object |  |
+| `derivatives_regime` | object |  |
+| `fear_greed` | object |  |
+| `stale` | boolean |  |
+| `unavailable` | array |  |
+| `updated` | integer |  |
+| `volatility` | object |  |
+| `warming` | array |  |
+| `withheld` | array |  |
+
+```bash
+curl \
+  "https://api.smartmoneyapi.com/v1/macro"
+```
 
 ### `GET /v1/market/altseason`
 
@@ -2982,6 +3008,7 @@ Response fields:
 | `symbols` | array |  |
 | `total` | integer |  |
 | `updated` | integer |  |
+| `warming_up` | boolean |  |
 
 ```bash
 curl \
@@ -3142,7 +3169,7 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `ingestion` | object |  |
-| `loop_stall` | object |  |
+| `loop_stall` | — |  |
 | `status` | string |  |
 | `subsystems` | object |  |
 | `subsystems_down` | array |  |
