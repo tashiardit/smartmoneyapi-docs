@@ -1,6 +1,6 @@
 # SmartMoneyAPI — API reference
 
-**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-27. It documents 253 of the 310 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
+**Generated file — do not hand-edit.** Produced by `tools/build_public_spec.py` from the live OpenAPI document at <https://smartmoneyapi.com/openapi.json>, on 2026-10-29. It documents 253 of the 310 paths the live API routes; the selection rule is stated in [openapi.yaml](openapi.yaml) and implemented in [tools/build_public_spec.py](tools/build_public_spec.py).
 
 Base URL: `https://api.smartmoneyapi.com`
 
@@ -3008,7 +3008,6 @@ Response fields:
 | `symbols` | array |  |
 | `total` | integer |  |
 | `updated` | integer |  |
-| `warming_up` | boolean |  |
 
 ```bash
 curl \
@@ -3169,7 +3168,7 @@ Response fields:
 | Field | Type | Description |
 |---|---|---|
 | `ingestion` | object |  |
-| `loop_stall` | — |  |
+| `loop_stall` | object |  |
 | `status` | string |  |
 | `subsystems` | object |  |
 | `subsystems_down` | array |  |
@@ -5617,7 +5616,7 @@ Cross-exchange funding-rate arbitrage opportunities. Trader tier: top-1 opportun
 | Parameter | In | Required | Description |
 |---|---|---|---|
 | `symbol` | query | no | Filter opportunities by symbol. |
-| `min_spread` | query | no | Minimum funding spread. Default `0.01`. |
+| `min_spread` | query | no | Minimum funding spread, 8h basis (0.0005 = 0.05%). Must be a finite number >= 0; anything else is a 400. Default `0.0005`. |
 
 Response fields:
 
